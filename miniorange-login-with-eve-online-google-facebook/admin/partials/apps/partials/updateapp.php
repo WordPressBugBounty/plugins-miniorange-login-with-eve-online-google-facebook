@@ -278,8 +278,7 @@ function mooauth_client_update_app_page( $appname ) {
 		</td>
 			</tr>
 			<?php } ?>
-			<tr>
-				<tr>
+			<tr><tr>
 				<td class="mo_oauth_contact_heading"><strong class="mo_strong"><?php esc_html_e( 'Login Button:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
 				<td><div style="padding:5px;"></div><input class="mo_oauth_input_box_css" type="checkbox" class="mo_input_checkbox" name="mo_oauth_show_on_login_page" value ="1" 
 				<?php
@@ -290,6 +289,27 @@ function mooauth_client_update_app_page( $appname ) {
 				};
 				?>
 				/><?php esc_html_e( 'Show on login page', 'miniorange-login-with-eve-online-google-facebook' ); ?></td>
+			</tr>
+			<tr>
+				<td class="mo_oauth_contact_heading"><strong class="mo_strong"><?php esc_html_e( 'Allow admin SSO:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
+				<td><div style="padding:5px;"></div><input class="mo_oauth_input_box_css" type="checkbox" class="mo_input_checkbox" name="mo_oauth_allow_admin_sso" value ="1" 
+				<?php
+				if ( isset( $currentapp['allow_admin_sso'] ) ) {
+					if ( 1 === $currentapp['allow_admin_sso'] ) {
+						echo 'checked';
+					}
+				};
+				?>
+				/><?php esc_html_e( 'Allow admin user to perform SSO', 'miniorange-login-with-eve-online-google-facebook' ); ?></td>
+				</tr><td></td>
+				<td>
+					<div id="admin_sso_notice" class="mo-oauth-admin-sso-notice" style="display:none;">
+						<span class="dashicons dashicons-info"></span>
+						<?php esc_html_e( 'Please enable', 'miniorange-login-with-eve-online-google-facebook' ); ?> 
+						<a href="admin.php?page=mo_oauth_settings&tab=attributemapping"><b><?php esc_html_e( 'email mapping', 'miniorange-login-with-eve-online-google-facebook' ); ?></b></a> 
+						<?php esc_html_e( 'for admin authentication', 'miniorange-login-with-eve-online-google-facebook' ); ?>
+					</div>
+				</td>
 			</tr>
 				<td>&nbsp;</td>
 				<td>
@@ -342,6 +362,21 @@ function mooauth_client_update_app_page( $appname ) {
 				show_button.className = "fa fa-eye";
 			}
 		}
+
+		jQuery(document).ready(function($) {
+			function toggleAdminSSONotice() {
+				if ($('input[name="mo_oauth_allow_admin_sso"]').is(':checked')) {
+					$('#admin_sso_notice').slideDown(300);
+				} else {
+					$('#admin_sso_notice').slideUp(300);
+				}
+			}
+			toggleAdminSSONotice();
+			$('input[name="mo_oauth_allow_admin_sso"]').on('change', function() {
+				toggleAdminSSONotice();
+			});
+		});
+
 		</script>
 			<?php
 		}

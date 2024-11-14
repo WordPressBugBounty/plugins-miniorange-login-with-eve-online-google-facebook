@@ -71,9 +71,9 @@ function mooauth_client_main_menu() {
 	MO_OAuth_Client_Admin_Utils::curl_extension_check();
 	MO_OAuth_Client_Admin_Menu::show_menu( $currenttab );
 	echo '<div id="mo_oauth_settings">';
-	if ( get_option( 'mo_oauth_client_show_rest_api_message' ) ) {
-		MO_OAuth_Client_Admin_Menu::show_rest_api_secure_message();
-	}
+	$admin_notice = new MO_OAuth_Admin_Notice();
+	$admin_notice->show_notice_message();
+
 		echo '
 		<div class="miniorange_container">';
 

@@ -2,9 +2,9 @@
 Contributors: cyberlord92
 Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
-Tested up to: 6.6
+Tested up to: 6.7
 Requires PHP: 5.4
-Stable tag: 6.26.1
+Stable tag: 6.26.2
 License: MIT/Expat
 License URI: https://docs.miniorange.com/mit-license
 
@@ -18,6 +18,76 @@ WordPress SSO (Single Sign On) with Azure, Azure B2C, Cognito, Okta, Classlink, 
 An unlimited number of users can perform Single Sign-On (SSO) with OAuth/OIDC supported Identity Providers on WordPress using Single Sign-On (SSO) capabilities.  
 
  |<a href="https://plugins.miniorange.com/wordpress-sso#key-features" target="_blank"> Features </a>| <a href="https://plugins.miniorange.com/wordpress-single-sign-on-sso-with-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_13" target="_blank"> OAuth / OpenID Providers Setup guides </a>|<a href="https://youtu.be/Vff0E0KxM3k" target="_blank"> Videos </a>|
+
+ = POPULAR OAUTH AND OPENID CONNECT (OIDC) PROVIDERS SINGLE SIGN-ON (SSO) =
+
+The following providers support OAuth 2.0/OpenID Connect SSO for WordPress login.
+
+*	[AWS Cognito SSO | Login with AWS Cognito](https://plugins.miniorange.com/aws-cognito-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_6)
+*	[Office 365 SSO | Login with Office 365](https://plugins.miniorange.com/office-365-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_5)
+*	[Azure B2C SSO | Login with Azure B2C](https://plugins.miniorange.com/azure-b2c-ad-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_3)
+*	[Azure AD SSO | Login with Azure AD](https://plugins.miniorange.com/azure-ad-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[ADFS SSO | Login with ADFS](https://plugins.miniorange.com/adfs-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Auth0 SSO | Login with Auth0](https://plugins.miniorange.com/auth0-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[OKTA SSO | Login with OKTA](https://plugins.miniorange.com/okta-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_8)
+*	[ClassLink SSO | Login with ClassLink](https://plugins.miniorange.com/classlink-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_12)
+*	[Keycloak SSO | Login with Keycloak](https://plugins.miniorange.com/keycloak-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_9)
+*	[Clever SSO | Login with Clever](https://plugins.miniorange.com/clever-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_11)
+*	[Google Classroom SSO | Login with Google Classroom](https://plugins.miniorange.com/google-classroom-single-sign-on-sso)
+*	[Salesforce SSO | Login with Salesforce](https://plugins.miniorange.com/salesforce-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_10)
+*	[G Suite / Google Apps SSO | Login with Google](https://plugins.miniorange.com/google-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_4)
+*	[Ping Federate SSO ( Ping / Ping Identity ) | Login with Ping Federate](https://plugins.miniorange.com/ping-federate-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[IdentityServer4 SSO | Login with IdentityServer4](https://plugins.miniorange.com/identityserver4-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[IdentityServer3 SSO | Login with IdentityServer3](https://plugins.miniorange.com/identityserver3-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Discord SSO | Login with Discord](https://plugins.miniorange.com/discord-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_7)
+*	[OneLogin SSO | Login with OneLogin](https://plugins.miniorange.com/onelogin-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Swiss-RX-Login SSO ( Swiss RX Login ) | Login with Swiss-RX-Login](https://plugins.miniorange.com/swiss-rx-login-single-sign-on-for-wordpress-using-oauth)
+*	[Neon CRM SSO | Login with Neon CRM](https://plugins.miniorange.com/neon-crm-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[iMIS SSO | Login with iMIS](https://plugins.miniorange.com/imis-oauth-and-openid-connect-single-sign-on-sso)
+*   [Signicat SSO | User Verification with Signicat](https://plugins.miniorange.com/signicat-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[ID.me SSO | Login with ID.me](https://plugins.miniorange.com/id-me-oauth-and-openid-connect-single-sign-on-sso-login)
+*	[Canvas SSO | Login with Canvas](https://plugins.miniorange.com/canvas-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[WordPress SSO | Login with WordPress](https://plugins.miniorange.com/guide-to-setup-single-sign-on-between-two-wordpress-sites)
+*	[WSO2 SSO | Login with WSO2](https://plugins.miniorange.com/wso2-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[OpenAthens SSO | Login with OpenAthens](https://plugins.miniorange.com/openathens-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[HP SSO | Login with HP](https://plugins.miniorange.com/hp-single-sign-on-sso-oauth-and-openid-connect)
+*	[Servicenow SSO | Login with Servicenow](https://plugins.miniorange.com/servicenow-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Invision Community SSO | Login with Invision Community](https://plugins.miniorange.com/invision-community-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[OpenAM / Forgerock SSO | Login with Forgerock](https://plugins.miniorange.com/forgerock-open-am-single-sign-on-for-wordpress-using-oauth)
+*	[Laravel Passport SSO | Login with Laravel Passport](https://plugins.miniorange.com/laravel-passport-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[NextCloud SSO | Login with NextCloud](https://plugins.miniorange.com/nextcloud-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Orcid SSO | Login with Orcid](https://plugins.miniorange.com/orcid-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Memberclicks SSO | Login with MemberClicks](https://plugins.miniorange.com/memberclicks-oauth-and-openid-connect-single-sign-on-sso-login)
+*	[Open edX / eduNEXT SSO | Login with Open edX](https://plugins.miniorange.com/open-edx-edunext-oauth-and-openid-connect-single-sign-on-sso-login)
+*	[SheepCRM SSO | Login with SheepCRM](https://plugins.miniorange.com/sheepcrm-oauth-and-openid-connect-single-sign-on-sso-login)
+*	[IBM APP ID SSO | Login with IBM](https://plugins.miniorange.com/ibm-app-id-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Amazon SSO | Login with Amazon](https://plugins.miniorange.com/amazon-oauth-and-openid-connect-single-sign-on-sso-login)
+*	[UNA SSO | Login with UNA](https://plugins.miniorange.com/una-oauth-and-openid-connect-single-sign-on-sso-login)
+*	[Bitrix24 SSO | Login with Bitrix24](https://plugins.miniorange.com/bitrix24-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Slack SSO | Login with Slack](https://plugins.miniorange.com/slack-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Yahoo SSO | Login with Yahoo](https://plugins.miniorange.com/yahoo-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[LinkedIn SSO | Login with LinkedIn](https://plugins.miniorange.com/linkedin-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Gitlab SSO | Login with Gitlab](https://plugins.miniorange.com/gitlab-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[GitHub SSO | Login with GitHub](https://plugins.miniorange.com/github-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Apple SSO | Login with Apple](https://plugins.miniorange.com/login-with-apple-app-using-wordpress-oauth-client)
+*	[Strava SSO | Login with Strava](https://plugins.miniorange.com/strava-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Blizzard / Battle.net SSO | Login with Battle.net](https://plugins.miniorange.com/blizzard-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Basecamp SSO | Login with Basecamp](https://plugins.miniorange.com/basecamp-oauth-and-openid-connect-single-sign-on-sso-login)
+*	[PayPal SSO | Login with PayPal](https://plugins.miniorange.com/paypal-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[Eve Online SSO | Login with Eve Online](https://plugins.miniorange.com/eve-online-single-sign-on-wordpress-sso-oauth-openid-connect)
+*   [Intuit SSO | Login with Intuit](https://plugins.miniorange.com/login-with-intuit-using-wordpress-oauth-openid-connect)
+*   [Hubspot SSO | Login with Hubspot](https://plugins.miniorange.com/hubspot-single-sign-on-for-wordpress-using-oauth)
+*   [X(Twitter) SSO | Login with Twitter](https://plugins.miniorange.com/twitter-single-sign-on-wordpress-sso-oauth-openid-connect)
+*   [Oracle IDCS SSO | Login with Oracle IDCS](https://plugins.miniorange.com/oracle-idcs-oauth-and-openid-connect-single-sign-on-sso-login)
+*   [Zoho SSO | Login with Zoho](https://plugins.miniorange.com/zoho-single-sign-on-wordpress-sso-oauth-openid-connect)
+*   [Idaptive SSO | CyberArk SSO | login with CyberArk](https://plugins.miniorange.com/idaptive-single-sign-on-for-wordpress-using-oauth)
+*   [WHMCS SSO | Login with WHMCS](https://plugins.miniorange.com/whmcs-single-sign-on-wordpress-sso-oauth-openid-connect)
+*	[France Connect SSO | Login with France Connect](https://plugins.miniorange.com/franceconnect-single-sign-on-sso-wordpress-oauth)
+
+
+= OTHER OAUTH AND OPENID CONNECT (OIDC) PROVIDERS WE SUPPORT FOR WORDPRESS SINGLE SIGN-ON (SSO) =
+*	Other OAuth 2.0 and OpenId Connect ( OIDC ) 1.0 servers WordPress Single Sign-On ( SSO ) plugin support includes Office 365, AWS Cognito, Microsoft Dynamic CRM 365, Auth0, Google Workspace, Egnyte, Autodesk, Zendesk, Foursquare, Harvest, Mailchimp, Bitrix24, Spotify, Vkontakte, Huddle, Reddit, Strava, Ustream, Yammer, RunKeeper, Instagram, SoundCloud, Pocket, PayPal, Pinterest, Vimeo, Nest, Heroku, DropBox, Buffer, Box, Hubic, Deezer, DeviantArt, Delicious, Dailymotion, Bitly, Mondo, Netatmo, Amazon, FitBit, Clever, Sqaure Connect, Windows, Microsoft Live, Dash 10, Github, Invision Community, Blizzard, authlete, Keycloak, Procore, Eve Online, Laravel Passport, Nextcloud, Renren, Soundcloud, OpenAM / Forgerock, IdentityServer, ORCID, Diaspora, Timezynk, Idaptive CyberArk, Duo Security, Rippling, Crowd, Janrain, Numina Solutions, Ubuntu Single Sign-On, Apple, Ipsilon, Zoho, Stripe, Itthinx, Fellowshipone, Miro, Naver, Clever, Coil, Parallel Markets, VATSIM, Liferay, Fatsecret, Intuit, iMIS, ORY Hydra, FusionAuth, Kakao, ID.me, MoxiWorks, HR Answerlink / Support center, ClassLink, Google Classroom, MemberClicks, BankID, CSI, Splitwise, Infusionsoft, Hubspot, Join It, MyAcademicID, MemberConnex, Novi, Coassemble, Servicenow, IBM APP ID, Nimble AMS, iSpring LMS, Neon CRM, EPIC, IPB forum, Wiziq, Sprinklr, Elvanto, ABSORB LMS, Wechat, Weibo, Shibboleth, Centrify, FranceConnect, Church Online, Bigcommerce, Sewobe, PracticePanther, SubscribeStar, Eventbrite, Medi-Access, Lichess, CILogon, Servicem8, Gigya, PhantAuth, XING, Simplecast, SURF, MediaWiki, UNA, NetSuite, Oracle IDCS, Globus, Square, SimpleSAMLphp, Basecamp, HP, SHELL, Otoy, Steam, Webflow, Simplepass, Feide, SingPass, Asmodee, SwissID, Miro, Alkami, Switch, Citrix, Schoology, iGov, LearnWorlds, France Connect, DID, Blackboard, UAEPass, Polar, CodeB, Vincere CRM, F5, TicketMaster, BizLibrary, Skolon, Rapattoni, PowerSchool, Minecraft, NETS, Joomla, Drupal, ASP.NET, CA Siteminder, Outseta, XUMM, ID Austria, Ubisecure, Gravitee.io, SheepCRM, Wahoo, WeatherFlow Tempest, OneWelcome / iWelcome, Xbox, Trovo, Cornerstone, Criipto, bare.id, Discourse, Authentik, Sailpoint, Coil, Asset Bank, GrowthZone, Vipps, Authorizer, Deviant Art, Miracl, Teamsnap, Authelia, Teachable, Django, IDsampa, Cvent, SERMO, Pixelfed, Finys, Login.gov, Fastcase, Acuity, ARPA, Zitadel, Yeti, myID.be, memberful, Teachable, Mindbody etc. This comprehensive SSO support facilitates seamless integration and secure authentication across a wide range of platforms.
+
  
 = WordPress Single Sign-On / SSO ( Login to WordPress ) =
 
@@ -96,77 +166,6 @@ The WordPress SSO (OAuth / OpenID Connect SSO) plugin supports login with Clever
 *  **No SSL Restriction**: Allows SSO login without SSL or HTTPS-enabled site using Google credentials or any other app.
 
 
-= POPULAR OAUTH AND OPENID CONNECT (OIDC) PROVIDERS SINGLE SIGN-ON (SSO) =
-The following providers support OAuth 2.0/OpenID Connect SSO for WordPress login.
-*	[AWS Cognito SSO | Login with AWS Cognito](https://plugins.miniorange.com/aws-cognito-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_6)
-*	[Office 365 SSO | Login with Office 365](https://plugins.miniorange.com/office-365-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_5)
-*	[Azure B2C SSO | Login with Azure B2C](https://plugins.miniorange.com/azure-b2c-ad-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_3)
-*	[Azure AD SSO | Login with Azure AD](https://plugins.miniorange.com/azure-ad-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Google Classroom SSO | Login with Google Classroom](https://plugins.miniorange.com/google-classroom-single-sign-on-sso)
-*	[ClassLink SSO | Login with ClassLink](https://plugins.miniorange.com/classlink-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_12)
-*	[Keycloak SSO | Login with Keycloak](https://plugins.miniorange.com/keycloak-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_9)
-*	[Clever SSO | Login with Clever](https://plugins.miniorange.com/clever-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_11)
-*	[Ping Federate SSO ( Ping / Ping Identity ) | Login with Ping Federate](https://plugins.miniorange.com/ping-federate-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[IdentityServer4 SSO | Login with IdentityServer4](https://plugins.miniorange.com/identityserver4-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[IdentityServer3 SSO | Login with IdentityServer3](https://plugins.miniorange.com/identityserver3-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Discord SSO | Login with Discord](https://plugins.miniorange.com/discord-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_7)
-*	[Canvas SSO | Login with Canvas](https://plugins.miniorange.com/canvas-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[WordPress SSO | Login with WordPress](https://plugins.miniorange.com/guide-to-setup-single-sign-on-between-two-wordpress-sites)
-*	[WSO2 SSO | Login with WSO2](https://plugins.miniorange.com/wso2-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Salesforce SSO | Login with Salesforce](https://plugins.miniorange.com/salesforce-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_10)
-*	[G Suite / Google Apps SSO | Login with Google](https://plugins.miniorange.com/google-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_4)
-*	[Auth0 SSO | Login with Auth0](https://plugins.miniorange.com/auth0-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[OKTA SSO | Login with OKTA](https://plugins.miniorange.com/okta-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_8)
-*	[OneLogin SSO | Login with OneLogin](https://plugins.miniorange.com/onelogin-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Swiss-RX-Login SSO ( Swiss RX Login ) | Login with Swiss-RX-Login](https://plugins.miniorange.com/swiss-rx-login-single-sign-on-for-wordpress-using-oauth)
-*	[Neon CRM SSO | Login with Neon CRM](https://plugins.miniorange.com/neon-crm-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[OpenAthens SSO | Login with OpenAthens](https://plugins.miniorange.com/openathens-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[iMIS SSO | Login with iMIS](https://plugins.miniorange.com/imis-oauth-and-openid-connect-single-sign-on-sso)
-*	[HP SSO | Login with HP](https://plugins.miniorange.com/hp-single-sign-on-sso-oauth-and-openid-connect)
-*	[Servicenow SSO | Login with Servicenow](https://plugins.miniorange.com/servicenow-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Invision Community SSO | Login with Invision Community](https://plugins.miniorange.com/invision-community-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[OpenAM / Forgerock SSO | Login with Forgerock](https://plugins.miniorange.com/forgerock-open-am-single-sign-on-for-wordpress-using-oauth)
-*	[Laravel Passport SSO | Login with Laravel Passport](https://plugins.miniorange.com/laravel-passport-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[NextCloud SSO | Login with NextCloud](https://plugins.miniorange.com/nextcloud-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Orcid SSO | Login with Orcid](https://plugins.miniorange.com/orcid-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Memberclicks SSO | Login with MemberClicks](https://plugins.miniorange.com/memberclicks-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[Open edX / eduNEXT SSO | Login with Open edX](https://plugins.miniorange.com/open-edx-edunext-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[SheepCRM SSO | Login with SheepCRM](https://plugins.miniorange.com/sheepcrm-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[IBM APP ID SSO | Login with IBM](https://plugins.miniorange.com/ibm-app-id-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Amazon SSO | Login with Amazon](https://plugins.miniorange.com/amazon-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[ADFS SSO | Login with ADFS](https://plugins.miniorange.com/adfs-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[UNA SSO | Login with UNA](https://plugins.miniorange.com/una-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[Bitrix24 SSO | Login with Bitrix24](https://plugins.miniorange.com/bitrix24-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Slack SSO | Login with Slack](https://plugins.miniorange.com/slack-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Yahoo SSO | Login with Yahoo](https://plugins.miniorange.com/yahoo-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[LinkedIn SSO | Login with LinkedIn](https://plugins.miniorange.com/linkedin-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Gitlab SSO | Login with Gitlab](https://plugins.miniorange.com/gitlab-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[GitHub SSO | Login with GitHub](https://plugins.miniorange.com/github-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Apple SSO | Login with Apple](https://plugins.miniorange.com/login-with-apple-app-using-wordpress-oauth-client)
-*	[Strava SSO | Login with Strava](https://plugins.miniorange.com/strava-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Blizzard / Battle.net SSO | Login with Battle.net](https://plugins.miniorange.com/blizzard-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Basecamp SSO | Login with Basecamp](https://plugins.miniorange.com/basecamp-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[PayPal SSO | Login with PayPal](https://plugins.miniorange.com/paypal-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Eve Online SSO | Login with Eve Online](https://plugins.miniorange.com/eve-online-single-sign-on-wordpress-sso-oauth-openid-connect)
-*   [Intuit SSO | Login with Intuit](https://plugins.miniorange.com/login-with-intuit-using-wordpress-oauth-openid-connect)
-*   [Hubspot SSO | Login with Hubspot](https://plugins.miniorange.com/hubspot-single-sign-on-for-wordpress-using-oauth)
-*   [X(Twitter) SSO | Login with Twitter](https://plugins.miniorange.com/twitter-single-sign-on-wordpress-sso-oauth-openid-connect)
-*   [Oracle IDCS SSO | Login with Oracle IDCS](https://plugins.miniorange.com/oracle-idcs-oauth-and-openid-connect-single-sign-on-sso-login)
-*   [Zoho SSO | Login with Zoho](https://plugins.miniorange.com/zoho-single-sign-on-wordpress-sso-oauth-openid-connect)
-*   [Idaptive SSO | CyberArk SSO | login with CyberArk](https://plugins.miniorange.com/idaptive-single-sign-on-for-wordpress-using-oauth)
-*   [WHMCS SSO | Login with WHMCS](https://plugins.miniorange.com/whmcs-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	Coil SSO | Login with Coil
-*	VATSIM SSO | Login with VATSIM
-*	Box SSO | Login with Box
-*	ID.me SSO | Login with ID.me
-*	Ticketmaster SSO | Login with TicketMaster
-*	MemberConnex SSO | Login with MemberConnex
-
-
-= OTHER OAUTH AND OPENID CONNECT (OIDC) PROVIDERS WE SUPPORT FOR WORDPRESS SINGLE SIGN-ON (SSO) =
-*	Other OAuth 2.0 and OpenId Connect ( OIDC ) 1.0 servers WordPress Single Sign-On ( SSO ) plugin support includes Office 365, AWS Cognito, Microsoft Dynamic CRM 365, Auth0, Google Workspace, Egnyte, Autodesk, Zendesk, Foursquare, Harvest, Mailchimp, Bitrix24, Spotify, Vkontakte, Huddle, Reddit, Strava, Ustream, Yammer, RunKeeper, Instagram, SoundCloud, Pocket, PayPal, Pinterest, Vimeo, Nest, Heroku, DropBox, Buffer, Box, Hubic, Deezer, DeviantArt, Delicious, Dailymotion, Bitly, Mondo, Netatmo, Amazon, FitBit, Clever, Sqaure Connect, Windows, Microsoft Live, Dash 10, Github, Invision Community, Blizzard, authlete, Keycloak, Procore, Eve Online, Laravel Passport, Nextcloud, Renren, Soundcloud, OpenAM / Forgerock, IdentityServer, ORCID, Diaspora, Timezynk, Idaptive CyberArk, Duo Security, Rippling, Crowd, Janrain, Numina Solutions, Ubuntu Single Sign-On, Apple, Ipsilon, Zoho, Stripe, Itthinx, Fellowshipone, Miro, Naver, Clever, Coil, Parallel Markets, VATSIM, Liferay, Fatsecret, Intuit, iMIS, ORY Hydra, FusionAuth, Kakao, ID.me, MoxiWorks, HR Answerlink / Support center, ClassLink, Google Classroom, MemberClicks, BankID, CSI, Splitwise, Infusionsoft, Hubspot, Join It, MyAcademicID, MemberConnex, Novi, Coassemble, Servicenow, IBM APP ID, Nimble AMS, iSpring LMS, Neon CRM, EPIC, IPB forum, Wiziq, Sprinklr, Elvanto, ABSORB LMS, Wechat, Weibo, Shibboleth, Centrify, FranceConnect, Church Online, Bigcommerce, Sewobe, PracticePanther, SubscribeStar, Eventbrite, Medi-Access, Lichess, CILogon, Servicem8, Gigya, PhantAuth, XING, Simplecast, SURF, MediaWiki, UNA, NetSuite, Oracle IDCS, Globus, Square, SimpleSAMLphp, Basecamp, HP, SHELL, Otoy, Steam, Webflow, Simplepass, Feide, SingPass, Asmodee, SwissID, Miro, Alkami, Switch, Citrix, Schoology, iGov, LearnWorlds, France Connect, DID, Blackboard, UAEPass, Polar, CodeB, Vincere CRM, F5, TicketMaster, BizLibrary, Skolon, Rapattoni, PowerSchool, Minecraft, NETS, Joomla, Drupal, ASP.NET, CA Siteminder, Outseta, XUMM, ID Austria, Ubisecure, Gravitee.io, SheepCRM, Wahoo, WeatherFlow Tempest, OneWelcome / iWelcome, Xbox, Trovo, Cornerstone, Criipto, bare.id, Discourse, Authentik, Sailpoint, Signicat, Asset Bank, GrowthZone, Vipps, Authorizer, Deviant Art, Miracl, Teamsnap, Authelia, Teachable, Django, IDsampa, Cvent, SERMO, Pixelfed, Finys, Login.gov, Fastcase, Acuity, ARPA, Zitadel, Yeti, myID.be etc. This comprehensive SSO support facilitates seamless integration and secure authentication across a wide range of platforms.
-
-
 == WORDPRESS SINGLE SIGN-ON (SSO) SUPPORTED ADD-ONS ==
 
 *	[**Page Restriction**](https://plugins.miniorange.com/wordpress-page-restriction) - This add-on is used to protect the pages / posts of your site with OAuth & OpenID Connect compliant IDP (Server) login page and also, to restrict access to pages / posts of the site based on user role using SSO.
@@ -229,6 +228,12 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.26.2 =
+* Add WordPress 6.7 Compatibility
+* Added Email mapping with user profile
+* Added restrict admin user to perform SSO feature
+* Security fixes
+
 = 6.26.1 =
 * Update the setup guide links for Diaspora, AWS Cognito, and others
 
@@ -786,6 +791,12 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+= 6.26.2 =
+* Add WordPress 6.7 Compatibility
+* Added Email mapping with user profile
+* Added restrict admin user to perform SSO feature
+* Security fixes
+
 = 6.26.1 =
 * Update the setup guide links for Diaspora, AWS Cognito, and others
 

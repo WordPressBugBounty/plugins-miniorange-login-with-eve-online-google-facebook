@@ -350,24 +350,36 @@ function mooauth_login_validate() {
 			}
 		}
 	} elseif ( ( ! empty( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'openidcallback' ) !== false ) || ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'oauth_token' ) !== false ) && ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'oauth_verifier' ) ) ) {
-		$appslist      = get_option( 'mo_oauth_apps_list' );
-		$username_attr = '';
-		$currentapp    = false;
+		$appslist        = get_option( 'mo_oauth_apps_list' );
+		$username_attr   = '';
+		$email_attr      = '';
+		$currentapp      = false;
+		$allow_admin_sso = '';
 		foreach ( $appslist as $key => $app ) {
 			if ( $key === $_COOKIE['tappname'] ) {
 						include 'class-mo-oauth-custom-oauth1.php';
 						$currentapp = $app;
 				if ( isset( $app['username_attr'] ) ) {
 					$username_attr = $app['username_attr'];
-				} elseif ( isset( $app['email_attr'] ) ) {
-					mooauth_update_email_to_username_attr( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) );
-					$username_attr = $app['email_attr'];
+				}
+				if ( isset( $app['email_attr'] ) ) {
+					if ( ! isset( $app['username_attr'] ) ) {
+						mooauth_update_email_to_username_attr( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) );
+						$username_attr = $app['email_attr'];
+
+					}
+
+					$email_attr = $app['email_attr'];
+				}
+				if ( isset( $app['allow_admin_sso'] ) ) {
+					$allow_admin_sso = $app['allow_admin_sso '];
 				}
 			}
 		}
 
 		$resource_owner = MO_OAuth_Custom_OAuth1::mo_oidc1_get_access_token( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) );
 		$username       = '';
+		$email          = '';
 		update_option( 'mo_oauth_attr_name_list', $resource_owner );
 		// Test Configuration.
 		if ( isset( $_COOKIE['mo_oauth_test'] ) && sanitize_text_field( wp_unslash( $_COOKIE['mo_oauth_test'] ) ) ) {
@@ -396,19 +408,46 @@ function mooauth_login_validate() {
 			MOOAuth_Debug::mo_oauth_log( 'Username is not a string. It is ' . mooauth_client_get_proper_prefix( gettype( $username ) ) );
 			wp_die( 'Username is not a string. It is ' . esc_html( mooauth_client_get_proper_prefix( gettype( $username ) ) ) );
 		}
+		if ( ! empty( $email_attr ) ) {
+			$email = mooauth_client_getnestedattribute( $resource_owner, $email_attr );
+			MOOAuth_Debug::mo_oauth_log( 'email received.=>' . $email );
+		}
 
-				$user = get_user_by( 'login', $username );
+		$user = get_user_by( 'login', $username );
+		if ( ! $user && ! empty( $email_attr ) ) {
+			$user = get_user_by( 'email', $email );
+		}
 
 		if ( $user ) {
 			$user_id = $user->ID;
+			if ( in_array( 'administrator', $user->roles, true ) ) {
+				if ( ! $allow_admin_sso ) {
+					MOOAuth_Debug::mo_oauth_log( 'You are trying to login using an admin user. Please login using email and password.' );
+					wp_die( 'You are trying to login using an admin user. Please login using email and password.' );
+				} else {
+					$current_admin_email = $user->user_email;
+					if ( $current_admin_email !== $email ) {
+						MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
+						wp_die( 'Error : WPO01 Invalid login attempt.' );
+					}
+				}
+			}
+			if ( ! empty( $email_attr ) ) {
+				wp_update_user(
+					array(
+						'ID'         => $user_id,
+						'user_email' => $email,
+					)
+				);
+			}
 		} else {
-			$user_id = 0;
 			if ( mooauth_migrate_customers() ) {
 				$user = mooauth_looped_user( $username );
 			} else {
-				$user = mooauth_handle_user_registration( $username );
+				$user = mooauth_handle_user_registration( $username, $email );
 			}
 		}
+
 		if ( $user ) {
 			wp_set_current_user( $user->ID );
 			wp_set_auth_cookie( $user->ID );
@@ -453,17 +492,27 @@ function mooauth_login_validate() {
 					MOOAuth_Debug::mo_oauth_log( 'ERROR : No request found for this application.' );
 					return;
 				}
-				$appslist      = get_option( 'mo_oauth_apps_list' );
-				$username_attr = '';
-				$currentapp    = false;
+				$appslist        = get_option( 'mo_oauth_apps_list' );
+				$username_attr   = '';
+				$email_attr      = '';
+				$currentapp      = false;
+				$allow_admin_sso = '';
 				foreach ( $appslist as $key => $app ) {
 					if ( $key === $currentappname ) {
 						$currentapp = $app;
 						if ( isset( $app['username_attr'] ) ) {
 							$username_attr = $app['username_attr'];
-						} elseif ( isset( $app['email_attr'] ) ) {
-								mooauth_update_email_to_username_attr( $currentappname );
+						}
+						if ( isset( $app['email_attr'] ) ) {
+							if ( ! isset( $app['username_attr'] ) ) {
+								mooauth_update_email_to_username_attr( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) );
 								$username_attr = $app['email_attr'];
+
+							}
+							$email_attr = $app['email_attr'];
+						}
+						if ( isset( $app['allow_admin_sso'] ) ) {
+							$allow_admin_sso = $app['allow_admin_sso'];
 						}
 					}
 				}
@@ -555,6 +604,7 @@ function mooauth_login_validate() {
 				}
 
 				$username = '';
+				$email    = '';
 				update_option( 'mo_oauth_attr_name_list', $resource_owner );
 				// Test Configuration.
 				if ( isset( $_COOKIE['mo_oauth_test'] ) && sanitize_text_field( wp_unslash( $_COOKIE['mo_oauth_test'] ) ) ) {
@@ -586,16 +636,44 @@ function mooauth_login_validate() {
 					exit( 'Username not received. Check your <b>Attribute Mapping</b> configuration.' );
 				}
 
+				if ( ! empty( $email_attr ) ) {
+					$email = mooauth_client_getnestedattribute( $resource_owner, $email_attr );
+					MOOAuth_Debug::mo_oauth_log( 'Email received.=>' . $email );
+				}
 				$user = get_user_by( 'login', $username );
+				if ( ! $user && ! empty( $email_attr ) ) {
+					$user = get_user_by( 'email', $email );
+				}
 
 				if ( $user ) {
 					$user_id = $user->ID;
+
+					if ( in_array( 'administrator', $user->roles, true ) ) {
+						if ( ! $allow_admin_sso ) {
+							MOOAuth_Debug::mo_oauth_log( 'You are trying to login using an admin user. Please login using email and password.' );
+							wp_die( 'You are trying to login using an admin user. Please login using email and password.' );
+						} else {
+							$current_admin_email = $user->user_email;
+							if ( $current_admin_email !== $email ) {
+								MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
+								wp_die( 'Error : WPO01 Invalid login attempt.' );
+							}
+						}
+					}
+
+					if ( ! empty( $email_attr ) ) {
+						wp_update_user(
+							array(
+								'ID'         => $user_id,
+								'user_email' => $email,
+							)
+						);
+					}
 				} else {
-					$user_id = 0;
 					if ( mooauth_migrate_customers() ) {
 						$user = mooauth_looped_user( $username );
 					} else {
-						$user = mooauth_handle_user_registration( $username );
+						$user = mooauth_handle_user_registration( $username, $email );
 					}
 				}
 				if ( $user ) {
@@ -650,8 +728,9 @@ function mooauth_login_validate() {
  * Handle user registration.
  *
  * @param mixed $username username for the current user.
+ * @param mixed $email email for the current user.
  */
-function mooauth_handle_user_registration( $username ) {
+function mooauth_handle_user_registration( $username, $email = null ) {
 	$random_password = wp_generate_password( 10, false );
 
 	if ( strlen( $username ) > 60 ) {
@@ -664,9 +743,13 @@ function mooauth_handle_user_registration( $username ) {
 		wp_die( 'You are not allowed to login. Please contact your administrator' );
 	}
 
-	$user_id = wp_create_user( $username, $random_password );
-	$user    = get_user_by( 'login', $username );
-	wp_update_user( array( 'ID' => $user_id ) );
+	$user_create_response = wp_create_user( $username, $random_password, $email );
+	if ( is_wp_error( $user_create_response ) ) {
+		wp_die( esc_attr( $user_create_response ) );
+	}
+
+	$user = get_user_by( 'login', $username );
+	wp_update_user( array( 'ID' => $user_create_response ) );
 	return $user;
 }
 

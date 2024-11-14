@@ -214,6 +214,7 @@ class MO_OAuth_Wizard_Ajax {
 		$newapp['send_body']          = ( true === $app['mo_oauth_send_body'] || 'true' === $app['mo_oauth_send_body'] ) ? '1' : '0';
 		$newapp['send_state']         = 1;
 		$newapp['show_on_login_page'] = 1;
+		$newapp['allow_admin_sso']    = 0;
 		$newapp['appId']              = $app['mo_oauth_appId'];
 
 		$scope  = '';

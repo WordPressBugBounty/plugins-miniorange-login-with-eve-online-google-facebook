@@ -45,7 +45,11 @@ function mooauth_client_attribite_role_mapping_ui() {
 		<input class="mo_table_textbox" required="" type="hidden" name="mo_oauth_custom_app_name" value="<?php echo esc_attr( $currentappname ); ?>">
 		<table class="mo_settings_table mo_oauth_attribute_map_table" style="margin:-20px;">
 			<tr id="mo_oauth_email_attr_div">
-				<td><strong class="mo_strong"><font color="#FF0000">*</font><?php esc_html_e( 'Username:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
+				<td>
+					<strong class="mo_strong"><font color="#FF0000">*</font><?php esc_html_e( 'Username:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>
+					<br/>
+					<div class="mo_oauth_usename_notice"><span class="mo_oauth_usename_notice_span"><?php esc_html_e( '[ Map unique attribute with username ]', 'miniorange-login-with-eve-online-google-facebook' ); ?></span></div>
+				</td>
 				<td>
 					<?php
 					if ( is_array( $attr_name_list ) ) {
@@ -65,7 +69,7 @@ function mooauth_client_attribite_role_mapping_ui() {
 							<?php
 							foreach ( $attr_name_list as $key => $value ) {
 								echo "<option value='" . esc_attr( $value ) . "'";
-								if ( ( isset( $currentapp['username_attr'] ) && $currentapp['username_attr'] === $value ) || ( isset( $currentapp['email_attr'] ) && $currentapp['email_attr'] === $value ) ) {
+								if ( ( isset( $currentapp['username_attr'] ) && $currentapp['username_attr'] === $value ) ) {
 									echo ' selected';
 								} else {
 									echo '';
@@ -75,23 +79,26 @@ function mooauth_client_attribite_role_mapping_ui() {
 							?>
 						</select>
 						<script>
-						function mooauth_changeFormField(){
-							var select_box = document.getElementById('mo_oauth_username_attr_select');
-							var input_tag = document.getElementById('mo_oauth_username_attr_input');
+						function mooauth_change_form_field(fieldType) {
+							var select_box = document.getElementById('mo_oauth_' + fieldType + '_attr_select');
+							var input_tag = document.getElementById('mo_oauth_' + fieldType + '_attr_input');
+							var attr_option = document.getElementById('mo_attr_option');
+							var change_p = document.getElementById('mo_' + fieldType + '_attr_change_p');
+
 							if (select_box.style.display != "none") {
 								select_box.name = "";
 								select_box.style.display = "none";
-								input_tag.name = "mo_oauth_username_attr";
+								input_tag.name = "mo_oauth_" + fieldType + "_attr";
 								input_tag.style.display = "block";
-								document.getElementById('mo_username_attr_change_p').innerHTML = "Change to automatic mode";
-								document.getElementById('mo_attr_option').value = "manual";
+								change_p.innerHTML = "Change to automatic mode";
+								attr_option.value = "manual";
 							} else {
-								select_box.name = "mo_oauth_username_attr";
+								select_box.name = "mo_oauth_" + fieldType + "_attr";
 								select_box.style.display = "block";
 								input_tag.name = "";
 								input_tag.style.display = "none";
-								document.getElementById('mo_username_attr_change_p').innerHTML = "Change to manual mode";
-								document.getElementById('mo_attr_option').value = "automatic";
+								change_p.innerHTML = "Change to manual mode";
+								attr_option.value = "automatic";
 							}
 						}
 						</script>
@@ -117,7 +124,7 @@ function mooauth_client_attribite_role_mapping_ui() {
 						</td>
 						<?php $textattr = get_option( 'mo_attr_option' ) ? get_option( 'mo_attr_option' ) === 'manual' ? 'Change to automatic mode' : 'Change to manual mode' : 'Change to manual mode'; ?>
 						<td>
-							<a href="#" id="mo_username_attr_change_p" onclick="mooauth_changeFormField()"><?php echo esc_html( $textattr ); ?></a>
+							<a href="#" id="mo_username_attr_change_p" onclick="mooauth_change_form_field('username')"><?php echo esc_html( $textattr ); ?></a>
 						</td>
 						<?php
 					} else {
@@ -142,6 +149,81 @@ function mooauth_client_attribite_role_mapping_ui() {
 					}
 					?>
 			</tr>
+			</td>
+			<tr id="mo_oauth_email_attr_div">
+				<td><strong class="mo_strong"><font color="#FF0000">*</font><?php esc_html_e( 'Email:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
+				<td>
+					<?php
+					if ( is_array( $attr_name_list ) ) {
+						?>
+						<select class="mo_table_textbox" 
+						<?php
+						if ( get_option( 'mo_attr_option' ) === 'manual' ) {
+							echo 'style="display:none"'; }
+						?>
+						id="mo_oauth_email_attr_select" 
+						<?php
+						if ( get_option( 'mo_attr_option' ) === false || get_option( 'mo_attr_option' ) === 'automatic' ) {
+							echo 'name="mo_oauth_email_attr"'; }
+						?>
+						>
+						<option value="">----------- Select an Attribute -----------</option>
+							<?php
+							foreach ( $attr_name_list as $key => $value ) {
+								echo "<option value='" . esc_attr( $value ) . "'";
+								if ( ( isset( $currentapp['email_attr'] ) && $currentapp['email_attr'] === $value ) ) {
+									echo ' selected';
+								} else {
+									echo '';
+								}
+								echo ' >' . esc_attr( $value ) . '</option>';
+							}
+							?>
+						</select>
+						<input type="hidden" id="mo_attr_option" name="mo_attr_option" value="
+						<?php
+						if ( get_option( 'mo_attr_option' ) ) {
+							echo esc_attr( get_option( 'mo_attr_option' ) );
+						} else {
+							echo 'automatic'; }
+						?>
+						">
+						<input 
+						<?php
+						if ( get_option( 'mo_attr_option' ) === 'manual' ) {
+							echo 'name="mo_oauth_email_attr"'; }
+						?>
+						class="mo_table_textbox" 
+						<?php
+						if ( get_option( 'mo_attr_option' ) === 'automatic' || get_option( 'mo_attr_option' ) === false ) {
+							echo 'style="display:none"'; }
+						?>
+						placeholder="Enter attribute name for Email" type="text" id="mo_oauth_email_attr_input" value=" <?php echo isset( $currentapp['email_attr'] ) ? esc_attr( $currentapp['email_attr'] ) : ''; ?> ">
+						</td>
+						<?php $textattr = get_option( 'mo_attr_option' ) ? get_option( 'mo_attr_option' ) === 'manual' ? 'Change to automatic mode' : 'Change to manual mode' : 'Change to manual mode'; ?>
+						<td>
+							<a href="#" id="mo_email_attr_change_p" onclick="mooauth_change_form_field('email')"><?php echo esc_html( $textattr ); ?></a>
+						</td>
+						<?php
+					} else {
+						?>
+						<input class="mo_table_textbox" required="" placeholder="Enter attribute name for Email" type="text" id="mo_oauth_email_attr_input" 
+						<?php
+						if ( ! is_array( $attr_name_list ) ) {
+							echo 'disabled'; }
+						?>
+						name="mo_oauth_email_attr" value="
+						<?php
+						if ( isset( $currentapp['email_attr'] ) ) {
+							echo esc_attr( $currentapp['email_attr'] ); }
+						?>
+						">
+						</td><td></td>
+						<?php
+					}
+					?>
+			</tr>
+
 		<?php
 		echo '<tr>
 			<td></td><td>
@@ -158,10 +240,6 @@ function mooauth_client_attribite_role_mapping_ui() {
 			<td><strong class="mo_strong">' . esc_html__( 'Last Name:', 'miniorange-login-with-eve-online-google-facebook' ) . '</strong></td>
 			<td>
 				<input type="text" class="mo_table_textbox mo_oauth_input_disabled" placeholder="' . esc_html__( 'Enter attribute name for Last Name', 'miniorange-login-with-eve-online-google-facebook' ) . '"  disabled /></td>
-		</tr>
-		<tr>
-			<td><strong class="mo_strong">' . esc_html__( 'Email:', 'miniorange-login-with-eve-online-google-facebook' ) . '</strong></td>
-			<td><input type="text" class="mo_table_textbox mo_oauth_input_disabled" placeholder="' . esc_html__( 'Enter attribute name for Email', 'miniorange-login-with-eve-online-google-facebook' ) . '"  value="" disabled /></td>
 		</tr>
 		<tr>
 			<td><strong class="mo_strong">' . esc_html__( 'Group/Role:', 'miniorange-login-with-eve-online-google-facebook' ) . '</strong></td>

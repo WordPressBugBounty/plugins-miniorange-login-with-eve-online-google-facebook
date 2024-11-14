@@ -398,19 +398,12 @@ class MO_OAuth_Client_Customer {
 		$from_email             = $email;
 		$subject                = $subject . ' ' . $plugin_version;
 		$site_url               = site_url();
-		$time_spent_in_plugin   = '0 days 0 hours';
 
 		global $user;
-		$user            = wp_get_current_user();
-		$query           = '[WP ' . MO_OAUTH_PLUGIN_NAME . ' ' . $plugin_version . '] : ' . sanitize_text_field( $message );
-		$deactivate_time = new DateTime();
-		$activate_time   = get_option( 'mo_oauth_activation_time' );
-		if ( false !== $activate_time ) {
-			$time_difference      = $deactivate_time->diff( $activate_time );
-			$time_spent_in_plugin = $time_difference->days . ' days ' . $time_difference->h . ' hours ' . $time_difference->i . ' minutes ';
-		}
+		$user  = wp_get_current_user();
+		$query = '[WP ' . MO_OAUTH_PLUGIN_NAME . ' ' . $plugin_version . '] : ' . sanitize_text_field( $message );
 
-		$content = ! empty( $_SERVER['SERVER_NAME'] ) ? '<div >Hello, <br><br>First Name :' . $user->user_firstname . '<br><br>Last  Name :' . $user->user_lastname . '   <br><br>Company :<a href="' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '" target="_blank" >' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '</a><br><br>Total plugin activation time :' . $time_spent_in_plugin . '<br><br>Email :<a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Query :' . $query : '';
+		$content = ! empty( $_SERVER['SERVER_NAME'] ) ? '<div >Hello, <br><br>First Name :' . $user->user_firstname . '<br><br>Last  Name :' . $user->user_lastname . '   <br><br>Company :<a href="' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '" target="_blank" >' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '</a><br><br>Email :<a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Query :' . $query : '';
 		if ( false === $skip ) {
 			$content .= '<br><br>' . $reply;
 			$content .= '</div>';

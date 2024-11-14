@@ -25,7 +25,6 @@ class MOOAuth {
 		add_shortcode( 'mo_oauth_login', array( $this, 'mo_oauth_shortcode_login' ) );
 		add_action( 'admin_footer', array( $this, 'mo_oauth_client_feedback_request' ) );
 		add_action( 'check_if_wp_rest_apis_are_open', array( $this, 'mo_oauth_scheduled_task' ) );
-		add_action( 'upgrader_process_complete', array( $this, 'mo_oauth_upgrade_hook' ), 10, 2 );
 		add_action( 'admin_init', array( $this, 'mo_oauth_debug_log_ajax_hook' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_client_support_script_hook' ) );
 
@@ -508,6 +507,7 @@ class MOOAuth {
 					$send_body          = isset( $_POST['mo_oauth_body'] ) ? sanitize_text_field( wp_unslash( $_POST['mo_oauth_body'] ) ) : '0';
 					$send_state         = isset( $_POST['mo_oauth_state'] ) ? (int) filter_var( sanitize_text_field( wp_unslash( $_POST['mo_oauth_state'] ) ), FILTER_SANITIZE_NUMBER_INT ) : 0;
 					$show_on_login_page = isset( $_POST['mo_oauth_show_on_login_page'] ) ? (int) filter_var( sanitize_text_field( wp_unslash( $_POST['mo_oauth_show_on_login_page'] ) ), FILTER_SANITIZE_NUMBER_INT ) : 0;
+					$allow_admin_sso    = isset( $_POST['mo_oauth_allow_admin_sso'] ) ? (int) filter_var( sanitize_text_field( wp_unslash( $_POST['mo_oauth_allow_admin_sso'] ) ), FILTER_SANITIZE_NUMBER_INT ) : 0;
 
 					if ( 'wso2' === $selectedapp ) {
 						update_option( 'mo_oauth_client_custom_token_endpoint_no_csecret', true );
@@ -547,6 +547,7 @@ class MOOAuth {
 					$newapp['send_body']          = $send_body;
 					$newapp['send_state']         = $send_state;
 					$newapp['show_on_login_page'] = $show_on_login_page;
+					$newapp['allow_admin_sso']    = $allow_admin_sso;
 
 					if ( 'oauth1' === $appname || 'twitter' === $appname ) {
 						$newapp['requesturl'] = isset( $_POST['mo_oauth_requesturl'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_requesturl'] ) ) ) : '';
@@ -657,16 +658,27 @@ class MOOAuth {
 			if ( current_user_can( 'administrator' ) ) {
 				$appname       = isset( $_POST['mo_oauth_app_name'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_app_name'] ) ) ) : '';
 				$username_attr = isset( $_POST['mo_oauth_username_attr'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_username_attr'] ) ) ) : '';
+				$email_attr    = isset( $_POST['mo_oauth_email_attr'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_email_attr'] ) ) ) : '';
 				$attr_option   = isset( $_POST['mo_attr_option'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_attr_option'] ) ) ) : '';
 				if ( empty( $appname ) ) {
 					update_option( 'message', 'You MUST configure an application before you map attributes.' );
 					$this->mo_oauth_show_error_message();
 					return;
 				}
+				if ( ! empty( $email_attr ) ) {
+					$mo_oauth_attr_name_list = get_option( 'mo_oauth_attr_name_list' );
+					$email_value             = $mo_oauth_attr_name_list[ $email_attr ];
+					if ( filter_var( $email_value, FILTER_VALIDATE_EMAIL ) === false ) {
+						update_option( 'message', 'Invalid email attribute entered. Please ensure it is a valid email format.' );
+						$this->mo_oauth_show_error_message();
+						return;
+					}
+				}
 				$appslist = get_option( 'mo_oauth_apps_list' );
 				foreach ( $appslist as $key => $currentapp ) {
 					if ( $appname === $key ) {
 						$currentapp['username_attr'] = $username_attr;
+						$currentapp['email_attr']    = $email_attr;
 						$appslist[ $key ]            = $currentapp;
 						break;
 					}
@@ -1162,20 +1174,4 @@ class MOOAuth {
 		delete_option( 'mo_oauth_login_icon_custom_color' );
 		delete_option( 'mo_oauth_login_icon_custom_boundary' );
 	}
-
-	/**
-	 * Upgrade hook
-	 *
-	 * @param mixed $mo_oauth_upgrader Oauth upgrader.
-	 * @param mixed $mo_oauth_parameters_received oauth parameters.
-	 */
-	public function mo_oauth_upgrade_hook( $mo_oauth_upgrader, $mo_oauth_parameters_received ) {
-		$mo_oauth_activation_time = get_option( 'mo_oauth_activation_time' );
-		if ( false === $mo_oauth_activation_time ) {
-			$activate_time = new DateTime();
-			update_option( 'mo_oauth_activation_time', $activate_time );
-		}
-
-	}
-
 }
