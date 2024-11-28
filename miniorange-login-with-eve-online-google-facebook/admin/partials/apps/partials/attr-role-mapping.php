@@ -48,7 +48,7 @@ function mooauth_client_attribite_role_mapping_ui() {
 				<td>
 					<strong class="mo_strong"><font color="#FF0000">*</font><?php esc_html_e( 'Username:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>
 					<br/>
-					<div class="mo_oauth_usename_notice"><span class="mo_oauth_usename_notice_span"><?php esc_html_e( '[ Map unique attribute with username ]', 'miniorange-login-with-eve-online-google-facebook' ); ?></span></div>
+					<div class="mo_oauth_username_notice"><span class="mo_oauth_username_notice_span"><?php esc_html_e( '[ Map unique attribute with username ]', 'miniorange-login-with-eve-online-google-facebook' ); ?></span></div>
 				</td>
 				<td>
 					<?php

@@ -667,8 +667,8 @@ class MOOAuth {
 				}
 				if ( ! empty( $email_attr ) ) {
 					$mo_oauth_attr_name_list = get_option( 'mo_oauth_attr_name_list' );
-					$email_value             = $mo_oauth_attr_name_list[ $email_attr ];
-					if ( filter_var( $email_value, FILTER_VALIDATE_EMAIL ) === false ) {
+					$email = mooauth_client_getnestedattribute( $mo_oauth_attr_name_list, $email_attr );
+					if ( filter_var( $email, FILTER_VALIDATE_EMAIL ) === false ) {
 						update_option( 'message', 'Invalid email attribute entered. Please ensure it is a valid email format.' );
 						$this->mo_oauth_show_error_message();
 						return;

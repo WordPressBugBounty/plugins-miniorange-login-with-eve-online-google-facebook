@@ -28,6 +28,7 @@ require 'addons' . DIRECTORY_SEPARATOR . 'class-mo-oauth-client-addons.php';
  * @param mixed $hook WordPress hook.
  */
 function mooauth_client_plugin_settings_style( $hook ) {
+	wp_enqueue_style( 'mo_oauth_black_friday_notice_style', plugin_dir_url( dirname( __FILE__ ) ) . 'css/black-friday-banner.min.css', array(), MO_OAUTH_CSS_JS_VERSION );
 	if ( 'toplevel_page_mo_oauth_settings' !== $hook ) {
 		return;
 	}

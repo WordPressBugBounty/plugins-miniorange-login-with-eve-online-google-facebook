@@ -426,7 +426,7 @@ function mooauth_login_validate() {
 					wp_die( 'You are trying to login using an admin user. Please login using email and password.' );
 				} else {
 					$current_admin_email = $user->user_email;
-					if ( $current_admin_email !== $email ) {
+					if ( strtolower( $current_admin_email ) !== strtolower( $email ) ) {
 						MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
 						wp_die( 'Error : WPO01 Invalid login attempt.' );
 					}
@@ -654,7 +654,7 @@ function mooauth_login_validate() {
 							wp_die( 'You are trying to login using an admin user. Please login using email and password.' );
 						} else {
 							$current_admin_email = $user->user_email;
-							if ( $current_admin_email !== $email ) {
+							if ( strtolower( $current_admin_email ) !== strtolower( $email ) ) {
 								MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
 								wp_die( 'Error : WPO01 Invalid login attempt.' );
 							}
