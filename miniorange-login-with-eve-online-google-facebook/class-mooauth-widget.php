@@ -25,10 +25,28 @@ class MOOAuth_Widget extends WP_Widget {
 		update_option( 'host_name', 'https://login.xecurify.com' );
 		add_action( 'wp_enqueue_scripts', array( $this, 'mo_oauth_register_plugin_styles' ) );
 		add_action( 'init', array( $this, 'mo_oauth_start_session' ) );
+		add_action( 'init', array( $this, 'mo_oauth_add_email_verification_option' ) );
 		add_action( 'wp_logout', array( $this, 'mo_oauth_end_session' ) );
 		add_action( 'login_form', array( $this, 'mo_oauth_wplogin_form_button' ) );
-		parent::__construct( 'mooauth_widget', MO_OAUTH_ADMIN_MENU, array( 'description' => __( 'Login to Apps with OAuth', 'flw' ) ) );
+		parent::__construct( 'mooauth_widget', MO_OAUTH_ADMIN_MENU, array( 'description' => __( 'Login to Apps with OAuth', 'miniorange-login-with-eve-online-google-facebook' ) ) );
 
+	}
+
+	/**
+	 * Handle migration for Email verification.
+	 */
+	public function mo_oauth_add_email_verification_option() {
+		$is_first_setup = get_option( 'mo_oauth_email_verification_option_initialized' );
+		if ( false === $is_first_setup ) {
+			$app_config = array();
+
+			$app_config['mo_oauth_email_verify_check']       = 'true';
+			$app_config['mo_oauth_idp_email_verified_key']   = 'email_verified';
+			$app_config['mo_oauth_idp_email_verified_value'] = '1';
+
+			update_option( 'mo_oauth_login_settings_option', $app_config );
+			update_option( 'mo_oauth_email_verification_option_initialized', true );
+		}
 	}
 
 	/**
@@ -146,7 +164,6 @@ class MOOAuth_Widget extends WP_Widget {
 	 */
 	public function mo_oauth_login_form() {
 		global $post;
-		$this->mo_oauth_error_message();
 		$appslist = get_option( 'mo_oauth_apps_list' );
 		if ( $appslist && count( $appslist ) > 0 ) {
 			$apps_configured = true;
@@ -181,7 +198,7 @@ class MOOAuth_Widget extends WP_Widget {
 			}
 		} else {
 			$current_user       = wp_get_current_user();
-			$link_with_username = __( 'Howdy, ', 'flw' ) . $current_user->display_name;
+			$link_with_username = __( 'Howdy, ', 'miniorange-login-with-eve-online-google-facebook' ) . $current_user->display_name;
 			echo '<div id="logged_in_user" class="login_wid">
 			<li>' . esc_attr( $link_with_username ) . ' | <a href="' . esc_url( wp_logout_url( site_url() ) ) . '" >Logout</a></li>
 		</div>';
@@ -208,17 +225,6 @@ class MOOAuth_Widget extends WP_Widget {
 	}
 
 
-
-	/**
-	 * Display Error message
-	 */
-	public function mo_oauth_error_message() {
-		if ( isset( $_SESSION['msg'] ) && $_SESSION['msg'] ) {
-			echo '<div class="' . esc_attr( $_SESSION['msg_class'] ) . '">' . esc_attr( $_SESSION['msg'] ) . '</div>';
-			unset( $_SESSION['msg'] );
-			unset( $_SESSION['msg_class'] );
-		}
-	}
 
 	/**
 	 * Register Plugin styles.
@@ -420,18 +426,42 @@ function mooauth_login_validate() {
 
 		if ( $user ) {
 			$user_id = $user->ID;
+
 			if ( in_array( 'administrator', $user->roles, true ) ) {
 				if ( ! $allow_admin_sso ) {
-					MOOAuth_Debug::mo_oauth_log( 'You are trying to login using an admin user. Please login using email and password.' );
-					wp_die( 'You are trying to login using an admin user. Please login using email and password.' );
+					MOOAuth_Debug::mo_oauth_log( 'WPO004: Invalid Login attempt. Please login using email and password.' );
+					wp_die( 'WPO004: Invalid Login attempt. Please login using email and password.' );
 				} else {
-					$current_admin_email = $user->user_email;
+					$current_admin_email          = $user->user_email;
+					$mo_oauth_email_verify_config = get_option( 'mo_oauth_login_settings_option' );
+					$mo_oauth_email_verify_check  = $mo_oauth_email_verify_config['mo_oauth_email_verify_check'];
+
 					if ( strtolower( $current_admin_email ) !== strtolower( $email ) ) {
 						MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
 						wp_die( 'Error : WPO01 Invalid login attempt.' );
 					}
+
+					if ( $mo_oauth_email_verify_check ) {
+
+						$idp_email_verified_key = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'] ) && '' !== $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
+						? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
+						: 'email_verified';
+
+						$idp_email_verified_value = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'] ) && '' !== $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
+						? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
+						: '1';
+
+						if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
+							$email_verified = $resource_owner[ $idp_email_verified_key ];
+							if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
+								MOOAuth_Debug::mo_oauth_log( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
+								wp_die( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
+							}
+						}
+					}
 				}
 			}
+
 			if ( ! empty( $email_attr ) ) {
 				wp_update_user(
 					array(
@@ -650,13 +680,35 @@ function mooauth_login_validate() {
 
 					if ( in_array( 'administrator', $user->roles, true ) ) {
 						if ( ! $allow_admin_sso ) {
-							MOOAuth_Debug::mo_oauth_log( 'You are trying to login using an admin user. Please login using email and password.' );
-							wp_die( 'You are trying to login using an admin user. Please login using email and password.' );
+							MOOAuth_Debug::mo_oauth_log( 'WPO005: Invalid Login attempt. Please login using email and password.' );
+							wp_die( 'WPO005: Invalid Login attempt. Please login using email and password.' );
 						} else {
-							$current_admin_email = $user->user_email;
+							$current_admin_email          = $user->user_email;
+							$mo_oauth_email_verify_config = get_option( 'mo_oauth_login_settings_option' );
+							$mo_oauth_email_verify_check  = $mo_oauth_email_verify_config['mo_oauth_email_verify_check'];
+
 							if ( strtolower( $current_admin_email ) !== strtolower( $email ) ) {
 								MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
 								wp_die( 'Error : WPO01 Invalid login attempt.' );
+							}
+
+							if ( $mo_oauth_email_verify_check ) {
+
+								$idp_email_verified_key = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'] )
+								? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
+								: 'email_verified';
+
+								$idp_email_verified_value = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'] )
+								? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
+								: '1';
+
+								if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
+									$email_verified = $resource_owner[ $idp_email_verified_key ];
+									if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
+										MOOAuth_Debug::mo_oauth_log( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
+										wp_die( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
+									}
+								}
 							}
 						}
 					}
@@ -822,18 +874,27 @@ function mooauth_client_getnestedattribute( $resource, $key ) {
 		return '';
 	}
 
-	$keys = explode( '.', $key );
-	if ( count( $keys ) > 1 ) {
-		$current_key = $keys[0];
-		if ( isset( $resource[ $current_key ] ) ) {
-			return mooauth_client_getnestedattribute( $resource[ $current_key ], str_replace( $current_key . '.', '', $key ) );
-		}
-	} else {
-		$current_key = $keys[0];
-		if ( isset( $resource[ $current_key ] ) ) {
-			return $resource[ $current_key ];
+	// Check if the key exists directly in the resource.
+	if ( isset( $resource[ $key ] ) ) {
+		return $resource[ $key ];
+	}
+
+	// Handle nested keys.
+	if ( strpos( $key, '.' ) !== false ) {
+		$keys        = explode( '.', $key );
+		$current_key = array_shift( $keys );
+
+		if ( count( $keys ) > 0 ) {
+			if ( isset( $resource[ $current_key ] ) ) {
+				return mooauth_client_getnestedattribute( $resource[ $current_key ], implode( '.', $keys ) );
+			}
+		} else {
+			if ( isset( $resource[ $current_key ] ) ) {
+				return $resource[ $current_key ];
+			}
 		}
 	}
+	return null;
 }
 
 /**

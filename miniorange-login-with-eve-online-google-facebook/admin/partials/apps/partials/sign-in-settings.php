@@ -12,6 +12,10 @@
  * Display Sign in Settings UI
  */
 function mooauth_client_sign_in_settings_ui() {
+	$mo_oauth_email_verify_config = get_option( 'mo_oauth_login_settings_option' );
+	$mo_oauth_email_verify_check  = $mo_oauth_email_verify_config['mo_oauth_email_verify_check'];
+	$mo_oauth_email_verify_key    = $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'];
+	$mo_oauth_email_verify_value  = $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'];
 	?>
 <div  id="wid-shortcode" class="mo_table_layout mo_oauth_attribute_page_font mo_oauth_outer_div">
 <div class="mo_oauth_customization_header"><div class="mo_oauth_attribute_map_heading" style="display: inline;"><b class="mo_oauth_position"><?php esc_html_e( 'Sign in options', 'miniorange-login-with-eve-online-google-facebook' ); ?></b></div><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >Know how this is useful</span><a style="text-decoration: none;" target="_blank" href="https://developers.miniorange.com/docs/oauth/wordpress/client/login-options" rel="noopener noreferrer">
@@ -32,6 +36,106 @@ function mooauth_client_sign_in_settings_ui() {
 			<?php esc_html_e( 'in WordPress pages or posts.', 'miniorange-login-with-eve-online-google-facebook' ); ?>
 		</li>
 	</ul>
+</div>
+
+<div  id="wid-shortcode" class="mo_table_layout mo_oauth_attribute_page_font mo_oauth_outer_div">
+	<form id="form-common" name="form-common" method="post" action="admin.php?page=mo_oauth_settings&tab=signinsettings">
+		<?php wp_nonce_field( 'mo_oauth_email_verified_form', 'mo_oauth_email_verified_form_field' ); ?>
+		<input type="hidden" name="option" value="mo_oauth_email_verified" />
+		<table class="mo_settings_table mo_oauth_client_mapping_table">
+			<tbody>
+			<tr class="mo_oauth_configure_table_rows">
+				<td>
+				<div>
+				<h3 class="mo_oauth_attribute_map_heading" style="font-size:18px;">
+				<?php esc_html_e( 'Advance Security Settings', 'miniorange-login-with-eve-online-google-facebook' ); ?></h3></div>
+				</td>
+			</tr>
+			<tr>
+			<td  style="font-size:14px;width:70%">
+			<span>
+				<?php esc_html_e( 'Allow login to Verified IDP Account', 'miniorange-login-with-eve-online-google-facebook' ); ?>
+			</span>
+			<br>
+			<?php esc_html_e( '( Allow login only to admin users who have the field below marked as verified. )', 'miniorange-login-with-eve-online-google-facebook' ); ?>
+			</td>
+			<td class="mo_oauth_contact_heading">
+			<input type="checkbox" name="mo_oauth_email_verify_check" class="mo_input_checkbox" id="email-verified-checkbox" value ="true" 
+				<?php
+				if ( isset( $mo_oauth_email_verify_check ) ) {
+					if ( 'true' === $mo_oauth_email_verify_check ) {
+						echo 'checked';
+					}
+				};
+				?>
+				/>
+			</td>
+		</tr>
+			</tbody></table>
+			<table class="mo_settings_table mo_oauth_configure_table mo_oauth_client_mapping_table"> <tbody>
+		<tr id="email-verified-keys-row" style="display:none;">
+		<td >
+			<label for="email-input1"><?php esc_html_e( 'Key', 'miniorange-login-with-eve-online-google-facebook' ); ?></label>
+			</td> <td>
+			<input 
+	class="mo_oauth_input" 
+	name="mo_oauth_idp_email_verified_key" 
+	type="text" 
+	style="width:50%;" 
+	placeholder="Enter the attribute Key to be verified" 
+	value="<?php echo isset( $mo_oauth_email_verify_key ) ? esc_attr( $mo_oauth_email_verify_key ) : ''; ?>" 
+/>
+
+			</td>
+		</tr>
+		<tr id="email-verified-values-row" style="display:none;">
+		<td>
+			<label for="email-input2"><?php esc_html_e( 'Value', 'miniorange-login-with-eve-online-google-facebook' ); ?></label> </td> <td>
+			<input 
+	name="mo_oauth_idp_email_verified_value" 
+	class="mo_oauth_input" 
+	type="text" 
+	style="width:50%;" 
+	placeholder="Enter the attribute Value to be verified" 
+	value="<?php echo isset( $mo_oauth_email_verify_value ) ? esc_attr( $mo_oauth_email_verify_value ) : ''; ?>" 
+/>
+
+		</td>
+		</tr>
+		<script>
+				document.addEventListener('DOMContentLoaded', function () {
+				var checkbox = document.getElementById('email-verified-checkbox');
+				var keysRow = document.getElementById('email-verified-keys-row');
+				var valuesRow = document.getElementById('email-verified-values-row');
+
+				// Function to toggle the visibility of the rows based on the checkbox state
+				function toggleRows() {
+					if (checkbox.checked) {
+						keysRow.style.display = 'table-row';
+						valuesRow.style.display = 'table-row';
+					} else {
+						keysRow.style.display = 'none';
+						valuesRow.style.display = 'none';
+					}
+				}
+
+				// Add event listener for change event on the checkbox
+				checkbox.addEventListener('change', toggleRows);
+
+				// Ensure the rows are displayed/hidden correctly when the page loads
+				toggleRows();
+			});
+		</script>
+		<tr>
+			<td>
+				<input type="submit" class="button button-primary button-large" value="<?php esc_html_e( 'Save Settings', 'miniorange-login-with-eve-online-google-facebook' ); ?>">
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+		</tbody>
+	</table>
+	</form>
+</div>
 </div>
 
 <!--div class="mo_oauth_premium_option_text"><span style="color:red;">*</span>This is a premium feature.

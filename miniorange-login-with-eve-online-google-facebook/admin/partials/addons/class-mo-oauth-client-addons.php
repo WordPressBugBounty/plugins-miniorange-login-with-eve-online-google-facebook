@@ -504,8 +504,7 @@ opacity: 1;
 			<div class="mo_oauth_column_inner" style="border-radius: 5px;">
 			<div class="row mo_oauth_benefits-outer-block">
 					<div> 
-					<img src="<?php echo esc_url( plugins_url( $addon['img'], __FILE__ ) ); ?>" class="mo_oauth_addon_img">
-					</div>
+					<img src="<?php echo esc_url( plugins_url( $addon['img'], __FILE__ ) ); ?>" class="mo_oauth_addon_img">					</div>
 				<div class="mo_oauth_addon_headline"><strong class="mo_strong"><p><a  href= "<?php echo isset( $addon['link'] ) ? esc_attr( $addon['link'] ) : ''; ?>" target="_blank" rel="noopener"><?php echo esc_html( $addon['title'] ); ?></a></p></strong></div>
 			<p class="mo_oauth_addon_description"><?php echo esc_html( $addon['desc'] ); ?></p>
 			<a class="mo_oauth_btn mo_oauth_know_more_button" href= "<?php echo esc_url( $addon['link'] ); ?>" target="_blank" >Know More</a> 

@@ -85,12 +85,24 @@ class MOOAuth {
 				update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
 				$mo_oauth_debugs = get_option( 'mo_oauth_debug' );
 				$mo_file_addr2   = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $mo_oauth_debugs . '.log';
-				$mo_debug_file   = fopen( $mo_file_addr2, 'w' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen -- Using fopen to open exiting debug log file.
-				chmod( $mo_file_addr2, 0644 );
-				update_option( 'mo_debug_check', 1 );
-				MOOAuth_Debug::mo_oauth_log( '' );
-				update_option( 'mo_debug_check', 0 );
+				if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/file.php';
+				}
+				$credentials = request_filesystem_credentials( site_url() );
+				if ( ! WP_Filesystem( $credentials ) ) {
+					return;
+				}
+				global $wp_filesystem;
+				if ( $wp_filesystem->put_contents( $mo_file_addr2, '', FS_CHMOD_FILE ) ) {
+					$wp_filesystem->chmod( $mo_file_addr2, 0644 );
+					update_option( 'mo_debug_check', 1 );
+					MOOAuth_Debug::mo_oauth_log( '' );
+					update_option( 'mo_debug_check', 0 );
+				} else {
+					update_option( 'mo_debug_check', 0 );
+				}
 			}
+
 			if ( get_option( 'mo_debug_enable' ) === 'off' ) {
 				$mo_oauth_debugs = get_option( 'mo_oauth_debug' );
 				$mo_file_addr2   = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $mo_oauth_debugs . '.log';
@@ -203,27 +215,27 @@ class MOOAuth {
 		if ( isset( $schedules['three_minutes'] ) ) {
 			$schedules['three_minutes'] = array(
 				'interval' => 3 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Three minutes' ),
+				'display'  => esc_html__( 'Every Three minutes', 'miniorange-login-with-eve-online-google-facebook' ),
 			);
 		} elseif ( isset( $schedules['five_minutes'] ) ) {
 			$schedules['five_minutes'] = array(
 				'interval' => 5 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Five minutes' ),
+				'display'  => esc_html__( 'Every Five minutes', 'miniorange-login-with-eve-online-google-facebook' ),
 			);
 		} elseif ( isset( $schedules['ten_minutes'] ) ) {
 			$schedules['ten_minutes'] = array(
 				'interval' => 10 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Ten minutes' ),
+				'display'  => esc_html__( 'Every Ten minutes', 'miniorange-login-with-eve-online-google-facebook' ),
 			);
 		} elseif ( isset( $schedules['three_days'] ) ) {
 			$schedules['three_days'] = array(
 				'interval' => 3 * 24 * 60 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Three days' ),
+				'display'  => esc_html__( 'Every Three days', 'miniorange-login-with-eve-online-google-facebook' ),
 			);
 		} elseif ( isset( $schedules['five_days'] ) ) {
 			$schedules['five_days'] = array(
 				'interval' => 5 * 24 * 60 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Five days' ),
+				'display'  => esc_html__( 'Every Five days', 'miniorange-login-with-eve-online-google-facebook' ),
 			);
 		}
 
@@ -269,7 +281,7 @@ class MOOAuth {
 	 * Handle widget text domain.
 	 */
 	public function mo_login_widget_text_domain() {
-		load_plugin_textdomain( 'flw', false, basename( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'languages' );
+		load_plugin_textdomain( 'miniorange-login-with-eve-online-google-facebook', false, basename( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'languages' );
 	}
 
 	/**
@@ -342,41 +354,64 @@ class MOOAuth {
 				echo( '404 File not found!' ); // file not found to clear logs.
 				exit();
 			}
-			file_put_contents( $mo_filepath, '' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents -- Using file_put_contents for fetching local files and not remote files.
-			file_put_contents( $mo_filepath, 'This is the miniOrange OAuth plugin Debug Log file' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents -- Using file_put_contents for fetching local files and not remote files.
+			// Ensure WP_Filesystem is available.
+			if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+			}
+			$credentials = request_filesystem_credentials( site_url() );
+			if ( ! WP_Filesystem( $credentials ) ) {
+				return;
+			}
+			global $wp_filesystem;
+			$wp_filesystem->put_contents( $mo_filepath, '', FS_CHMOD_FILE );
+			$wp_filesystem->put_contents( $mo_filepath, 'This is the miniOrange OAuth plugin Debug Log file', FS_CHMOD_FILE );
 			update_option( 'message', 'Debug Logs cleared successfully.' );
 			$this->mo_oauth_show_success_message();
 		}
 
 		if ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_enable_debug_download' && isset( $_REQUEST['mo_oauth_enable_debug_download_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_enable_debug_download_nonce'] ) ), 'mo_oauth_enable_debug_download' ) ) {
-				$mo_filepath = plugin_dir_path( __FILE__ ) . get_option( 'mo_oauth_debug' ) . '.log';
+			$mo_filepath = plugin_dir_path( __FILE__ ) . get_option( 'mo_oauth_debug' ) . '.log';
 
 			if ( ! is_file( $mo_filepath ) ) {
-				echo( '404 File not found!' ); // file not found to download.
+				echo( '404 File not found!' );
 				exit();
 			}
 
-				$mo_len            = filesize( $mo_filepath ); // get size of file.
-				$mo_filename       = basename( $mo_filepath ); // get name of file only.
-				$mo_file_extension = strtolower( pathinfo( $mo_filename, PATHINFO_EXTENSION ) );
-				// Set the Content-Type to the appropriate setting for the file.
-				$mo_ctype = 'application/force-download';
-				ob_clean();
-				// Begin writing headers.
-				header( 'Pragma: public' );
-				header( 'Expires: 0' );
-				header( 'Cache-Control: must-revalidate, post-check=0, pre-check=0' );
-				header( 'Cache-Control: public' );
-				header( 'Content-Description: File Transfer' );
-				header( "Content-Type: $mo_ctype" );
-				// Force the download.
-				$mo_header = 'Content-Disposition: attachment; filename=' . $mo_filename . ';';
-				header( $mo_header );
-				header( 'Content-Transfer-Encoding: binary' );
-				header( 'Content-Length: ' . $mo_len );
+			if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+			}
 
-				@readfile( $mo_filepath ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_readfile, WordPress.PHP.NoSilencedErrors.Discouraged -- Using deafult PHP function to donwload debug logs.
-				exit;
+			$credentials = request_filesystem_credentials( site_url() );
+			if ( ! WP_Filesystem( $credentials ) ) {
+				return;
+			}
+
+			global $wp_filesystem;
+			$file_content = $wp_filesystem->get_contents( $mo_filepath );
+
+			if ( false !== $file_content ) {
+				$mo_filename = basename( $mo_filepath );
+
+				// Set headers for file download.
+				header( 'Content-Description: File Transfer' );
+				header( 'Content-Type: application/octet-stream' );
+				header( 'Content-Disposition: attachment; filename="' . $mo_filename . '"' );
+				header( 'Content-Transfer-Encoding: binary' );
+				header( 'Expires: 0' );
+				header( 'Cache-Control: must-revalidate' );
+				header( 'Pragma: public' );
+				header( 'Content-Length: ' . strlen( $file_content ) );
+
+				// Clear output buffer.
+				ob_clean();
+				flush();
+
+				// Output the file content.
+				echo esc_attr( $file_content );
+			} else {
+				echo esc_html( 'Error reading the debug log file.' );
+			}
+			exit;
 		}
 
 		if ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_register_customer' && isset( $_REQUEST['mo_oauth_register_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_register_form_field'] ) ), 'mo_oauth_register_form' ) ) {
@@ -388,19 +423,19 @@ class MOOAuth {
 				$fname            = '';
 				$lname            = '';
 				$company          = '';
-				if ( ( empty( $_POST['email'] ) || empty( $_POST['password'] ) || empty( $_POST['confirmPassword'] ) ) || $this->mo_oauth_check_empty_or_null( sanitize_text_field( wp_unslash( $_POST['email'] ) ) ) || $this->mo_oauth_check_empty_or_null( $_POST['password'] ) || $this->mo_oauth_check_empty_or_null( $_POST['confirmPassword'] ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization.
+				if ( ( empty( $_POST['email'] ) || empty( $_POST['password'] ) || empty( $_POST['confirmPassword'] ) ) || $this->mo_oauth_check_empty_or_null( sanitize_text_field( wp_unslash( $_POST['email'] ) ) ) || $this->mo_oauth_check_empty_or_null( wp_unslash( $_POST['password'] ) ) || $this->mo_oauth_check_empty_or_null( wp_unslash( $_POST['confirmPassword'] ) ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization.
 					update_option( 'message', 'All the fields are required. Please enter valid entries.' );
 					$this->mo_oauth_show_error_message();
 					return;
-				} elseif ( strlen( $_POST['password'] ) < 8 || strlen( $_POST['confirmPassword'] ) < 8 ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization.
+				} elseif ( strlen( wp_unslash( $_POST['password'] ) ) < 8 || strlen( wp_unslash( $_POST['confirmPassword'] ) ) < 8 ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization.
 					update_option( 'message', 'Choose a password with minimum length 8.' );
 					$this->mo_oauth_show_error_message();
 					return;
 				} else {
 					$email            = ! empty( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
 					$phone            = ! empty( $_POST['phone'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['phone'] ) ) ) : '';
-					$password         = stripslashes( ( $_POST['password'] ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization. Preventing use of sanitization in password will lead to removal of special characters. 
-					$confirm_password = stripslashes( ( $_POST['confirmPassword'] ) ); //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization. Preventing use of sanitization in password will lead to removal of special characters.
+					$password         = isset( $_POST['password'] ) ? wp_unslash( $_POST['password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Passwords are intentionally not sanitized to preserve special characters.
+					$confirm_password = isset( $_POST['confirmPassword'] ) ? wp_unslash( $_POST['confirmPassword'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					$fname            = ! empty( $_POST['fname'] ) ? sanitize_text_field( wp_unslash( $_POST['fname'] ) ) : '';
 					$lname            = ! empty( $_POST['lname'] ) ? sanitize_text_field( wp_unslash( $_POST['lname'] ) ) : '';
 					$company          = ! empty( $_POST['company'] ) ? sanitize_text_field( wp_unslash( $_POST['company'] ) ) : '';
@@ -458,13 +493,13 @@ class MOOAuth {
 				// validation and sanitization.
 				$email    = '';
 				$password = '';
-				if ( $this->mo_oauth_check_empty_or_null( sanitize_text_field( wp_unslash( $_POST['email'] ) ) ) || $this->mo_oauth_check_empty_or_null( $_POST['password'] ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization.
+				if ( $this->mo_oauth_check_empty_or_null( sanitize_text_field( wp_unslash( $_POST['email'] ) ) ) || $this->mo_oauth_check_empty_or_null( wp_unslash( $_POST['password'] ) ) ) { //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization.
 					update_option( 'message', 'All the fields are required. Please enter valid entries.' );
 					$this->mo_oauth_show_error_message();
 					return;
 				} else {
 					$email    = ! empty( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-					$password = ! empty( $_POST['password'] ) ? stripslashes( $_POST['password'] ) : ''; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- As we are not storing password in the database, so we can ignore sanitization.
+					$password = ! empty( $_POST['password'] ) ? wp_unslash( $_POST['password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Passwords are not sanitized to preserve special characters.
 				}
 				update_option( 'mo_oauth_admin_email', $email );
 				$customer     = new MO_OAuth_Client_Customer();
@@ -653,6 +688,15 @@ class MOOAuth {
 					}
 				}
 			}
+		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_email_verified' && isset( $_REQUEST['mo_oauth_email_verified_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_email_verified_form_field'] ) ), 'mo_oauth_email_verified_form' ) ) {
+			$email_verify_check                              = isset( $_POST['mo_oauth_email_verify_check'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_email_verify_check'] ) ) ) : '';
+			$email_verify_key                                = isset( $_POST['mo_oauth_idp_email_verified_key'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_idp_email_verified_key'] ) ) ) : '';
+			$email_verify_value                              = isset( $_POST['mo_oauth_idp_email_verified_value'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_idp_email_verified_value'] ) ) ) : '';
+			$app_config['mo_oauth_email_verify_check']       = $email_verify_check;
+			$app_config['mo_oauth_idp_email_verified_key']   = $email_verify_key;
+			$app_config['mo_oauth_idp_email_verified_value'] = $email_verify_value;
+			update_option( 'mo_oauth_login_settings_option', $app_config );
+
 		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_attribute_mapping' && isset( $_REQUEST['mo_oauth_attr_role_mapping_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_attr_role_mapping_form_field'] ) ), 'mo_oauth_attr_role_mapping_form' ) ) {
 
 			if ( current_user_can( 'administrator' ) ) {
@@ -667,7 +711,7 @@ class MOOAuth {
 				}
 				if ( ! empty( $email_attr ) ) {
 					$mo_oauth_attr_name_list = get_option( 'mo_oauth_attr_name_list' );
-					$email = mooauth_client_getnestedattribute( $mo_oauth_attr_name_list, $email_attr );
+					$email                   = mooauth_client_getnestedattribute( $mo_oauth_attr_name_list, $email_attr );
 					if ( filter_var( $email, FILTER_VALIDATE_EMAIL ) === false ) {
 						update_option( 'message', 'Invalid email attribute entered. Please ensure it is a valid email format.' );
 						$this->mo_oauth_show_error_message();
@@ -790,7 +834,8 @@ class MOOAuth {
 					update_option( 'message', 'Please fill up Usecase, Email field and Requested demo plan to submit your query.' );
 					$this->mo_oauth_show_error_message();
 				} else {
-					$demosite_status = (bool) @fsockopen( 'demo.miniorange.com', 443, $errno, $errstr, 5 ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fsockopen, WordPress.PHP.NoSilencedErrors.Discouraged -- Using default PHP function to test socket connection.
+					$response        = wp_remote_get( 'https://demo.miniorange.com', array( 'timeout' => 5 ) );
+					$demosite_status = ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200;
 					$addons          = MO_OAuth_Client_Addons::$all_addons;
 					$addons_selected = '';
 					foreach ( $addons as $key => $value ) {

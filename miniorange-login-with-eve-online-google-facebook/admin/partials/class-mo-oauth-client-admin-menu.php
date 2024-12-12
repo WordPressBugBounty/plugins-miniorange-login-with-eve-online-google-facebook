@@ -161,11 +161,24 @@ class MO_OAuth_Client_Admin_Menu {
 			update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
 			$mo_oauth_debugs = get_option( 'mo_oauth_debug' );
 			$mo_file_addr2   = dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . $mo_oauth_debugs . '.log';
-			$mo_debug_file   = fopen( $mo_file_addr2, 'w' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen -- Using fopen to open exiting debug log file.
-			chmod( $mo_file_addr2, 0644 );
-			update_option( 'mo_debug_check', 1 );
-			MOOAuth_Debug::mo_oauth_log( '' );
-			update_option( 'mo_debug_check', 0 );
+			if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+			}
+
+			$credentials = request_filesystem_credentials( site_url() );
+			if ( ! WP_Filesystem( $credentials ) ) {
+				return;
+			}
+			global $wp_filesystem;
+
+			if ( $wp_filesystem->put_contents( $mo_file_addr2, '', FS_CHMOD_FILE ) ) {
+				$wp_filesystem->chmod( $mo_file_addr2, 0644 );
+				update_option( 'mo_debug_check', 1 );
+				MOOAuth_Debug::mo_oauth_log( '' );
+				update_option( 'mo_debug_check', 0 );
+			} else {
+				update_option( 'mo_debug_check', 0 ); // Handle failure.
+			}
 		}
 
 		if ( 'licensing' !== $currenttab ) { ?>

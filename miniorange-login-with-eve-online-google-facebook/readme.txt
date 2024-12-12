@@ -4,11 +4,11 @@ Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
 Tested up to: 6.7
 Requires PHP: 5.4
-Stable tag: 6.26.3
-License: MIT/Expat
+Stable tag: 6.26.4
+License: Expat
 License URI: https://docs.miniorange.com/mit-license
 
-WordPress SSO (Single Sign On) with Azure, Azure B2C, Cognito, Okta, Classlink, Discord, Clever, Keycloak, many OAuth & OpenID Providers [24/7 SUPPORT].
+WordPress SSO (Single Sign On) with Azure, Azure B2C, Cognito, Okta, Classlink, Discord, Clever, Keycloak, OAuth & OpenID Providers [24/7 SUPPORT].
 
 == Description ==
 
@@ -228,6 +228,9 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.26.4 =
+* Security fixes.
+
 = 6.26.3 =
 * Added BMCF sale banner
 * Attribute mapping improvements
@@ -795,6 +798,9 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+= 6.26.4 =
+* Security fixes.
+
 = 6.26.3 =
 * Added BMCF sale banner
 * Attribute mapping improvements

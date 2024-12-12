@@ -22,7 +22,7 @@ class MO_OAuth_Black_Friday_Notice {
 	 * Initializing Sale banner
 	 */
 	public function __construct() {
-		$this->sale_end_time = strtotime( '2024-12-06 23:59:59 ' . wp_timezone_string() );
+		$this->sale_end_time = strtotime( '2024-12-31 23:59:59 ' . wp_timezone_string() );
 		add_action( 'admin_notices', array( $this, 'display_black_friday_notice' ) );
 		add_action( 'wp_ajax_mo_oauth_dismiss_black_friday_notice', array( $this, 'dismiss_black_friday_notice' ) );
 	}
@@ -52,7 +52,7 @@ class MO_OAuth_Black_Friday_Notice {
 			<div style="display: flex;" class="mo_oauth_black_friday_content">
 				<div>
 					<div class="mo_oauth_black_friday_headline">
-						miniOrange Black Friday sale is here!
+						miniOrange End Year sale is here!
 					</div>
 					
 					<div class="mo_oauth_black_friday_description">
