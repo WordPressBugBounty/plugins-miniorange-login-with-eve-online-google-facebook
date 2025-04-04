@@ -121,8 +121,8 @@ class MO_OAuth_Client_Support {
 	<div class="mo_oauth_contact">
 			<table class="mo_settings_table" style="display: none;">
 				<input type="email" class="mo_oauth_contact-input-fields" placeholder="Enter your email"
-					name="mo_oauth_contact_us_email" value="<?php echo esc_attr( get_option( 'mo_oauth_admin_email' ) ); ?>"
-					required />
+					name="mo_oauth_contact_us_email" id="mo_oauth_contact_us_email" value="<?php echo esc_attr( get_option( 'mo_oauth_admin_email' ) ); ?>"
+					required maxlength="254"/>
 				<input type="tel" id="contact_us_phone" class="mo_settings_table mo_oauth_contact-input-fields" type="tel" id="contact_us_phone"
 					placeholder="Enter your phone number" name="mo_oauth_contact_us_phone"
 					value="<?php echo esc_attr( get_option( 'mo_oauth_client_admin_phone' ) ); ?>"
