@@ -2,9 +2,9 @@
 Contributors: cyberlord92
 Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 5.4
-Stable tag: 6.26.7
+Stable tag: 6.26.8
 License: Expat
 License URI: https://docs.miniorange.com/mit-license
 
@@ -228,6 +228,11 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.26.8 = 
+* Added WordPress 6.8 Compatibility
+* Removed in-plugin License page
+* License menu now redirects to product page
+
 = 6.26.7 =
 * Improved email validation for contact form​
 * New Slack icon to the UI/assets
@@ -808,6 +813,11 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+= 6.26.8 = 
+* Added WordPress 6.8 Compatibility
+* Removed in-plugin License page
+* License menu now redirects to product page
+
 = 6.26.7 =
 * Improved email validation for contact form​
 * New Slack icon to the UI/assets

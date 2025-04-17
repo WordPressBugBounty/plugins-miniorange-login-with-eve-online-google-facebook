@@ -136,7 +136,7 @@ function mooauth_client_show_customer_info() {
 		<input type="submit" style="padding:0px 20px;" value="<?php esc_attr_e( 'Change Email Address', 'miniorange-login-with-eve-online-google-facebook' ); ?>" class="button button-large mo_oauth_configure_btn"/>
 	</form>
 	</td><td>
-	<a href="<?php echo esc_url( get_site_url( null, '/wp-admin/' ) . 'admin.php?page=mo_oauth_settings&tab=licensing' ); ?>"><input type="button" class="button button-large mo_oauth_configure_btn" value="<?php esc_attr_e( 'Check Licensing Plans', 'miniorange-login-with-eve-online-google-facebook' ); ?>" /></a>
+	<a href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank"><input type="button" class="button button-large mo_oauth_configure_btn" value="<?php esc_attr_e( 'Check Licensing Plans', 'miniorange-login-with-eve-online-google-facebook' ); ?>" /></a>
 	</td>
 	</tr>
 	</table>

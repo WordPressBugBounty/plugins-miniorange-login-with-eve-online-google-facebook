@@ -170,7 +170,7 @@ function mooauth_client_update_app_page( $appname ) {
 					</td>
 				</tr>
 				<tr>
-					<td class="mo_oauth_contact_heading"><strong class="mo_strong"><font color="#FF0000"></font><?php esc_html_e( 'Reset / Forgot Password Policy:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong><br>&emsp;<font color="#FF0000"><small><a href="admin.php?page=mo_oauth_settings&tab=licensing" target="_blank" rel="noopener noreferrer">[ALL-INCLUSIVE]</a></small></font></td>
+					<td class="mo_oauth_contact_heading"><strong class="mo_strong"><font color="#FF0000"></font><?php esc_html_e( 'Reset / Forgot Password Policy:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong><br>&emsp;<font color="#FF0000"><small><a href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer">[ALL-INCLUSIVE]</a></small></font></td>
 					<td><input class="mo_table_textbox" type="text" disabled readonly="true" placeholder= "<?php echo 'Ex. myapp_reset_password'; ?>"></td>
 			</tr>					
 			<tr >

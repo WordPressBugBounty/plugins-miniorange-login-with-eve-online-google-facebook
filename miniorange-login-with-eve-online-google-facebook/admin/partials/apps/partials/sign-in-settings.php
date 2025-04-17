@@ -138,8 +138,7 @@ function mooauth_client_sign_in_settings_ui() {
 </div>
 </div>
 
-<!--div class="mo_oauth_premium_option_text"><span style="color:red;">*</span>This is a premium feature.
-		<a href="admin.php?page=mo_oauth_settings&tab=licensing">Click Here</a> to see our full list of Premium Features.</div-->
+
 <div id="advanced_settings_sso" class="mo_table_layout mo_oauth_outer_div">
 	<form id="signing_setting_form" name="f" method="post" action="">
 		<?php wp_nonce_field( 'mo_oauth_role_mapping_form_nonce', 'mo_oauth_role_mapping_form_field' ); ?>

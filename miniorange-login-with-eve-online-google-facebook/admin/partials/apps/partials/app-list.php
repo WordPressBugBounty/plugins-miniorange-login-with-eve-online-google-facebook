@@ -100,7 +100,7 @@ function mooauth_client_get_app_list() {
 		}
 		echo "<h3 class='mo_app_heading' style='font-size:23px'>" . esc_html__( 'Applications List', 'miniorange-login-with-eve-online-google-facebook' ) . "</h3><hr class='mo-divider'></br>";
 		if ( ( is_array( $appslist ) && count( $appslist ) > 0 ) || get_option( 'mo_oauth_setup_wizard_app' ) ) {
-			echo "<p class='mo_oauth_upgrade_warning'>" . esc_html__( 'You can only add 1 application with free version. Upgrade to', 'miniorange-login-with-eve-online-google-facebook' ) . " <a href='admin.php?page=mo_oauth_settings&tab=licensing'><b>enterprise</b></a> " . esc_html__( 'to add more.', 'miniorange-login-with-eve-online-google-facebook' ) . '</p>';
+			echo "<p class='mo_oauth_upgrade_warning'>" . esc_html__( 'You can only add 1 application with free version. Upgrade to', 'miniorange-login-with-eve-online-google-facebook' ) . " <a href='" . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . "' target='_blank'><b>enterprise</b></a> " . esc_html__( 'to add more.', 'miniorange-login-with-eve-online-google-facebook' ) . '</p>';
 		}
 		echo '<table class="mo_oauth_app_list" height="auto" width="100%" align="center"
 			style="border-spacing: 30px 10px; font-size: 13px;">';

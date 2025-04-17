@@ -35,9 +35,7 @@ class MOOAuth {
 	 */
 	public function mo_oauth_client_support_script_hook() {
 		if ( isset( $_REQUEST['page'] ) && 'mo_oauth_settings' === $_REQUEST['page'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-			if ( ! ( isset( $_REQUEST['tab'] ) && 'licensing' === $_REQUEST['tab'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-				wp_enqueue_script( 'mo_oauth_client_support_script', plugin_dir_url( __FILE__ ) . '/admin/js/clientSupport.min.js', array(), $ver = '10.0.0', $in_footer = false );
-			}
+			wp_enqueue_script( 'mo_oauth_client_support_script', plugin_dir_url( __FILE__ ) . '/admin/js/clientSupport.min.js', array(), $ver = '10.0.0', $in_footer = false );
 			wp_enqueue_style( 'mo_oauth_initial_plugin_style', plugin_dir_url( __FILE__ ) . '/admin/css/mo-oauth-initial.min.css', array(), MO_OAUTH_CSS_JS_VERSION );
 		}
 	}
@@ -459,7 +457,7 @@ class MOOAuth {
 						$response = json_decode( $customer->create_customer( $password ), true );
 						if ( strcasecmp( $response['status'], 'SUCCESS' ) === 0 ) {
 							$this->mo_oauth_get_current_customer( $password );
-							wp_safe_redirect( admin_url( '/admin.php?page=mo_oauth_settings&tab=licensing' ), 301 );
+							wp_safe_redirect( admin_url( '/admin.php?page=mo_oauth_settings&tab=account' ), 301 );
 							exit;
 						} if ( strcasecmp( $response['status'], 'FAILED' ) === 0 && strcasecmp( $response['message'], 'Email is not enterprise email.' ) === 0 ) {
 							update_option( 'message', 'Please use your Enterprise email for registration.' );
@@ -1140,7 +1138,7 @@ class MOOAuth {
 	public function mo_oauth_shortcode_login() {
 		if ( mooauth_migrate_customers() || ! mooauth_is_customer_registered() ) {
 			return '<div class="mo_oauth_premium_option_text" style="text-align: center;border: 1px solid;margin: 5px;padding-top: 25px;"><p>This feature is supported only in standard and higher versions.</p>
-				<p><a href="' . get_site_url( null, '/wp-admin/' ) . 'admin.php?page=mo_oauth_settings&tab=licensing">Click Here</a> to see our full list of Features.</p></div>';
+				<p><a href="' . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . '" target="_blank">Click Here</a> to see our full list of Features.</p></div>';
 		}
 		$mowidget = new MOOAuth_Widget();
 		return $mowidget->mo_oauth_login_form();

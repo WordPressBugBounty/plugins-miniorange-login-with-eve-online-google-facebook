@@ -61,33 +61,12 @@ class MO_OAuth_Client_Admin {
 			)
 		);
 		$url           .= '&tab=config';
-		$url2           = $url . '&tab=licensing';
+		$url2           = MO_OAUTH_CLIENT_PRICING_PLAN;
 		$settings_link  = "<a href='$url'>Configure</a>";
-		$settings_link2 = "<a href='$url2'>Premium Plans</a>";
+		$settings_link2 = "<a href='$url2' target='_blank'>Premium Plans</a>";
 		array_push( $actions, $settings_link2 );
 		array_push( $actions, $settings_link );
 		return array_reverse( $actions );
-	}
-
-	/**
-	 * Register the stylesheets for the admin area.
-	 */
-	public function enqueue_styles() {
-		if ( isset( $_REQUEST['tab'] ) && 'licensing' === $_REQUEST['tab'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce recommendation because we are fetching data from URL directly and not form submission.
-			wp_enqueue_style( 'mo_oauth_bootstrap_css', plugins_url( 'css/bootstrap/bootstrap.min.css', __FILE__ ), array(), '5.1.3' );
-			wp_enqueue_style( 'mo_oauth_license_page_style', plugins_url( 'css/mo-oauth-licensing.min.css', __FILE__ ), array(), MO_OAUTH_CSS_JS_VERSION );
-		}
-	}
-
-	/**
-	 * Register the JavaScript for the admin area.
-	 */
-	public function enqueue_scripts() {
-		if ( isset( $_REQUEST['tab'] ) && 'licensing' === $_REQUEST['tab'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce recommendation because we are fetching data from URL directly and not form submission.
-			wp_enqueue_script( 'mo_oauth_modernizr_script', plugins_url( 'js/modernizr.min.js', __FILE__ ), array(), '3.6.0', false );
-			wp_enqueue_script( 'mo_oauth_popover_script', plugins_url( 'js/bootstrap/popper.min.js', __FILE__ ), array(), '2.0.1', false );
-			wp_enqueue_script( 'mo_oauth_bootstrap_script', plugins_url( 'js/bootstrap/bootstrap.min.js', __FILE__ ), array(), '5.1.3', false );
-		}
 	}
 
 	/**
@@ -109,13 +88,6 @@ class MO_OAuth_Client_Admin {
 			'Plugin Configuration',
 			'administrator',
 			'mo_oauth_settings'
-		);
-		add_submenu_page(
-			$slug,
-			'Licencnce',
-			'<div style="color:orange;display: flex;align-items: center;gap: 5px"><img src="' . esc_url( dirname( plugin_dir_url( __FILE__ ) ) ) . '/admin/images/prem.png" alt="miniOrange Premium Plans Logo" style="height:16px;width:16px"> ' . __( 'Premium Plans', 'miniorange-login-with-eve-online-google-facebook' ) . '</div>',
-			'administrator',
-			'?page=mo_oauth_settings&tab=licensing'
 		);
 		add_submenu_page(
 			'mo_oauth_settings',

@@ -228,7 +228,7 @@ function mooauth_client_attribite_role_mapping_ui() {
 		echo '<tr>
 			<td></td><td>
             <b><p style="margin-left:2px" class=" mop_table">' . esc_html__( 'Advanced attribute mapping is available in', 'miniorange-login-with-eve-online-google-facebook' ) . '
-			<a href="admin.php?page=mo_oauth_settings&amp;tab=licensing">premium</a> version.</b>
+			<a href="' . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . '" target="_blank">premium</a> version.</b>
             </p>
 			</td>
 		</tr>
@@ -260,7 +260,7 @@ function mooauth_client_attribite_role_mapping_ui() {
 			<tr><td colspan="3"><hr class="mo-divider"></td></tr>
 			<tr></tr>
 			<tr><td  colspan="2">
-			<h3 class="mo_oauth_attribute_page_font">' . esc_html__( 'Map Custom Attributes ', 'miniorange-login-with-eve-online-google-facebook' ) . '<div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span><a style="text-decoration: none;" target="_blank" href="admin.php?page=mo_oauth_settings&tab=licensing" rel="noopener noreferrer">
+			<h3 class="mo_oauth_attribute_page_font">' . esc_html__( 'Map Custom Attributes ', 'miniorange-login-with-eve-online-google-facebook' ) . '<div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span><a style="text-decoration: none;" href="' . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . '" target="_blank" rel="noopener noreferrer">
 			<span><img class="mo_oauth_premium-label" src="' . esc_url( dirname( plugin_dir_url( __FILE__ ) ) ) . '/images/mo_oauth_premium-label.png" alt="miniOrange Premium Plans Logo"></span></a></div></span></h3></td>
 			<td><span style="float: right;"><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >How to map Custom Attributes?</span><a
                 href="https://developers.miniorange.com/docs/oauth/wordpress/client/attribute-mapping#custom-attr-map" target="_blank"
@@ -286,7 +286,7 @@ function mooauth_client_attribite_role_mapping_ui() {
 		</div>
 		<div class="mo_table_layout mo_oauth_attribute_page_font mo_oauth_outer_div" id="role-mapping">
 		<div class="mo_oauth_customization_header">
-		<h3 class="mo_oauth_signing_heading" style="margin-top:0px; margin-bottom:0px;"><?php esc_html_e( 'Role Mapping ', 'miniorange-login-with-eve-online-google-facebook' ); ?><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext"  >PREMIUM</span><a style="text-decoration: none;" target="_blank" href="admin.php?page=mo_oauth_settings&tab=licensing" rel="noopener noreferrer">
+		<h3 class="mo_oauth_signing_heading" style="margin-top:0px; margin-bottom:0px;"><?php esc_html_e( 'Role Mapping ', 'miniorange-login-with-eve-online-google-facebook' ); ?><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext"  >PREMIUM</span><a style="text-decoration: none;" href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer">
 		<span><img class="mo_oauth_premium-label" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_premium-label.png" alt="miniOrange Premium Plans Logo"></span></a></div></h3>
 		<span style="float: right;"><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >How to map Roles?</span><a
 				href="https://developers.miniorange.com/docs/oauth/wordpress/client/role-mapping" target="_blank"

@@ -15,7 +15,6 @@
 require 'class-mo-oauth-client-admin-utils.php';
 require 'account' . DIRECTORY_SEPARATOR . 'class-mo-oauth-client-admin-account.php';
 require 'apps' . DIRECTORY_SEPARATOR . 'class-mo-oauth-client-apps.php';
-require 'licensing' . DIRECTORY_SEPARATOR . 'class-mo-oauth-client-license.php';
 require 'support' . DIRECTORY_SEPARATOR . 'class-mo-oauth-client-support.php';
 require 'guides' . DIRECTORY_SEPARATOR . 'class-mo-oauth-client-attribute-mapping.php';
 require 'demo' . DIRECTORY_SEPARATOR . 'class-mo-oauth-client-demo.php';
@@ -197,7 +196,7 @@ class MO_OAuth_Client_Admin_Menu {
 		<div class="justify-content-end mo_oauth_wrapper">
 			<h1 class="mo_oauth_h1">
 			<a id="license_upgrade" class="mo-add-new-hover mo_premium-plans-btn mo_oauth_header_link"
-			href="<?php echo ! empty( $_SERVER['REQUEST_URI'] ) ? esc_attr( add_query_arg( array( 'tab' => 'licensing' ), sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) ) : ''; ?>">
+			href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>"  target="_blank">
 			<img class="mo_oauth_header_link_image" style="margin: 0px;" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/prem.png" alt="miniOrange Premium Plans Logo">
 			<?php esc_html_e( 'Premium Plans', 'miniorange-login-with-eve-online-google-facebook' ); ?></a>
 			<a id="faq_button_id" class="mo_generic-btns-on-top mo_oauth_header_link"
@@ -214,27 +213,7 @@ class MO_OAuth_Client_Admin_Menu {
 				alt="miniOrange Feature Details Logo"><?php esc_html_e( 'Feature Details', 'miniorange-login-with-eve-online-google-facebook' ); ?></span></a>
 	</h1>
 	</div>
-	<?php } if ( 'licensing' === $currenttab ) { ?>
-	<div class="mo_license_heading" style="display: flex;padding-bottom:7px;padding-top: 35px;width: 100%;gap :19em"
-		id="nav-container">
-		<div>
-			<a 
-				href="<?php echo esc_attr( add_query_arg( array( 'tab' => 'default' ), sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) ); ?>">
-				<button id="Back-To-Plugin-Configuration" type="button" value="Back-To-Plugin-Configuration"
-					class="button button-primary button-large"
-					style="position:absolute;left:10px;background-color: #093553;">
-					<span class="dashicons dashicons-arrow-left-alt" style="vertical-align: middle;"></span>
-					Plugin Configuration
-				</button>
-			</a>
-		</div>
-		<div style="display:block;text-align:center;margin: 10px;">
-			<h2 style="font-size:22px;text-align: center;float: left"><b>miniOrange OAuth & OIDC Single Sign-On</b></h2>
-		</div>
-	</div>
-			<?php
-	}
-	?>
+	<?php } ?>
 </div>
 </div>
 <style>
@@ -325,38 +304,6 @@ class MO_OAuth_Client_Admin_Menu {
 		}
 
 	}
-	/**
-	 * Show REST API not protected alert
-	 */
-	public static function show_rest_api_secure_message() {
-		if ( get_option( 'mo_oauth_client_show_rest_api_message' ) ) {
-			$currenttab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-			if ( 'licensing' !== $currenttab ) {
-				?>
-				<form name="f" method="post" action="" id="mo_oauth_client_rest_api_form">
-							<?php wp_nonce_field( 'mo_oauth_client_rest_api_form', 'mo_oauth_client_rest_api_form_field' ); ?>
-					<input type="hidden" name="option" value="mo_oauth_client_rest_api_message" />
-					<div class="notice notice-info" style="padding-right: 38px;position: relative;border-left-color:red;">
-						<h4><i class="fa fa-exclamation-triangle" style="font-size:20px;color:red;"></i>&nbsp;&nbsp;
-							<b>Security Alert: </b> Looks like your WP REST APIs are not protected from public access. WP REST APIs
-							should be protected and allowed only for authorized access. You can <a
-								href="https://wordpress.org/plugins/wp-rest-api-authentication/" target="_blank">click here</a> to know
-							how it can be handled.
-						</h4>
-						<button type="button" class="notice-dismiss" id="mo_oauth_client_rest_api_button"><span
-								class="screen-reader-text">Dismiss this notice.</span>
-						</button>
-					</div>
-				</form>
-				<script>
-				jQuery("#mo_oauth_client_rest_api_button").click(function() {
-					jQuery("#mo_oauth_client_rest_api_form").submit();
-				});
-				</script>
-				<?php
-			}
-		}
-	}
 
 	/**
 	 * Show IDP link
@@ -421,8 +368,6 @@ jQuery("#mo_oauth_client_mo_server").click(function() {
 			MO_OAuth_Client_Apps::user_analytics();
 		} elseif ( 'signinsettings' === $currenttab ) {
 			MO_OAuth_Client_Apps::sign_in_settings();
-		} elseif ( 'licensing' === $currenttab ) {
-			MO_OAuth_Client_License::show_licensing_page();
 		} elseif ( 'requestfordemo' === $currenttab ) {
 			MO_OAuth_Client_Demo::requestfordemo();
 		} elseif ( 'addons' === $currenttab ) {
