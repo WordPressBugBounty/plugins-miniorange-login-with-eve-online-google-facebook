@@ -1,6 +1,6 @@
 {
 	"oauth2.1": {
-		"label":"Custom OAuth 2.1 App", "type":"oauth", "image":"oauth2.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
+		"label":"Custom OAuth 2.1 (OAuth with PKCE)", "type":"oauth", "image":"oauth2.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
 	},
 	"other": {
 	"label":"Custom OAuth 2.0 App", "type":"oauth", "image":"oauth2.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"https://plugins.miniorange.com/wordpress-single-sign-on-with-custom-oauth-provider", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0"
@@ -11,9 +11,6 @@
 	"oauth1": {
 	"label":"Custom OAuth 1.0 App", "type":"oauth1", "image":"oauth1.png", "scope": "", "domain": "", "discovery":"", "request": "","requesturl": "", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
 	},
-	"office365": {
-		"label":"Office 365", "type":"openidconnect", "image":"office365.png", "scope": "openid", "tenant": "tenent-id", "discovery": "https://login.microsoftonline.com/tenant/.well-known/openid-configuration", "authorize": "https://login.microsoftonline.com/{tenant-id}/oauth2/authorize", "token": "https://login.microsoftonline.com/{tenant-id}/oauth2/token", "userinfo": "https://login.windows.net/common/openid/userinfo", "guide":"https://plugins.miniorange.com/office-365-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-windowslive", "video":"https://www.youtube.com/watch?v=smHkrtg6Y9I&t=24s", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the tenant ID in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/office-365-single-sign-on-wordpress-sso-oauth-openid-connect#client-id-tenant' target='blank'>{tenant-id}</a></b>."
-	},
 	"azure": {
 		"label":"Azure AD", "type":"openidconnect", "image":"azure.png", "scope": "openid profile email", "tenant": "", "discovery": "", "authorize": "https://login.microsoftonline.com/{tenant-id}/oauth2/authorize", "token": "https://login.microsoftonline.com/{tenant-id}/oauth2/token", "userinfo": "https://login.windows.net/common/openid/userinfo", "guide":"https://plugins.miniorange.com/azure-ad-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-windowslive",
 		"video":"https://youtu.be/3QkVcSQH9F0", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the tenant ID in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/azure-ad-single-sign-on-wordpress-sso-oauth-openid-connect#client-id-tenant' target='blank'>{tenant-id}</a></b>."
@@ -21,6 +18,9 @@
 	"azureb2c": {
 		"label":"Azure B2C", "type":"openidconnect", "image":"azure.png", "scope": "openid", "tenant": "", "policy": "", "discovery": "","authorize": "https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/authorize", "token": "https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{policy}/oauth2/v2.0/token", "userinfo": "", "guide":"https://plugins.miniorange.com/azure-b2c-ad-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-windowslive",
 		"video":"https://youtu.be/GbaH1vMkEMc", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the tenant name and policy in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/azure-b2c-ad-single-sign-on-wordpress-sso-oauth-openid-connect#tenant' target='blank'>{tenant}</a></b> and <b><a style='color:#15c !important' href='https://plugins.miniorange.com/azure-b2c-ad-single-sign-on-wordpress-sso-oauth-openid-connect#policyname' target='blank'>{policy}</a></b>."
+	},
+	"office365": {
+		"label":"Office 365", "type":"openidconnect", "image":"office365.png", "scope": "openid", "tenant": "tenent-id", "discovery": "https://login.microsoftonline.com/tenant/.well-known/openid-configuration", "authorize": "https://login.microsoftonline.com/{tenant-id}/oauth2/authorize", "token": "https://login.microsoftonline.com/{tenant-id}/oauth2/token", "userinfo": "https://login.windows.net/common/openid/userinfo", "guide":"https://plugins.miniorange.com/office-365-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-windowslive", "video":"https://www.youtube.com/watch?v=smHkrtg6Y9I&t=24s", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the tenant ID in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/office-365-single-sign-on-wordpress-sso-oauth-openid-connect#client-id-tenant' target='blank'>{tenant-id}</a></b>."
 	},
 	"cognito": {
 		"label":"AWS Cognito", "type":"oauth", "image":"cognito.png", "scope": "openid", "domain": "", "discovery": "","authorize": "https://{cognito-app-domain}/oauth2/authorize", "token": "https://{cognito-app-domain}/oauth2/token", "userinfo": "https://{cognito-app-domain}/oauth2/userInfo", "guide":"https://plugins.miniorange.com/aws-cognito-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-amazon"
@@ -34,6 +34,20 @@
 		"label":"keycloak", "type":"openidconnect", "image":"keycloak.png", "scope": "openid profile email", "domain": "", "realmname":"", "discovery":"", "authorize": "{your-domain}/auth/realms/{realm}/protocol/openid-connect/auth", "token": "{your-domain}/auth/realms/{realm}/protocol/openid-connect/token", "userinfo": "{your-domain}/auth/realms/{realm}/protocol/openid-connect/userinfo", "guide":"https://plugins.miniorange.com/keycloak-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock",
 		"video":" https://youtu.be/w2_Dx8pd43w", "send_header":"1", "send_body":"0", "setup_notice":"Please configure the above endpoins as per <b><a style='color:#15c !important' href='https://plugins.miniorange.com/keycloak-single-sign-on-wordpress-sso-oauth-openid-connect#step6' target='blank'>this step</a></b> for <b>Keycloak Version 18 and above</b>.<br> And configure the above endpoints as per <b><a style='color:#15c !important' href='https://plugins.miniorange.com/keycloak-single-sign-on-wordpress-sso-oauth-openid-connect#step6' target='blank'>this step</a></b> for <b>Keycloak Version 17 and below</b>."
 	},
+	"clever": {
+		"label":"Clever", "type":"oauth", "image":"clever.png", "scope": "read:students read:teachers read:user_id", "domain": "", "discovery":"", "authorize": "https://clever.com/oauth/authorize", "token": "https://clever.com/oauth/tokens", "userinfo": "https://api.clever.com/v3.0/me", "guide":"https://plugins.miniorange.com/clever-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"1"
+	},
+	"classlink": {
+		"label":"Classlink", "type":"oauth", "image":"classlink.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
+	},
+	"whmcs": {
+		"label":"WHMCS", "type":"oauth", "image":"whmcs.png", "scope": "openid profile email", "domain": "", "discovery":"", "authorize": "https://{yourWHMCSdomain}/oauth/authorize.php", "token": "https://{yourWHMCSdomain}/oauth/token.php", "userinfo": "https://{yourWHMCSdomain}/oauth/userinfo.php", "guide":"https://plugins.miniorange.com/whmcs-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock"
+	, "video":"https://youtu.be/PGet7ip3Q8E", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the WHMCS domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/whmcs-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>{<yourWHMCSdomain}</a></b>."
+	},
+	"salesforce": {
+		"label":"Salesforce", "type":"oauth", "image":"salesforce.png", "scope": "openid email profile", "domain": "","avl_domain":"", "discovery":"", "authorize": "https://login.salesforce.com/services/oauth2/authorize", "token": "https://login.salesforce.com/services/oauth2/token", "userinfo": "https://login.salesforce.com/services/oauth2/userinfo", "guide":"https://plugins.miniorange.com/salesforce-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock"
+	, "video":"https://youtu.be/jXImJNGPo0M", "send_header":"1", "send_body":"0"
+	},
 	"okta": {
 		"label":"Okta", "type":"openidconnect", "image":"okta.png", "scope": "openid email profile", "domain":"", "discovery":"", "authorize": "https://{yourOktaDomain}.com/oauth2/default/v1/authorize", "token": "https://{yourOktaDomain}.com/oauth2/default/v1/token", "userinfo": "https://{yourOktaDomain}.com/oauth2/default/v1/userinfo", "guide":"https://plugins.miniorange.com/okta-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock"
 	,"video":"https://youtu.be/veEIAUs_Gwc", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the okta domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/okta-single-sign-on-wordpress-sso-oauth-openid-connect#client-id-tenant' target='blank'>{yourOktaDomain}</a></b>."
@@ -45,28 +59,25 @@
 	"ping": {
 		"label":"Ping", "type":"openidconnect", "image":"ping.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://{yourPingDomain}.com/as/authorization.oauth2", "token": "https://{yourPingDomain}.com/as/token.oauth2", "userinfo": "https://{yourPingDomain}.com/as/userinfo.openid", "guide":"https://plugins.miniorange.com/ping-federate-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the Ping domain in the above endpoints in place of <b style='color:#15c !important'>{yourPingDomain}</b>."
 	},
-	"whmcs": {
-		"label":"WHMCS", "type":"oauth", "image":"whmcs.png", "scope": "openid profile email", "domain": "", "discovery":"", "authorize": "https://{yourWHMCSdomain}/oauth/authorize.php", "token": "https://{yourWHMCSdomain}/oauth/token.php", "userinfo": "https://{yourWHMCSdomain}/oauth/userinfo.php", "guide":"https://plugins.miniorange.com/whmcs-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock"
-	, "video":"https://youtu.be/PGet7ip3Q8E", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the WHMCS domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/whmcs-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>{<yourWHMCSdomain}</a></b>."
-	},
 	"WindowsLive": {
 		"label":"Windows Live", "type":"openidconnect", "image":"windowslive.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://login.live.com/oauth20_authorize.srf", "token": "https://login.live.com/oauth20_token.srf", "userinfo": "https://apis.live.net/v5.0/me", "guide":"https://plugins.miniorange.com/windows-live-oauth-and-openid-connect-single-sign-on-sso-login", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0"
  	},
 	"identityserver": {
 		"label":"Identity Server", "type":"oauth", "image":"identityserver.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://{your-identityserver-domain}/connect/authorize", "token": "https://{your-identityserver-domain}/connect/token", "userinfo": "https://{your-identityserver-domain}/connect/introspect", "guide":"https://plugins.miniorange.com/identityserver4-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the Identity Server domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/identityserver4-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>{your-identityserver-domain}</a></b>."
 	},
-	"classlink": {
-		"label":"ClassLink", "type":"oauth", "image":"classlink.png", "scope": "profile email", "domain": "", "discovery":"", "authorize": "https://launchpad.classlink.com/oauth2/v2/auth", "token": "https://launchpad.classlink.com/oauth2/v2/token", "userinfo": "https://nodeapi.classlink.com/v2/my/info", "guide":"https://plugins.miniorange.com/classlink-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock"
+	"neoncrm": {
+		"label":"Neon CRM", "type":"oauth", "image":"neoncrm.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":""
+	, "video":"" 
 	},
 	"canvas": {
 		"label":"Canvas", "type":"oauth", "image":"canvas.png", "scope": "openid profile", "domain": "", "discovery":"", "authorize": "https://{your-site-url}/login/oauth2/auth", "token": "https://{your-site-url}/login/oauth2/token", "userinfo": "https://{your-site-url}/api/v1/users/self", "guide":"https://plugins.miniorange.com/canvas-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock","send_header":"1", "send_body":"0", "setup_notice":"Please enter the canvas site url in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/canvas-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>{your-site-url}</a></b>."
-	},	
-	"clever": {
-		"label":"Clever", "type":"oauth", "image":"clever.png", "scope": "read:students read:teachers read:user_id", "domain": "", "discovery":"", "authorize": "https://clever.com/oauth/authorize", "token": "https://clever.com/oauth/tokens", "userinfo": "https://api.clever.com/v3.0/me", "guide":"https://plugins.miniorange.com/clever-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"1"
 	},
 	"wso2": {
 		"label":"WSO2", "type":"oauth", "image":"wso2.png", "scope": "", "domain": "", "discovery":"", "authorize": "https://domain/oauth2/authorize", "token": "https://domain/oauth2/toke", "userinfo": "https://domain/oauth2/userinfo", "guide":"https://plugins.miniorange.com/wso2-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock"
 	,"video":"https://youtu.be/ub34FlnRUiw", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the WSO2 domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/wso2-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>domain</a></b>."
+	},
+	"imis": {
+		"label":"iMIS", "type":"oauth", "image":"imis.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
 	},
 	"adfs": {
 		"label":"ADFS", "type":"openidconnect", "image":"adfs.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://{yourADFSDomain}/adfs/oauth2/authorize/", "token": "https://{yourADFSDomain}/adfs/oauth2/token/", "userinfo": "", "guide":"https://plugins.miniorange.com/adfs-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-windowslive", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the ADFS domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/adfs-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>{yourADFSdomain}</a></b>."
@@ -76,10 +87,6 @@
 	},
 	"steam": {
 		"label":"steam", "type":"openidconnect", "image":"steam.png", "scope": "profile", "domain": "", "discovery":"", "authorize": "https://steamcommunity.com/openid/login", "token": "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=", "userinfo": "", "guide":"", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":""
-	},
-	"salesforce": {
-		"label":"Salesforce", "type":"oauth", "image":"salesforce.png", "scope": "openid email profile", "domain": "","avl_domain":"", "discovery":"", "authorize": "https://login.salesforce.com/services/oauth2/authorize", "token": "https://login.salesforce.com/services/oauth2/token", "userinfo": "https://login.salesforce.com/services/oauth2/userinfo", "guide":"https://plugins.miniorange.com/salesforce-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock"
-	, "video":"https://youtu.be/jXImJNGPo0M", "send_header":"1", "send_body":"0"
 	},
 	"auth0": {
 		"label":"Auth0", "type":"openidconnect", "image":"auth0.png", "scope": "openid profile", "domain": "", "discovery":"", "authorize": "https://{your-auth0-domain}/authorize", "token": "https://{your-auth0-domain}/oauth/token", "userinfo": "", "guide":"https://plugins.miniorange.com/auth0-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the Auth0 domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/auth0-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>{your-auth0-domain}</a></b>."
@@ -102,6 +109,9 @@
 	},
 	"joomla": {
 		"label":"Joomla", "type":"oauth", "image":"joomla.png", "scope": "email", "domain":"", "discovery":"", "authorize": "http://{joomla-app-domain}/index.php", "token": "http://{joomla-app-domain}/index.php", "userinfo": "http://{joomla-app-domain}/plugins/system/miniorangeoauth/miniorangeoauthserver.php", "guide":"https://plugins.miniorange.com/wordpress-single-sign-on-sso-oauth-openid-client-with-joomla-oauth-server", "logo_class":"fa fa-lock", "video":"", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the Joomla App Domain in the above endpoints in place of <b style='color:#15c !important'>{joomla-app-domain}</b>."
+	},
+	"mindbody": {
+		"label":"Mindbody", "type":"oauth", "image":"mindbody.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
 	},
 	"SheepCRM": {
         "label":"SheepCRM", "type":"oauth", "image":"sheepcrm.png", "scope": "read write read_membership introspection", "domain": "", "discovery":"", "authorize": "https://auth.sheepcrm.com/o/authorize", "token": "https://auth.sheepcrm.com/o/token", "userinfo": "https://iam.sheepcrm.com/userinfo", "guide":"https://plugins.miniorange.com/sheepcrm-oauth-and-openid-connect-single-sign-on-sso-login#step_heading", "logo_class":"fa fa-lock"
@@ -129,6 +139,9 @@
 	"ibmappid": {
 		"label":"IBM App ID", "type":"openidconnect", "image":"ibmappid.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://{region}.appid.cloud.ibm.com/oauth/v4/{tenant-id}/authorization", "token": "https://{region}.appid.cloud.ibm.com/oauth/v4/{tenant-id}/token", "userinfo": "https://{region}.appid.cloud.ibm.com/oauth/v4/{tenant-id}/userinfo", "guide":"https://plugins.miniorange.com/ibm-app-id-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the region and tenant ID in the above endpoints in place of <b style='color:#15c !important'>{region}</b> and <b style='color:#15c !important'>{tenant-id}</b>."
 	},
+	"orcid": {
+		"label":"ORCID", "type":"openidconnect", "image":"orcid.png", "scope": "openid", "domain": "","avl_domain":"", "discovery":"", "authorize": "https://orcid.org/oauth/authorize", "token": "https://orcid.org/oauth/token", "userinfo": "", "guide":"https://plugins.miniorange.com/orcid-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0"
+		},
 	"swiss rx login": {
 		"label":"Swiss RX Login", "type":"openidconnect", "image":"swiss-rx-login.png", "domain": "", "discovery":"", "scope": "anonymous", "authorize": "https://swiss-rx-login.ch/oauth/authorize", "token": "https://swiss-rx-login.ch/oauth/token", "userinfo": "", "guide":"https://plugins.miniorange.com/swiss-rx-login-single-sign-on-for-wordpress-using-oauth", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0"
 	},
@@ -139,12 +152,11 @@
 		"label":"Strava", "type":"oauth", "image":"strava.png", "scope": "read", "domain": "", "discovery":"", "authorize": "https://www.strava.com/oauth/authorize", "token": "https://www.strava.com/oauth/token", "userinfo": "https://www.strava.com/api/v3/athlete", "guide":"https://plugins.miniorange.com/strava-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock"
 	, "video":"https://youtu.be/pU-lgMm318k", "send_header":"0", "send_body":"1"
 	},
+	"vendesta": {
+		"label":"Vendesta", "type":"oauth", "image":"vendesta.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
+	},
 	"gluu": {
 		"label":"Gluu Server", "type":"oauth", "image":"gluu.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "http://{gluu-server-domain}/oxauth/restv1/authorize", "token": "http://{gluu-server-domain}/oxauth/restv1/token", "userinfo": "http:///{gluu-server-domain}/oxauth/restv1/userinfo", "guide":"https://plugins.miniorange.com/gluu-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the gluu domain in the above endpoints in place of <b style='color:#15c !important'>{gluu-server-domain}</b>."
-	},
-	"neoncrm": {
-		"label":"Neon CRM", "type":"oauth", "image":"neoncrm.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://{{your Neon CRM organization id}}.z2systems.com/np/oauth/auth", "token": "https://{{your Neon CRM organization id}}.z2systems.com/np/oauth/token", "userinfo": "https://api.neoncrm.com/neonws/services/api/account/retrieveIndividualAccount?accountId=", "guide":"https://plugins.miniorange.com/neon-crm-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the Neon CRM organization ID in the above endpoints in place of <b style='color:#15c !important'>{{your Neon CRM organization id}}</b>."
-	, "video":"" 
 	},
 	"invision": {
 		"label":"Invision Community", "type":"oauth", "image":"invis.png", "scope": "email", "domain": "", "discovery":"", "authorize": "https://{invision-community-domain}/oauth/authorize/", "token": "https://{invision-community-domain}/oauth/token/", "userinfo": "https://{invision-community-domain}/api/core/me", "guide":"https://plugins.miniorange.com/invision-community-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the invision domain in the above endpoints in place of <b style='color:#15c !important'>{invision-community-domain}</b>."
@@ -211,9 +223,6 @@
 	"eveonlinenew": {
 		"label":"Eve Online", "type":"oauth", "image":"eveonline.png", "scope": "publicData", "domain": "", "discovery":"", "authorize": "https://login.eveonline.com/oauth/authorize", "token": "https://login.eveonline.com/oauth/token", "userinfo": "https://esi.evetech.net/verify", "guide":"https://plugins.miniorange.com/eve-online-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0"
 	},
-	"orcid": {
-		"label":"ORCID", "type":"openidconnect", "image":"orcid.png", "scope": "openid", "domain": "","avl_domain":"", "discovery":"", "authorize": "https://orcid.org/oauth/authorize", "token": "https://orcid.org/oauth/token", "userinfo": "", "guide":"https://plugins.miniorange.com/orcid-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0"
-	},
 	"intuit": {
 		"label":"Intuit", "type":"oauth", "image":"intuit.png", "scope": "openid email profile", "domain": "", "discovery":"", "authorize": "https://appcenter.intuit.com/connect/oauth2", "token": "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer", "userinfo": "https://accounts.platform.intuit.com/v1/openid_connect/userinfo", "guide":"https://plugins.miniorange.com/login-with-intuit-using-wordpress-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0"
 	},
@@ -279,5 +288,5 @@
 	"blizzard": {
 		"label":"Blizzard", "type":"oauth", "image":"blizzard.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://us.battle.net/oauth/authorize", "token": "https://us.battle.net/oauth/token", "userinfo": "https://us.battle.net/oauth/userinfo", "guide":"https://plugins.miniorange.com/blizzard-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0"
 	, "video":"https://youtu.be/aSoM3tjcM0Y" 
-	}	
+	}
 }

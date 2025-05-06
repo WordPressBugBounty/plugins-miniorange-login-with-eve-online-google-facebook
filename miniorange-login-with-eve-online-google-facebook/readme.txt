@@ -4,7 +4,7 @@ Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
 Tested up to: 6.8
 Requires PHP: 5.4
-Stable tag: 6.26.8
+Stable tag: 6.26.9
 License: Expat
 License URI: https://docs.miniorange.com/mit-license
 
@@ -228,6 +228,10 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.26.9 = 
+* Advertise premium applications like iMIS, NeonCRM, and others
+* Minor UI improvements and bug fixes
+
 = 6.26.8 = 
 * Added WordPress 6.8 Compatibility
 * Removed in-plugin License page
@@ -813,6 +817,10 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+= 6.26.9 = 
+* Advertise premium applications like iMIS, NeonCRM, and others
+* Minor UI improvements and bug fixes
+
 = 6.26.8 = 
 * Added WordPress 6.8 Compatibility
 * Removed in-plugin License page

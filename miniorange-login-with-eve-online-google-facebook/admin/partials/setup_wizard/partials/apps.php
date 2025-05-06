@@ -34,10 +34,13 @@ function mooauth_client_setup_apps() {
 			// continue.
 		}
 
-		if ( 'oauth2.1' === $app_id ) {
-			echo '<li data-appid="' . esc_attr( $app_id ) . '" class="mo-flex-item mo_oauth_tooltip "><span class="mo_oauth_tooltiptext">OAuth 2.1 protocol is supported in our paid plugin versions. You can reach out to us to unlock this functionality.</span><a href="#"><img class="mo_oauth_two_point_one_app_icon" src=" ' . esc_url( plugins_url( '/partials/apps/images/oauth2.png', dirname( dirname( dirname( __FILE__ ) ) ) ) ) . '"><img class="mo_oauth_pro_icon" src="' . esc_url( plugins_url( '/partials/apps/images/pro.png', dirname( dirname( dirname( __FILE__ ) ) ) ) ) . '">';
+		if ( 'oauth2.1' === $app_id || 'neoncrm' === $app_id || 'mindbody' === $app_id || 'imis' === $app_id || 'classlink' === $app_id || 'vendesta' === $app_id || 'clever' === $app_id || 'orcid' === $app_id ) {
+			$image_name      = $application->image;
+			$tooltip_message = 'oauth2.1' === $app_id ? 'OAuth 2.1 protocol is supported in our paid plugin versions. You can reach out to us to unlock this functionality.' : esc_html( $application->label ) . ' application is available in the Paid Version of the plugin. <a class ="skip-this" style="color:#ffd700; text-decoration:underline;" href="' . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . '" target="_blank">Click here</a> to upgrade the plan.';
+			$image_url       = plugins_url( '/partials/apps/images/' . $image_name, dirname( dirname( dirname( __FILE__ ) ) ) );
+			echo '<li data-appid="' . esc_attr( $app_id ) . '" class="mo-flex-item mo_oauth_tooltip "><span class="mo_oauth_tooltiptext">' . wp_kses_post( $tooltip_message ) . '</span><a class = "mo_oauth_client_search_idp" href="#"><img class="mo_oauth_two_point_one_app_icon" src="' . esc_url( $image_url ) . '"><img class="mo_oauth_pro_icon" src="' . esc_url( plugins_url( '/partials/apps/images/pro.png', dirname( dirname( dirname( __FILE__ ) ) ) ) ) . '">';
 		} else {
-			echo '<li data-appid="' . esc_attr( $app_id ) . '" class="mo-flex-item"><a ' . ( 'cognito' === $app_id ? 'id=vip-default-app' : '' ) . ' href="#" ><img class="mo_oauth_client_default_app_icon" src=" ' . esc_url( plugins_url( '/partials/apps/images/' . $application->image, dirname( dirname( dirname( __FILE__ ) ) ) ) ) . '">';
+			echo '<li data-appid="' . esc_attr( $app_id ) . '" class="mo-flex-item"><a class = "mo_oauth_client_search_idp" ' . ( 'cognito' === $app_id ? 'id=vip-default-app' : '' ) . ' href="#" ><img class="mo_oauth_client_default_app_icon" src=" ' . esc_url( plugins_url( '/partials/apps/images/' . $application->image, dirname( dirname( dirname( __FILE__ ) ) ) ) ) . '">';
 		}
 
 		echo ' <br><p>' . esc_attr( $application->label ) . '</p></a><input type="hidden" value="' . esc_html( wp_json_encode( $application ) ) . '"></li>';
@@ -58,7 +61,16 @@ function mooauth_client_setup_apps() {
 				jQuery("#displayName").val(appId);
 				jQuery("#moauth_show_desc").html("This will displayed on SSO login button as <b>\"Login with " +appId +"\"</b>. The entire button name is customizable in paid versions.");
 				var selected_app_child = jQuery(this).children();
-				console.log(jQuery(selected_app_child[1]).val());
+				var jsonStr = jQuery(selected_app_child[1]).val();
+				if (jsonStr) {
+					try {
+						var selected_app = jQuery.parseJSON(jsonStr);
+					} catch (e) {
+						return;
+					}
+				} else {
+					return;
+				}
 				var selected_app = jQuery.parseJSON(jQuery(selected_app_child[1]).val());
 				var discovery = jQuery(".mo-discovery");
 				jQuery("#type").val(selected_app["type"]);	
