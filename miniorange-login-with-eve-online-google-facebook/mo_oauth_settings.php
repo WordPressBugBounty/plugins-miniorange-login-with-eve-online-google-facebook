@@ -12,11 +12,11 @@
  * Plugin Name: OAuth Single Sign On - SSO (OAuth Client)
  * Plugin URI: https://wordpress.org/plugins/miniorange-login-with-eve-online-google-facebook
  * Description: This WordPress Single Sign-On plugin allows login into WordPress with your Azure AD B2C, AWS Cognito, Salesforce, Keycloak, Discord, WordPress or other custom OAuth 2.0 / OpenID Connect providers. WordPress OAuth Client plugin works with any Identity provider that conforms to the OAuth 2.0 and OpenID Connect (OIDC) 1.0 standard.
- * Version: 6.26.9
+ * Version: 6.26.10
  * Author: miniOrange
  * Author URI: https://www.miniorange.com
  * License: Expat
- * License URI: https://docs.miniorange.com/mit-license
+ * License URI: https://plugins.miniorange.com/mit-license
  * Text Domain: miniorange-login-with-eve-online-google-facebook
  * Domain Path: /languages
  */
@@ -35,7 +35,7 @@ require 'admin' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'setu
 require 'constants.php';
 require 'admin' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'mo_plugins' . DIRECTORY_SEPARATOR . 'autoload.php';
 require_once 'class-mooauth.php';
-define( 'MO_OAUTH_CSS_JS_VERSION', '6.26.9' );
+define( 'MO_OAUTH_CSS_JS_VERSION', '6.26.10' );
 define( 'MO_OAUTH_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 use MO_Plugins\MO_REST_API_Advertisement;

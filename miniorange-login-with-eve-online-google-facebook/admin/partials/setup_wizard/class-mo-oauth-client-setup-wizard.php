@@ -4,7 +4,7 @@
  *
  * @package    setup-wizard
  * @author     miniOrange <info@miniorange.com>
- * @license    MIT/Expat
+ * @license    Expat
  * @link       https://miniorange.com
  */
 
