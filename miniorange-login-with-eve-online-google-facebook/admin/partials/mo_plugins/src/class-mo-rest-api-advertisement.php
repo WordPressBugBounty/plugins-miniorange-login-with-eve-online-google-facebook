@@ -17,11 +17,11 @@ use MOOAuth_Debug;
  */
 class MO_REST_API_Advertisement {
 
-	private const REST_API_PLUGIN_NAME   = 'wp-rest-api-authentication';
-	private const REST_API_PLUGIN_FILE   = '/miniorange-api-authentication.php';
-	private const NOTICE_STATE_TEMPORARY = 'temporary';
-	private const NOTICE_STATE_PERMANENT = 'permanent';
-	private const REST_API_PLUGIN_PATH   = self::REST_API_PLUGIN_NAME . self::REST_API_PLUGIN_FILE;
+	const REST_API_PLUGIN_NAME   = 'wp-rest-api-authentication';
+	const REST_API_PLUGIN_FILE   = '/miniorange-api-authentication.php';
+	const NOTICE_STATE_TEMPORARY = 'temporary';
+	const NOTICE_STATE_PERMANENT = 'permanent';
+	const REST_API_PLUGIN_PATH   = self::REST_API_PLUGIN_NAME . self::REST_API_PLUGIN_FILE;
 
 	/**
 	 * Instance of the class.
