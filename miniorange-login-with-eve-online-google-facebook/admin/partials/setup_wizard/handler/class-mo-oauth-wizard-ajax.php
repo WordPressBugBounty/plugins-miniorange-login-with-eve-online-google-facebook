@@ -33,7 +33,7 @@ class MO_OAuth_Wizard_Ajax {
 		if ( ! isset( $_POST['mo_oauth_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mo_oauth_nonce'] ) ), 'mo-oauth-setup-wizard-nonce' ) ) {
 			wp_send_json( 'error' );
 		}
-		if ( current_user_can( 'administrator' ) && ! empty( $_POST['mo_oauth_option'] ) ) {
+		if ( current_user_can( 'manage_options' ) && ! empty( $_POST['mo_oauth_option'] ) ) {
 			switch ( sanitize_text_field( wp_unslash( $_POST['mo_oauth_option'] ) ) ) {
 				case 'save_draft':
 					$this->save_draft();
@@ -81,7 +81,7 @@ class MO_OAuth_Wizard_Ajax {
 			wp_send_json( 'No application selected' );
 		}
 
-		$defaultapps     = file_get_contents( dirname( dirname( dirname( __FILE__ ) ) ) . DIRECTORY_SEPARATOR . '/apps/partials/defaultapps.json' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Using file_put_contents to fetch local file and not remote file.
+		$defaultapps     = file_get_contents( dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . '/apps/partials/defaultapps.json' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Using file_put_contents to fetch local file and not remote file.
 		$defaultappsjson = json_decode( $defaultapps );
 		$appname         = $app['mo_oauth_appId'];
 		if ( isset( $app['mo_oauth_input'] ) ) {
@@ -190,7 +190,7 @@ class MO_OAuth_Wizard_Ajax {
 			}
 		}
 		$newapp          = array();
-		$defaultapps     = file_get_contents( dirname( dirname( dirname( __FILE__ ) ) ) . DIRECTORY_SEPARATOR . '/apps/partials/defaultapps.json' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Using file_put_contents to fetch local file and not remote file.
+		$defaultapps     = file_get_contents( dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . '/apps/partials/defaultapps.json' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Using file_put_contents to fetch local file and not remote file.
 		$defaultappsjson = json_decode( $defaultapps );
 		$appname         = $app['mo_oauth_appId'];
 		foreach ( $defaultappsjson as $app_id => $application ) {
@@ -293,7 +293,15 @@ class MO_OAuth_Wizard_Ajax {
 			if ( ! get_option( 'mo_oauth_debug' ) ) {
 				update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
 			}
-			$mo_oauth_log_file = dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) . DIRECTORY_SEPARATOR . get_option( 'mo_oauth_debug' ) . '.log';
+
+			// Use uploads directory instead of plugin directory.
+			$mo_oauth_log_file = MOOAuth_Debug::get_log_file_path();
+
+			// Make sure log directory exists.
+			if ( ! file_exists( $log_dir ) ) {
+				wp_mkdir_p( $log_dir );
+			}
+
 			if ( ! function_exists( 'request_filesystem_credentials' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 			}
@@ -302,7 +310,7 @@ class MO_OAuth_Wizard_Ajax {
 				return;
 			}
 			global $wp_filesystem;
-			$log_content = '';
+			$log_content = 'This is the miniOrange OAuth plugin Debug Log file';
 			if ( $wp_filesystem->put_contents( $mo_oauth_log_file, $log_content, FS_CHMOD_FILE ) ) {
 				$wp_filesystem->chmod( $mo_oauth_log_file, 0644 );
 				update_option( 'mo_debug_check', 1 );
@@ -371,7 +379,6 @@ class MO_OAuth_Wizard_Ajax {
 			}
 		}
 		return $new_scopes;
-
 	}
 
 	/**
@@ -392,7 +399,6 @@ class MO_OAuth_Wizard_Ajax {
 		}
 
 		return $array;
-
 	}
 	/**
 	 * Calls during the SSO test is running to get test progress status
@@ -406,9 +412,10 @@ class MO_OAuth_Wizard_Ajax {
 			array_push( $result, get_option( 'mo_oauth_attr_name_list' ) );
 			array_push( $result, array_values( get_option( 'mo_oauth_apps_list' ) )[0]['username_attr'] );
 		} else {
-			$mo_oauth_log_file = dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) . DIRECTORY_SEPARATOR . get_option( 'mo_oauth_debug' ) . '.log';
+
+			$mo_oauth_log_file = MOOAuth_Debug::get_log_file_path();
 			if ( file_exists( $mo_oauth_log_file ) ) {
-				$file = file_get_contents( $mo_oauth_log_file ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Using file_put_contents to fetch local file and not remote file.
+				$file = file_get_contents( $mo_oauth_log_file );//phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Using file_put_contents to fetch local file and not remote file.
 			} else {
 				$file = '';
 			}
@@ -431,6 +438,5 @@ class MO_OAuth_Wizard_Ajax {
 	private function test_finish() {
 		delete_option( 'mo_oauth_setup_wizard_app' );
 	}
-
-}new MO_OAuth_Wizard_Ajax();
-
+}
+new MO_OAuth_Wizard_Ajax();

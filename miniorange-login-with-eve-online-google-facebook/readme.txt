@@ -3,8 +3,8 @@ Contributors: cyberlord92
 Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
 Tested up to: 6.8
-Requires PHP: 5.4
-Stable tag: 6.26.11
+Requires PHP: 7.0
+Stable tag: 6.26.12
 License: Expat
 License URI: https://plugins.miniorange.com/mit-license
 
@@ -219,6 +219,10 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.26.12 =
+* Updated debug log file path
+* Minimum PHP version updated to 7.0 and above
+
 = 6.26.11 = 
 * Added support for trial access in paid applications
 * Fix REST API notice issue for PHP <7.1
@@ -815,6 +819,10 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+= 6.26.12 =
+* Updated debug log file path
+* Minimum PHP version updated to 7.0 and above
+
 = 6.26.11 = 
 * Added support for trial access in paid applications
 * Fix REST API notice issue for PHP <7.1

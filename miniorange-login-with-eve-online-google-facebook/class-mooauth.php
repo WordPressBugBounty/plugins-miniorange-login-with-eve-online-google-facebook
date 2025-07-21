@@ -27,7 +27,6 @@ class MOOAuth {
 		add_action( 'check_if_wp_rest_apis_are_open', array( $this, 'mo_oauth_scheduled_task' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_debug_log_ajax_hook' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_client_support_script_hook' ) );
-
 	}
 
 	/**
@@ -61,7 +60,6 @@ class MOOAuth {
 					break;
 			}
 		}
-
 	}
 
 	// wp_once_field configuration by ajax call submition.
@@ -70,52 +68,65 @@ class MOOAuth {
 	 * Reset debug logs.
 	 */
 	public function mo_oauth_reset_debug() {
-		if ( isset( $_POST['mo_oauth_option'] ) && sanitize_text_field( wp_unslash( $_POST['mo_oauth_option'] ) ) === 'mo_oauth_reset_debug' && isset( $_REQUEST['mo_oauth_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_nonce'] ) ), 'mo-oauth-Debug-logs-unique-string-nonce' ) ) {
+		if (
+		isset( $_POST['mo_oauth_option'] ) &&
+		sanitize_text_field( wp_unslash( $_POST['mo_oauth_option'] ) ) === 'mo_oauth_reset_debug' &&
+		isset( $_REQUEST['mo_oauth_nonce'] ) &&
+		wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_nonce'] ) ), 'mo-oauth-Debug-logs-unique-string-nonce' )
+		) {
 			$debug_enable = false;
 			if ( isset( $_POST['mo_oauth_mo_oauth_debug_check'] ) ) {
 				$debug_enable = sanitize_text_field( wp_unslash( $_POST['mo_oauth_mo_oauth_debug_check'] ) );
 			}
 			update_option( 'mo_debug_enable', $debug_enable );
-			if ( get_option( 'mo_debug_enable' ) === 'on' ) {
+
+			$upload_dir   = wp_upload_dir();
+			$log_filename = get_option( 'mo_oauth_debug' );
+
+			if ( 'on' === $debug_enable ) {
 				update_option( 'mo_debug_check', 1 );
-			}
-			if ( get_option( 'mo_debug_enable' ) === 'on' ) {
-				update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
-				$mo_oauth_debugs = get_option( 'mo_oauth_debug' );
-				$mo_file_addr2   = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $mo_oauth_debugs . '.log';
-				if ( ! function_exists( 'request_filesystem_credentials' ) ) {
-					require_once ABSPATH . 'wp-admin/includes/file.php';
+
+				if ( ! $log_filename ) {
+					// Create a new debug filename if none exists.
+					update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
+					$log_filename = get_option( 'mo_oauth_debug' );
 				}
-				$credentials = request_filesystem_credentials( site_url() );
-				if ( ! WP_Filesystem( $credentials ) ) {
-					return;
+				$mo_file_path = MOOAuth_Debug::get_log_file_path();
+
+				// Create the file if it doesn't exist.
+				if ( ! file_exists( $mo_file_path ) ) {
+					if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+						require_once ABSPATH . 'wp-admin/includes/file.php';
+					}
+					$credentials = request_filesystem_credentials( site_url() );
+					if ( WP_Filesystem( $credentials ) ) {
+						global $wp_filesystem;
+						$log_content = 'This is the miniOrange OAuth plugin Debug Log file';
+						$wp_filesystem->put_contents( $mo_file_path, $log_content, FS_CHMOD_FILE );
+						$wp_filesystem->chmod( $mo_file_path, 0644 );
+					}
 				}
-				global $wp_filesystem;
-				if ( $wp_filesystem->put_contents( $mo_file_addr2, '', FS_CHMOD_FILE ) ) {
-					$wp_filesystem->chmod( $mo_file_addr2, 0644 );
-					update_option( 'mo_debug_check', 1 );
-					MOOAuth_Debug::mo_oauth_log( '' );
-					update_option( 'mo_debug_check', 0 );
-				} else {
-					update_option( 'mo_debug_check', 0 );
-				}
+
+				update_option( 'mo_debug_check', 0 );
 			}
 
-			if ( get_option( 'mo_debug_enable' ) === 'off' ) {
-				$mo_oauth_debugs = get_option( 'mo_oauth_debug' );
-				$mo_file_addr2   = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . $mo_oauth_debugs . '.log';
-				delete_option( 'mo_oauth_debug' );
-				if ( file_exists( $mo_file_addr2 ) ) {
-					wp_delete_file( $mo_file_addr2 );
+			if ( 'off' === $debug_enable ) {
+				if ( $log_filename ) {
+					$mo_file_path = MOOAuth_Debug::get_log_file_path();
+					delete_option( 'mo_oauth_debug' );
+					if ( file_exists( $mo_file_path ) ) {
+						wp_delete_file( $mo_file_path );
+					}
 				}
 			}
-
-			$switch_status             = get_option( 'mo_debug_enable' );
-			$response['switch_status'] = $switch_status;
+			$response['switch_status'] = get_option( 'mo_debug_enable' );
 			wp_send_json( $response );
 		} else {
-			echo 'error';}
+			echo 'error';
+		}
 	}
+
+
 
 
 	/**
@@ -125,7 +136,7 @@ class MOOAuth {
 		load_plugin_textdomain(
 			'miniorange-login-with-eve-online-google-facebook',
 			false,
-			basename( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'languages'
+			basename( __DIR__ ) . DIRECTORY_SEPARATOR . 'languages'
 		);
 	}
 
@@ -136,7 +147,6 @@ class MOOAuth {
 		$class   = 'error';
 		$message = get_option( 'message' );
 		echo "<div style='display:flex; margin:15px 19px 0px 0px; border-radius:5px;' class='" . esc_attr( $class ) . "'><div><img style='margin-bottom:-12px' src='" . esc_url( plugin_dir_url( __FILE__ ) ) . "/images/mo_oauth_error.png' ></div><div><p> &nbsp;&nbsp;" . esc_attr( $message ) . '</p></div></div>';
-
 	}
 
 	/**
@@ -157,18 +167,18 @@ class MOOAuth {
 
 	/*
 		*   Custom Intervals
-		*	Name             dispname                Interval
-		*   three_minutes    Every Three minutes	 3  * MINUTE_IN_SECONDS (3 * 60)
-		*   five_minutes     Every Five minutes	     5  * MINUTE_IN_SECONDS (5 * 60)
-		*   ten_minutes      Every Ten minutes	     10 * MINUTE_IN_SECONDS (10 * 60)
-		*   three_days     	 Every Three days	     3  * 24 * 60 * MINUTE_IN_SECONDS
-		*   five_days      	 Every Five days	     5  * 24 * 60 * MINUTE_IN_SECONDS
+		*   Name             dispname                Interval
+		*   three_minutes    Every Three minutes     3  * MINUTE_IN_SECONDS (3 * 60)
+		*   five_minutes     Every Five minutes      5  * MINUTE_IN_SECONDS (5 * 60)
+		*   ten_minutes      Every Ten minutes       10 * MINUTE_IN_SECONDS (10 * 60)
+		*   three_days       Every Three days        3  * 24 * 60 * MINUTE_IN_SECONDS
+		*   five_days        Every Five days         5  * 24 * 60 * MINUTE_IN_SECONDS
 		*
 		*
 		*   Default Intervals
 		*   Name         dispname        Interval (in sec)
-		*   hourly       Once Hourly	 3600 (1 hour)
-		*   twicedaily   Twice Daily	 43200 (12 hours)
+		*   hourly       Once Hourly     3600 (1 hour)
+		*   twicedaily   Twice Daily     43200 (12 hours)
 		*   daily        Once Daily      86400 (1 day)
 		*   weekly       Once Weekly     604800 (1 week)
 	*/
@@ -271,7 +281,6 @@ class MOOAuth {
 				update_option( 'mo_oauth_client_show_rest_api_message', true );
 			}
 		}
-
 	}
 
 
@@ -279,7 +288,7 @@ class MOOAuth {
 	 * Handle widget text domain.
 	 */
 	public function mo_login_widget_text_domain() {
-		load_plugin_textdomain( 'miniorange-login-with-eve-online-google-facebook', false, basename( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'languages' );
+		load_plugin_textdomain( 'miniorange-login-with-eve-online-google-facebook', false, basename( __DIR__ ) . DIRECTORY_SEPARATOR . 'languages' );
 	}
 
 	/**
@@ -315,7 +324,7 @@ class MOOAuth {
 	 */
 	public function miniorange_oauth_save_settings() {
 		if ( isset( $_GET['option'] ) && 'mo_oauth_client_setup_wizard' === sanitize_text_field( wp_unslash( $_GET['option'] ) ) ) {
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				$setup_wizard = new MO_OAuth_Client_Setup_Wizard();
 				$setup_wizard->page();
 				return;
@@ -340,80 +349,91 @@ class MOOAuth {
 		}
 
 		if ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'change_miniorange' && isset( $_REQUEST['mo_oauth_goto_login_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_goto_login_form_field'] ) ), 'mo_oauth_goto_login_form' ) ) {
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				$this->mo_oauth_deactivate();
 				return;
 			}
 		}
 
-		if ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_clear_debug' && isset( $_REQUEST['mo_oauth_clear_debug_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_clear_debug_nonce'] ) ), 'mo_oauth_clear_debug' ) ) {
-			$mo_filepath = plugin_dir_path( __FILE__ ) . get_option( 'mo_oauth_debug' ) . '.log';
+		if (
+		isset( $_POST['option'] ) &&
+		sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_clear_debug' &&
+		isset( $_REQUEST['mo_oauth_clear_debug_nonce'] ) &&
+		wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_clear_debug_nonce'] ) ), 'mo_oauth_clear_debug' )
+		) {
+			// Get uploads directory and log folder path.
+			$upload_dir = wp_upload_dir();
+
+			$mo_filepath = MOOAuth_Debug::get_log_file_path();
 			if ( ! is_file( $mo_filepath ) ) {
-				echo( '404 File not found!' ); // file not found to clear logs.
-				exit();
+					echo '404 File not found!';
+					exit();
 			}
-			// Ensure WP_Filesystem is available.
+			// Load WP Filesystem API if not loaded.
 			if ( ! function_exists( 'request_filesystem_credentials' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 			}
+
 			$credentials = request_filesystem_credentials( site_url() );
 			if ( ! WP_Filesystem( $credentials ) ) {
 				return;
 			}
+
 			global $wp_filesystem;
+
+			// Clear the file contents.
 			$wp_filesystem->put_contents( $mo_filepath, '', FS_CHMOD_FILE );
+			// Write a default message to the log file.
 			$wp_filesystem->put_contents( $mo_filepath, 'This is the miniOrange OAuth plugin Debug Log file', FS_CHMOD_FILE );
+
 			update_option( 'message', 'Debug Logs cleared successfully.' );
 			$this->mo_oauth_show_success_message();
 		}
+		if (
+		isset( $_POST['option'] ) &&
+		sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_enable_debug_download' &&
+		isset( $_REQUEST['mo_oauth_enable_debug_download_nonce'] ) &&
+		wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_enable_debug_download_nonce'] ) ), 'mo_oauth_enable_debug_download' )
+		) {
+			// Prevent any extra output.
+			while ( ob_get_level() ) {
+				ob_end_clean();
+			}
 
-		if ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_enable_debug_download' && isset( $_REQUEST['mo_oauth_enable_debug_download_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_enable_debug_download_nonce'] ) ), 'mo_oauth_enable_debug_download' ) ) {
-			$mo_filepath = plugin_dir_path( __FILE__ ) . get_option( 'mo_oauth_debug' ) . '.log';
-
-			if ( ! is_file( $mo_filepath ) ) {
-				echo( '404 File not found!' );
-				exit();
+			$upload_dir   = wp_upload_dir();
+			$log_filename = get_option( 'mo_oauth_debug' );
+			$mo_filepath  = MOOAuth_Debug::get_log_file_path();
+			if ( ! file_exists( $mo_filepath ) ) {
+				wp_die( '404 File not found!' );
 			}
 
 			if ( ! function_exists( 'request_filesystem_credentials' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
 			}
-
 			$credentials = request_filesystem_credentials( site_url() );
 			if ( ! WP_Filesystem( $credentials ) ) {
-				return;
+				wp_die( 'Could not initialize filesystem.' );
 			}
-
 			global $wp_filesystem;
-			$file_content = $wp_filesystem->get_contents( $mo_filepath );
 
-			if ( false !== $file_content ) {
-				$mo_filename = basename( $mo_filepath );
+			header( 'Content-Description: File Transfer' );
+			header( 'Content-Type: text/plain' );
+			header( 'Content-Disposition: attachment; filename="' . basename( $mo_filepath ) . '"' );
+			header( 'Content-Transfer-Encoding: binary' );
+			header( 'Expires: 0' );
+			header( 'Cache-Control: must-revalidate' );
+			header( 'Pragma: public' );
+			header( 'Content-Length: ' . filesize( $mo_filepath ) );
 
-				// Set headers for file download.
-				header( 'Content-Description: File Transfer' );
-				header( 'Content-Type: application/octet-stream' );
-				header( 'Content-Disposition: attachment; filename="' . $mo_filename . '"' );
-				header( 'Content-Transfer-Encoding: binary' );
-				header( 'Expires: 0' );
-				header( 'Cache-Control: must-revalidate' );
-				header( 'Pragma: public' );
-				header( 'Content-Length: ' . strlen( $file_content ) );
-
-				// Clear output buffer.
-				ob_clean();
-				flush();
-
-				// Output the file content.
-				echo esc_attr( $file_content );
-			} else {
-				echo esc_html( 'Error reading the debug log file.' );
-			}
+			// Output the file contents using WP_Filesystem.
+			echo esc_html( $wp_filesystem->get_contents( $mo_filepath ) );
+			ob_flush();
+			flush();
 			exit;
 		}
 
 		if ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_register_customer' && isset( $_REQUEST['mo_oauth_register_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_register_form_field'] ) ), 'mo_oauth_register_form' ) ) {
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				$email            = '';
 				$phone            = '';
 				$password         = '';
@@ -484,7 +504,7 @@ class MOOAuth {
 		}
 
 		if ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_verify_customer' && isset( $_REQUEST['mo_oauth_verify_password_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_verify_password_form_field'] ) ), 'mo_oauth_verify_password_form' ) ) {   // register the admin to miniOrange.
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				if ( mooauth_is_curl_installed() === 0 ) {
 					return $this->mo_oauth_show_curl_error();
 				}
@@ -520,7 +540,7 @@ class MOOAuth {
 				}
 			}
 		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_add_app' && isset( $_REQUEST['mo_oauth_add_app_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_add_app_form_field'] ) ), 'mo_oauth_add_app_form' ) ) {
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				$scope        = '';
 				$clientid     = ! empty( $_POST['mo_oauth_client_id'] ) ? sanitize_text_field( wp_unslash( $_POST['mo_oauth_client_id'] ) ) : '';
 				$clientsecret = ! empty( $_POST['mo_oauth_client_secret'] ) ? sanitize_text_field( wp_unslash( $_POST['mo_oauth_client_secret'] ) ) : '';
@@ -697,7 +717,7 @@ class MOOAuth {
 
 		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_attribute_mapping' && isset( $_REQUEST['mo_oauth_attr_role_mapping_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_attr_role_mapping_form_field'] ) ), 'mo_oauth_attr_role_mapping_form' ) ) {
 
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				$appname       = isset( $_POST['mo_oauth_app_name'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_app_name'] ) ) ) : '';
 				$username_attr = isset( $_POST['mo_oauth_username_attr'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_username_attr'] ) ) ) : '';
 				$email_attr    = isset( $_POST['mo_oauth_email_attr'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_email_attr'] ) ) ) : '';
@@ -737,7 +757,7 @@ class MOOAuth {
 				}
 			}
 		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_contact_us_query_option' && isset( $_REQUEST['mo_oauth_support_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_support_form_field'] ) ), 'mo_oauth_support_form' ) ) {
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				if ( mooauth_is_curl_installed() === 0 ) {
 					return $this->mo_oauth_show_curl_error();
 				}
@@ -819,7 +839,7 @@ class MOOAuth {
 			}
 		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_client_demo_request_form' && isset( $_REQUEST['mo_oauth_client_demo_request_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_client_demo_request_field'] ) ), 'mo_oauth_client_demo_request_form' ) ) {
 
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				if ( mooauth_is_curl_installed() === 0 ) {
 					return $this->mo_oauth_show_curl_error();
 				}
@@ -884,35 +904,33 @@ class MOOAuth {
 							$customer->mo_oauth_send_demo_alert( $email, $demo_plan, $query, $addons_selected, 'WP OAuth Client On Demo Request - ' . $email );
 							update_option( 'message', 'Thanks for getting in touch! We shall get back to you shortly.' );
 							$this->mo_oauth_show_success_message();
-						} else {
-							if ( 'SUCCESS' === $output->status ) {
+						} elseif ( 'SUCCESS' === $output->status ) {
 
-								if ( isset( $output->demo_credentials ) ) {
-									$demo_credentials = array();
+							if ( isset( $output->demo_credentials ) ) {
+								$demo_credentials = array();
 
-									$site_url           = esc_url_raw( $output->demo_credentials->site_url );
-									$email              = sanitize_email( $output->demo_credentials->email );
-									$temporary_password = $output->demo_credentials->temporary_password;
-									$password_link      = esc_url_raw( $output->demo_credentials->password_link );
+								$site_url           = esc_url_raw( $output->demo_credentials->site_url );
+								$email              = sanitize_email( $output->demo_credentials->email );
+								$temporary_password = $output->demo_credentials->temporary_password;
+								$password_link      = esc_url_raw( $output->demo_credentials->password_link );
 
-									$sanitized_demo_credentials = array(
-										'site_url'      => $site_url,
-										'email'         => $email,
-										'temporary_password' => $temporary_password,
-										'password_link' => $password_link,
-										'validity'      => gmdate( 'd F, Y', strtotime( '+10 day' ) ),
-									);
+								$sanitized_demo_credentials = array(
+									'site_url'           => $site_url,
+									'email'              => $email,
+									'temporary_password' => $temporary_password,
+									'password_link'      => $password_link,
+									'validity'           => gmdate( 'd F, Y', strtotime( '+10 day' ) ),
+								);
 
-									update_option( 'mo_oauth_demo_creds', $sanitized_demo_credentials );
+								update_option( 'mo_oauth_demo_creds', $sanitized_demo_credentials );
 
-									$output->message = 'Your trial has been generated successfully. Please use the below credentials to access the trial.';
-								}
+								$output->message = 'Your trial has been generated successfully. Please use the below credentials to access the trial.';
+							}
 								update_option( 'message', $output->message );
 								$this->mo_oauth_show_success_message();
-							} else {
-								update_option( 'message', $output->message );
-								$this->mo_oauth_show_error_message();
-							}
+						} else {
+							update_option( 'message', $output->message );
+							$this->mo_oauth_show_error_message();
 						}
 					} else {
 						$customer = new MO_OAuth_Client_Customer();
@@ -923,7 +941,7 @@ class MOOAuth {
 				}
 			}
 		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_client_video_demo_request_form' && isset( $_REQUEST['mo_oauth_client_video_demo_request_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_client_video_demo_request_field'] ) ), 'mo_oauth_client_video_demo_request_form' ) ) {
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				if ( mooauth_is_curl_installed() === 0 ) {
 					return $this->mo_oauth_show_curl_error();
 				}
@@ -998,7 +1016,7 @@ class MOOAuth {
 			}
 		} elseif ( isset( $_POST ['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_forgot_password_form_option' && isset( $_REQUEST['mo_oauth_forgotpassword_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_forgotpassword_form_field'] ) ), 'mo_oauth_forgotpassword_form' ) ) {
 
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				if ( ! mooauth_is_curl_installed() ) {
 					update_option( 'mo_oauth_message', 'ERROR: <a href="http://php.net/manual/en/curl.installation.php" target="_blank">PHP cURL extension</a> is not installed or disabled. Resend OTP failed.' );
 					$this->mo_oauth_show_error_message();
@@ -1022,7 +1040,7 @@ class MOOAuth {
 			update_option( 'mo_oauth_client_new_registration', 'true' );
 		} elseif ( isset( $_POST['mo_oauth_client_feedback'] ) && sanitize_text_field( wp_unslash( $_POST['mo_oauth_client_feedback'] ) ) === 'true' && isset( $_REQUEST['mo_oauth_feedback_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_feedback_form_field'] ) ), 'mo_oauth_feedback_form' ) ) {
 
-			if ( current_user_can( 'administrator' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
 				$user = wp_get_current_user();
 
 				$message = 'Plugin Deactivated:';
@@ -1071,29 +1089,25 @@ class MOOAuth {
 						update_option( 'message', 'Plugin deactivated successfully' );
 						$this->mo_oauth_show_success_message();
 						wp_safe_redirect( self_admin_url( 'plugins.php?deactivate=true' ) );
-				} else {
-					if ( ! empty( $deactivate_reason ) && ! empty( $email ) ) {
+				} elseif ( ! empty( $deactivate_reason ) && ! empty( $email ) ) {
 						$submited = json_decode( $feedback_reasons->mo_oauth_send_email_alert( $email, $reply, $message, 'Feedback: WordPress ' . MO_OAUTH_PLUGIN_NAME ), true );
 						deactivate_plugins( __DIR__ . DIRECTORY_SEPARATOR . 'mo_oauth_settings.php' );
-						if ( ! array_key_exists( 'mo_oauth_keep_settings_intact', $_POST ) ) {
-							$this->delete_options_on_deactivation();
-						}
+					if ( ! array_key_exists( 'mo_oauth_keep_settings_intact', $_POST ) ) {
+						$this->delete_options_on_deactivation();
+					}
 						update_option( 'message', 'Thank you for the feedback.' );
 						$this->mo_oauth_show_success_message();
 						wp_safe_redirect( self_admin_url( 'plugins.php?deactivate=true' ) );
-					} elseif ( empty( $deactivate_reason ) ) {
-						update_option( 'message', 'Please select one of the reasons, if your reason is not mentioned please select "Other Reasons" ' );
-						$this->mo_oauth_show_error_message();
-					} else {
-						update_option( 'message', 'Please enter your email address.' );
-						$this->mo_oauth_show_error_message();
-					}
+				} elseif ( empty( $deactivate_reason ) ) {
+					update_option( 'message', 'Please select one of the reasons, if your reason is not mentioned please select "Other Reasons" ' );
+					$this->mo_oauth_show_error_message();
+				} else {
+					update_option( 'message', 'Please enter your email address.' );
+					$this->mo_oauth_show_error_message();
 				}
 			}
 		}
-
 	}
-
 
 	/**
 	 * Get customer

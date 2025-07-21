@@ -223,7 +223,6 @@ class MO_OAuth_Client_Support {
 	public static function mo_download_log() {
 		?>
 
-
 <div class="mo_enable_logs_wrapper mo_support_layout mo_oauth_outer_div">
 	<div class="mo_oauth_support_layout mo_enable_logs">
 		<div class="mo_debug">
@@ -241,7 +240,7 @@ class MO_OAuth_Client_Support {
 						<span class="mo_oauth_slider round"></span>
 					</label>
 
-	</form>
+		</form>
 					<p>
 						<b>
 							<label for="oauth_enable_logs"></label>

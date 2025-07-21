@@ -30,14 +30,14 @@ function mooauth_client_plugin_settings_style( $hook ) {
 	if ( 'toplevel_page_mo_oauth_settings' !== $hook ) {
 		return;
 	}
-	wp_enqueue_style( 'mo_oauth_admin_style', plugin_dir_url( dirname( __FILE__ ) ) . 'css/admin.min.css', array(), MO_OAUTH_CSS_JS_VERSION );
-	wp_enqueue_style( 'mo_oauth_admin_settings_style', plugin_dir_url( dirname( __FILE__ ) ) . 'css/style_settings.min.css', array(), MO_OAUTH_CSS_JS_VERSION );
-	wp_enqueue_style( 'mo_oauth_admin_settings_font_awesome', plugin_dir_url( dirname( __FILE__ ) ) . 'css/font-awesome.min.css', array(), '4.7.0' );
-	wp_enqueue_style( 'mo_oauth_admin_settings_phone_style', plugin_dir_url( dirname( __FILE__ ) ) . 'css/phone.min.css', array(), '0.0.2' );
-	wp_enqueue_style( 'mo_oauth_admin_settings_datatable_style', plugin_dir_url( dirname( __FILE__ ) ) . 'css/jquery.dataTables.min.css', array(), '3.6.0' );
-	wp_enqueue_style( 'mo_oauth_admin_settings_inteltelinput_style', plugin_dir_url( dirname( __FILE__ ) ) . 'css/intlTelInput.min.css', array(), '17.0.19' );
-	wp_enqueue_style( 'mo_oauth_admin_settings_jquery_ui_style', plugin_dir_url( dirname( __FILE__ ) ) . 'css/jquery-ui.min.css', array(), '1.12.1' );
-	wp_enqueue_style( 'mo_oauth_admin_settings_overall_font_style', plugin_dir_url( dirname( __FILE__ ) ) . 'css/fontNunito.min.css', array(), '1.0.0' );
+	wp_enqueue_style( 'mo_oauth_admin_style', plugin_dir_url( __DIR__ ) . 'css/admin.min.css', array(), MO_OAUTH_CSS_JS_VERSION );
+	wp_enqueue_style( 'mo_oauth_admin_settings_style', plugin_dir_url( __DIR__ ) . 'css/style_settings.min.css', array(), MO_OAUTH_CSS_JS_VERSION );
+	wp_enqueue_style( 'mo_oauth_admin_settings_font_awesome', plugin_dir_url( __DIR__ ) . 'css/font-awesome.min.css', array(), '4.7.0' );
+	wp_enqueue_style( 'mo_oauth_admin_settings_phone_style', plugin_dir_url( __DIR__ ) . 'css/phone.min.css', array(), '0.0.2' );
+	wp_enqueue_style( 'mo_oauth_admin_settings_datatable_style', plugin_dir_url( __DIR__ ) . 'css/jquery.dataTables.min.css', array(), '3.6.0' );
+	wp_enqueue_style( 'mo_oauth_admin_settings_inteltelinput_style', plugin_dir_url( __DIR__ ) . 'css/intlTelInput.min.css', array(), '17.0.19' );
+	wp_enqueue_style( 'mo_oauth_admin_settings_jquery_ui_style', plugin_dir_url( __DIR__ ) . 'css/jquery-ui.min.css', array(), '1.12.1' );
+	wp_enqueue_style( 'mo_oauth_admin_settings_overall_font_style', plugin_dir_url( __DIR__ ) . 'css/fontNunito.min.css', array(), '1.0.0' );
 }
 
 /**
@@ -49,13 +49,13 @@ function mooauth_client_plugin_settings_script( $hook ) {
 	if ( 'toplevel_page_mo_oauth_settings' !== $hook ) {
 		return;
 	}
-	wp_enqueue_script( 'mo_oauth_admin_script', plugin_dir_url( dirname( __FILE__ ) ) . 'js/admin.min.js', array(), $ver = MO_OAUTH_CSS_JS_VERSION, false );
-	wp_enqueue_script( 'mo_oauth_admin_settings_script', plugin_dir_url( dirname( __FILE__ ) ) . 'js/settings.min.js', array(), $ver = MO_OAUTH_CSS_JS_VERSION, false );
-	wp_enqueue_script( 'mo_oauth_admin_settings_phone_script', plugin_dir_url( dirname( __FILE__ ) ) . 'js/phone.min.js', array(), $ver = '0.8.3', false );
-	wp_enqueue_script( 'mo_oauth_admin_settings_datatable_script', plugin_dir_url( dirname( __FILE__ ) ) . 'js/jquery.dataTables.min.js', array(), $ver = '1.10.20', false );
+	wp_enqueue_script( 'mo_oauth_admin_script', plugin_dir_url( __DIR__ ) . 'js/admin.min.js', array(), $ver = MO_OAUTH_CSS_JS_VERSION, false );
+	wp_enqueue_script( 'mo_oauth_admin_settings_script', plugin_dir_url( __DIR__ ) . 'js/settings.min.js', array(), $ver = MO_OAUTH_CSS_JS_VERSION, false );
+	wp_enqueue_script( 'mo_oauth_admin_settings_phone_script', plugin_dir_url( __DIR__ ) . 'js/phone.min.js', array(), $ver = '0.8.3', false );
+	wp_enqueue_script( 'mo_oauth_admin_settings_datatable_script', plugin_dir_url( __DIR__ ) . 'js/jquery.dataTables.min.js', array(), $ver = '1.10.20', false );
 	wp_enqueue_script( 'jquery-ui-datepicker' );
 	wp_enqueue_script( 'mo_oauth_admin_settings_jquery-ui3', includes_url() . 'js/jquery/ui/datepicker.min.js', array(), $ver = false, false );
-	wp_enqueue_script( 'mo_oauth_admin_settings_inteltelinput', plugin_dir_url( dirname( __FILE__ ) ) . 'js/intlTelInput.min.js', array(), $ver = '13.0.4', false );
+	wp_enqueue_script( 'mo_oauth_admin_settings_inteltelinput', plugin_dir_url( __DIR__ ) . 'js/intlTelInput.min.js', array(), $ver = '13.0.4', false );
 }
 
 /**
@@ -109,14 +109,13 @@ class MO_OAuth_Client_Admin_Menu {
 
 	/**
 	 * Delete log file
+	 *
+	 * @param string $log_file_path Path to the log file to be deleted.
 	 */
-	public static function logfile_delete() {
-
-		$mo_file_path1 = dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . get_option( 'mo_oauth_debug' ) . '.log';
-		if ( file_exists( $mo_file_path1 ) ) {
-			wp_delete_file( $mo_file_path1 );
+	public static function logfile_delete( $log_file_path ) {
+		if ( file_exists( $log_file_path ) ) {
+			wp_delete_file( $log_file_path );
 		}
-
 	}
 
 	/**
@@ -130,52 +129,33 @@ class MO_OAuth_Client_Admin_Menu {
 			update_option( 'mo_debug_check', 0 );
 		}
 
-		$log_file_path = dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . get_option( 'mo_oauth_debug' ) . '.log';
+		$log_file_path = MOOAuth_Debug::get_log_file_path();
 
 		$mo_log_enable = get_option( 'mo_debug_enable' );
 
 		$mo_oauth_debug = get_option( 'mo_oauth_debug' );
-
-		if ( 'on' === $mo_log_enable ) {
-			$key            = 604800;
-			$mo_debug_times = get_option( 'mo_debug_time' );
-			$mo_curr_time   = time();
-
-			$mo_oauth_var = (int) ( ( $mo_curr_time - $mo_debug_times ) / ( $key ) );
-			if ( $mo_oauth_var >= 1 ) {
-				update_option( 'mo_debug_time', $mo_debug_times + ( $mo_oauth_var * $key ) );
-				update_option( 'mo_debug_enable', 0 );
-
-				self::logfile_delete();
-				delete_option( 'mo_oauth_debug' );
+		if ( 'on' === $mo_log_enable && ( ! $mo_oauth_debug || ! file_exists( $log_file_path ) ) ) {
+			if ( ! $mo_oauth_debug ) {
+				update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
+				$mo_oauth_debug = get_option( 'mo_oauth_debug' );
+				$log_file_path  = MOOAuth_Debug::get_log_file_path();
 			}
-		} else {
-			self::logfile_delete();
-			delete_option( 'mo_oauth_debug' );
-		}
-
-		if ( ( 'on' === $mo_log_enable && ! $mo_oauth_debug ) || ( 'on' === $mo_log_enable && ( ! file_exists( $log_file_path ) ) ) ) {
-
-			update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
-			$mo_oauth_debugs = get_option( 'mo_oauth_debug' );
-			$mo_file_addr2   = dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . $mo_oauth_debugs . '.log';
-			if ( ! function_exists( 'request_filesystem_credentials' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/file.php';
-			}
-
-			$credentials = request_filesystem_credentials( site_url() );
-			if ( ! WP_Filesystem( $credentials ) ) {
-				return;
-			}
-			global $wp_filesystem;
-
-			if ( $wp_filesystem->put_contents( $mo_file_addr2, '', FS_CHMOD_FILE ) ) {
-				$wp_filesystem->chmod( $mo_file_addr2, 0644 );
-				update_option( 'mo_debug_check', 1 );
-				MOOAuth_Debug::mo_oauth_log( '' );
-				update_option( 'mo_debug_check', 0 );
-			} else {
-				update_option( 'mo_debug_check', 0 ); // Handle failure.
+			if ( ! file_exists( $log_file_path ) ) {
+				if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/file.php';
+				}
+				$credentials = request_filesystem_credentials( site_url() );
+				if ( WP_Filesystem( $credentials ) ) {
+					global $wp_filesystem;
+					$log_content = 'This is the miniOrange OAuth plugin Debug Log file';
+					$log_dir     = dirname( $log_file_path );
+					if ( ! $wp_filesystem->is_dir( $log_dir ) ) {
+						$wp_filesystem->mkdir( $log_dir, FS_CHMOD_DIR );
+					}
+					if ( $wp_filesystem->put_contents( $log_file_path, $log_content, FS_CHMOD_FILE ) ) {
+						$wp_filesystem->chmod( $log_file_path, 0644 );
+					}
+				}
 			}
 		}
 
@@ -302,7 +282,6 @@ class MO_OAuth_Client_Admin_Menu {
 </div>
 			<?php
 		}
-
 	}
 
 	/**
