@@ -282,14 +282,37 @@ function mooauth_login_validate() {
 					exit();
 				}
 
-				$state             = base64_encode( $appname ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Base64 encode will be required for fetching appname from state.
-				$authorization_url = $app['authorizeurl'];
+				$timestamp           = time();
+				$client_ip           = mooauth_get_client_ip();
+				$hmac_secret         = wp_salt( 'auth' );
+				$timestamp_hmac      = hash_hmac( 'sha256', $timestamp, $hmac_secret );
+				$state_nonce         = bin2hex( \openssl_random_pseudo_bytes( 32 ) );
+				$state_nonce_hmac    = hash_hmac( 'sha256', $state_nonce, $timestamp_hmac );
+				$ip_hmac             = hash_hmac( 'sha256', $client_ip, $timestamp_hmac );
+				$state_string        = $appname . '|' . $timestamp . '|' . $ip_hmac . '|' . $state_nonce_hmac;
+				$state_string_cookie = $appname . '|' . $timestamp . '|' . $ip_hmac . '|' . $state_nonce;
+				$state_cookie        = base64_encode( $state_string_cookie );//phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Base64 encode will be required for fetching appname from state.
+				$state               = base64_encode( $state_string ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Base64 encode will be required for fetching appname from state.
+				$authorization_url   = $app['authorizeurl'];
 
 				if ( strpos( $authorization_url, '?' ) !== false ) {
 					$authorization_url = $authorization_url . '&client_id=' . $app['clientid'] . '&scope=' . $app['scope'] . '&redirect_uri=' . $app['redirecturi'] . '&response_type=code&state=' . $state;
 				} else {
 					$authorization_url = $authorization_url . '?client_id=' . $app['clientid'] . '&scope=' . $app['scope'] . '&redirect_uri=' . $app['redirecturi'] . '&response_type=code&state=' . $state;
 				}
+
+				setcookie(
+					'mo_oauth_sso_' . $appname . '_state',
+					$state_cookie,
+					array(
+						'expires'  => time() + 300,   // 5 minutes
+						'httponly' => true,
+						'secure'   => is_ssl(),
+						'samesite' => 'Lax',
+						'path'     => COOKIEPATH,
+						'domain'   => COOKIE_DOMAIN,
+					)
+				);
 
 				if ( strpos( $authorization_url, 'apple' ) !== false ) {
 					$authorization_url = str_replace( 'response_type=code', 'response_type=code+id_token', $authorization_url );
@@ -329,7 +352,7 @@ function mooauth_login_validate() {
 				if ( session_id() === '' || ! isset( $_SESSION ) ) {
 					session_start();
 				}
-				$_SESSION['oauth2state'] = $state;
+				$_SESSION['oauth2state'] = $state_cookie;
 				$_SESSION['appname']     = $appname;
 
 				MOOAuth_Debug::mo_oauth_log( 'Authorization Request Sent => ' . $authorization_url );
@@ -343,11 +366,22 @@ function mooauth_login_validate() {
 				} else {
 					$authorization_url = $authorization_url . '?client_id=' . $app['clientid'] . '&scope=' . $app['scope'] . '&redirect_uri=' . $app['redirecturi'] . '&response_type=code';
 				}
-
+				setcookie(
+					'mo_oauth_sso_' . $appname . '_state',
+					$state_cookie,
+					array(
+						'expires'  => time() + 300,   // 5 minutes
+						'httponly' => true,
+						'secure'   => is_ssl(),
+						'samesite' => 'Lax',
+						'path'     => COOKIEPATH,
+						'domain'   => COOKIE_DOMAIN,
+					)
+				);
 				if ( session_id() === '' || ! isset( $_SESSION ) ) {
 					session_start();
 				}
-				$_SESSION['oauth2state'] = $state;
+				$_SESSION['oauth2state'] = $state_cookie;
 				$_SESSION['appname']     = $appname;
 
 				MOOAuth_Debug::mo_oauth_log( 'Authorization Request Sent => ' . $authorization_url );
@@ -514,8 +548,26 @@ function mooauth_login_validate() {
 
 				if ( isset( $_SESSION['appname'] ) && ! empty( $_SESSION['appname'] ) ) {
 					$currentappname = sanitize_text_field( $_SESSION['appname'] );
-				} elseif ( isset( $_REQUEST['state'] ) && ! empty( $_REQUEST['state'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-					$currentappname = sanitize_text_field( wp_unslash( base64_decode( $_REQUEST['state'] ) ) ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended, WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Base64 encoding will be required to fetch current app name from state. Sanitizing late for $_REQUEST['state'] as we need to sanitize after decode.
+				}
+				if ( isset( $_REQUEST['state'] ) && ! empty( $_REQUEST['state'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
+					$state_encoded  = sanitize_text_field( wp_unslash( $_REQUEST['state'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
+					$state_data     = mooauth_validate_state( $state_encoded );
+					$currentappname = $state_data['appname'];
+				} else {
+					$appslist       = get_option( 'mo_oauth_apps_list' );
+					$state_required = false;
+					foreach ( $appslist as $key => $app ) {
+						MOOAuth_Debug::mo_oauth_log( 'Send State Value: ' );
+						MOOAuth_Debug::mo_oauth_log( $app['send_state'] );
+						if ( isset( $app['send_state'] ) && $app['send_state'] == true ) {
+							$state_required = true;
+							break;
+						}
+					}
+					if ( $state_required ) {
+						MOOAuth_Debug::mo_oauth_log( 'ERROR : State parameter is required but not found in request.' );
+						wp_die( 'Authentication failed. State parameter is required.' );
+					}
 				}
 
 				if ( empty( $currentappname ) ) {
@@ -573,39 +625,28 @@ function mooauth_login_validate() {
 						$resource_owner = $mo_oauth_handler->get_resource_owner( $profile_url, '' );
 					} else { // Openid flow.
 						$code = ! empty( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-						if ( isset( $_REQUEST['id_token'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-							$id_token = sanitize_text_field( wp_unslash( $_REQUEST['id_token'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-						} else {
-							if ( ! isset( $currentapp['send_headers'] ) ) {
-								$currentapp['send_headers'] = false;
-							}
-							if ( ! isset( $currentapp['send_body'] ) ) {
-								$currentapp['send_body'] = false;
-							}
-							$token_response = $mo_oauth_handler->get_id_token(
-								$currentapp['accesstokenurl'],
-								'authorization_code',
-								$currentapp['clientid'],
-								$currentapp['clientsecret'],
-								$code,
-								$currentapp['redirecturi'],
-								$currentapp['send_headers'],
-								$currentapp['send_body']
-							);
-
-							$id_token = isset( $token_response['id_token'] ) ? $token_response['id_token'] : $token_response['access_token'];
-
+						if ( ! isset( $currentapp['send_headers'] ) ) {
+							$currentapp['send_headers'] = false;
 						}
-
-						if ( ! $id_token ) {
-							MOOAuth_Debug::mo_oauth_log( 'Token Response Recieved => ERROR : Invalid token received.' );
-							exit( 'Invalid token received.' );
-						} else {
-							MOOAuth_Debug::mo_oauth_log( 'ID Token => ' );
-							MOOAuth_Debug::mo_oauth_log( $id_token );
-							$resource_owner = $mo_oauth_handler->get_resource_owner_from_id_token( $id_token );
-							MOOAuth_Debug::mo_oauth_log( 'Resource Owner Response => ' . wp_json_encode( $resource_owner ) );
+						if ( ! isset( $currentapp['send_body'] ) ) {
+							$currentapp['send_body'] = false;
 						}
+						$token_response = $mo_oauth_handler->get_id_token(
+							$currentapp['accesstokenurl'],
+							'authorization_code',
+							$currentapp['clientid'],
+							$currentapp['clientsecret'],
+							$code,
+							$currentapp['redirecturi'],
+							$currentapp['send_headers'],
+							$currentapp['send_body']
+						);
+
+						$id_token = isset( $token_response['id_token'] ) ? $token_response['id_token'] : $token_response['access_token'];
+						MOOAuth_Debug::mo_oauth_log( 'ID Token => ' );
+						MOOAuth_Debug::mo_oauth_log( $id_token );
+						$resource_owner = $mo_oauth_handler->get_resource_owner_from_id_token( $id_token );
+						MOOAuth_Debug::mo_oauth_log( 'Resource Owner Response => ' . wp_json_encode( $resource_owner ) );
 					}
 				} else {
 					MOOAuth_Debug::mo_oauth_log( 'OAuth Flow' );
@@ -986,4 +1027,95 @@ function mooauth_gen_rand_str( $length = 10 ) {
 
 	add_action( 'widgets_init', 'mooauth_register_widget' );
 	add_action( 'init', 'mooauth_login_validate' );
+
+/**
+ * Get client IP address
+ *
+ * @return string Client IP address
+ */
+function mooauth_get_client_ip() {
+	$ipaddress = '';
+	if ( getenv( 'HTTP_CLIENT_IP' ) ) {
+		$ipaddress = getenv( 'HTTP_CLIENT_IP' );
+	} elseif ( getenv( 'HTTP_X_FORWARDED_FOR' ) ) {
+		$ipaddress = getenv( 'HTTP_X_FORWARDED_FOR' );
+	} elseif ( getenv( 'HTTP_X_FORWARDED' ) ) {
+		$ipaddress = getenv( 'HTTP_X_FORWARDED' );
+	} elseif ( getenv( 'HTTP_FORWARDED_FOR' ) ) {
+		$ipaddress = getenv( 'HTTP_FORWARDED_FOR' );
+	} elseif ( getenv( 'HTTP_FORWARDED' ) ) {
+		$ipaddress = getenv( 'HTTP_FORWARDED' );
+	} elseif ( getenv( 'REMOTE_ADDR' ) ) {
+		$ipaddress = getenv( 'REMOTE_ADDR' );
+	} else {
+		$ipaddress = 'UNKNOWN';
+	}
+	return $ipaddress;
+}
+
+/**
+ * Validate OAuth state parameter
+ * Expected format: appname|timestamp|ip_hmac
+ *
+ * @param string $state_encoded Base64 encoded state parameter.
+ * @return array Decoded state data or wp_die() if invalid
+ */
+function mooauth_validate_state( $state_encoded ) {
+	$state_string = base64_decode( $state_encoded ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Base64 decode will be required for fetching appname from state.
+
+	if ( ! $state_string ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : Invalid state parameter format.' );
+		wp_die( 'Authentication failed. Please try again.' );
+	}
+
+	$state_parts = explode( '|', $state_string );
+
+	if ( count( $state_parts ) !== 4 ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : Invalid state parameter structure.' );
+		wp_die( 'Authentication failed. Please try again.' );
+	}
+
+	$appname                  = $state_parts[0];
+	$timestamp                = $state_parts[1];
+	$ip_hmac                  = $state_parts[2];
+	$state_nonce_hmac_request = $state_parts[3];
+
+	$hmac_secret = wp_salt( 'auth' );
+
+	$current_time = time();
+	$state_time   = intval( $timestamp );
+	$time_diff    = $current_time - $state_time;
+
+	if ( $time_diff > 300 ) { // 5 minutes = 300 seconds
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : State parameter expired. Time difference: ' . $time_diff . ' seconds.' );
+		wp_die( 'Authentication failed. Please try again.' );
+	}
+
+	$timestamp_hmac = hash_hmac( 'sha256', $timestamp, $hmac_secret );
+	$cookie_name    = 'mo_oauth_sso_' . $appname . '_state';
+	$cookie_state   = sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ?? '' ) );
+	$current_ip     = mooauth_get_client_ip();
+	if ( ! empty( $cookie_state ) ) {
+		$state_string            = base64_decode( $cookie_state ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Base64 decode will be required for fetching appname from state.
+		$state_parts             = explode( '|', $state_string );
+		$state_nonce_cookie      = $state_parts[3];
+		$state_nonce_hmac_cookie = hash_hmac( 'sha256', $state_nonce_cookie, $timestamp_hmac );
+		if ( $state_nonce_hmac_request !== $state_nonce_hmac_cookie ) {
+			MOOAuth_Debug::mo_oauth_log( 'ERROR : State parameter mismatch. Expected: ' . $cookie_state . ', Got: ' . $state_encoded );
+			wp_die( 'Authentication failed. Please try again.' );
+		}
+	} else {
+		$current_ip_hmac = hash_hmac( 'sha256', $current_ip, $timestamp_hmac );
+
+		if ( $current_ip_hmac !== $ip_hmac ) {
+			MOOAuth_Debug::mo_oauth_log( 'ERROR : IP address mismatch. Expected: ' . $ip_hmac . ', Got: ' . $current_ip_hmac );
+			wp_die( 'Authentication failed. Please try again.' );
+		}
+	}
+	return array(
+		'appname'   => $appname,
+		'timestamp' => $state_time,
+		'ip'        => $current_ip,
+	);
+}
 ?>

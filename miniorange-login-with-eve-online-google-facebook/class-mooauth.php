@@ -18,6 +18,7 @@ class MOOAuth {
 	 */
 	public function __construct() {
 
+		add_action( 'mo_oauth_auto_delete_debug_logs', array( $this, 'handle_debug_log_cleanup' ) );
 		add_action( 'admin_init', array( $this, 'miniorange_oauth_save_settings' ), 11 );
 		add_action( 'plugins_loaded', array( $this, 'mo_load_plugin_textdomain' ) );
 		register_deactivation_hook( MO_OAUTH_PLUGIN_BASENAME, array( $this, 'mo_oauth_deactivate' ) );
@@ -44,6 +45,24 @@ class MOOAuth {
 	 */
 	public function mo_oauth_debug_log_ajax_hook() {
 		add_action( 'wp_ajax_mo_oauth_debug_ajax', array( $this, 'mo_oauth_debug_log_ajax' ) );
+		$mo_log_enable = get_option( 'mo_debug_enable' );
+		if ( isset( $mo_log_enable ) && 'on' === $mo_log_enable && get_option( 'mo_debug_time' ) === false ) {
+			$cron_exists = wp_next_scheduled( 'mo_oauth_auto_delete_debug_logs' );
+			if ( ! $cron_exists ) {
+				wp_schedule_single_event( time() + 604800, 'mo_oauth_auto_delete_debug_logs' );
+			}
+			update_option( 'mo_debug_time', time() );
+		}
+	}
+
+	/**
+	 * Handle debug log cleanup
+	 */
+	public function handle_debug_log_cleanup() {
+		if ( class_exists( 'MOOAuth_Debug' ) ) {
+
+			MOOAuth_Debug::auto_delete_old_log();
+		}
 	}
 
 	/**
@@ -106,17 +125,28 @@ class MOOAuth {
 						$wp_filesystem->chmod( $mo_file_path, 0644 );
 					}
 				}
+				if ( ! wp_next_scheduled( 'mo_oauth_auto_delete_debug_logs' ) ) {
+					wp_schedule_single_event( time() + 604800, 'mo_oauth_auto_delete_debug_logs' );
+				}
+				$mo_curr_time = time();
+				update_option( 'mo_debug_time', $mo_curr_time );
 
 				update_option( 'mo_debug_check', 0 );
 			}
 
 			if ( 'off' === $debug_enable ) {
+				if ( wp_next_scheduled( 'mo_oauth_auto_delete_debug_logs' ) ) {
+					wp_clear_scheduled_hook( 'mo_oauth_auto_delete_debug_logs' );
+				}
+
 				if ( $log_filename ) {
 					$mo_file_path = MOOAuth_Debug::get_log_file_path();
 					delete_option( 'mo_oauth_debug' );
 					if ( file_exists( $mo_file_path ) ) {
 						wp_delete_file( $mo_file_path );
 					}
+					delete_option( 'mo_debug_time' );
+
 				}
 			}
 			$response['switch_status'] = get_option( 'mo_debug_enable' );
@@ -190,12 +220,22 @@ class MOOAuth {
 		if ( ! wp_next_scheduled( 'check_if_wp_rest_apis_are_open' ) ) {
 			wp_schedule_event( time() + 604800, 'weekly', 'check_if_wp_rest_apis_are_open' ); // update timestamp and name according to interval.
 		}
+		$mo_log_enable = get_option( 'mo_debug_enable' );
+		if ( isset( $mo_log_enable ) && 'on' === $mo_log_enable && ! wp_next_scheduled( 'mo_oauth_auto_delete_debug_logs' ) ) {
+			wp_schedule_single_event( time() + 604800, 'mo_oauth_auto_delete_debug_logs' );
+		}
 	}
 
 	/**
 	 * Delete options after plugin deactivation.
 	 */
 	public function mo_oauth_deactivate() {
+		if ( class_exists( 'MOOAuth_Debug' ) ) {
+			$log_file_path = MOOAuth_Debug::get_log_file_path();
+			if ( file_exists( $log_file_path ) ) {
+				wp_delete_file( $log_file_path );
+			}
+		}
 		delete_option( 'host_name' );
 		delete_option( 'mo_oauth_client_new_registration' );
 		delete_option( 'mo_oauth_client_admin_phone' );
@@ -209,7 +249,9 @@ class MOOAuth {
 		delete_option( 'mo_oauth_client_show_mo_server_message' );
 		delete_option( 'mo_oauth_log' );
 		delete_option( 'mo_oauth_debug' );
+		delete_option( 'mo_debug_time' );
 		wp_clear_scheduled_hook( 'check_if_wp_rest_apis_are_open' );
+		wp_clear_scheduled_hook( 'mo_oauth_auto_delete_debug_logs' );
 	}
 
 
