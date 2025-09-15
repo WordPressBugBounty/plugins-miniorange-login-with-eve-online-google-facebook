@@ -4,7 +4,7 @@ Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
 Tested up to: 6.8
 Requires PHP: 7.0
-Stable tag: 6.26.13
+Stable tag: 6.26.14
 License: Expat
 License URI: https://plugins.miniorange.com/mit-license
 
@@ -219,6 +219,9 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.26.14 =
+* Fixed cookie naming error
+
 = 6.26.13 =
 * Added automatic clear of plugin log file after 7 days
 * Improvement in the OpenID flow to handle ID token
@@ -824,6 +827,9 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+= 6.26.14 =
+* Fixed cookie naming error
+
 = 6.26.13 =
 * Added automatic clear of plugin log file after 7 days
 * Improvement in the OpenID flow to handle ID token

@@ -302,7 +302,7 @@ function mooauth_login_validate() {
 				}
 
 				setcookie(
-					'mo_oauth_sso_' . $appname . '_state',
+					'mo_oauth_sso_state',
 					$state_cookie,
 					array(
 						'expires'  => time() + 300,   // 5 minutes
@@ -367,7 +367,7 @@ function mooauth_login_validate() {
 					$authorization_url = $authorization_url . '?client_id=' . $app['clientid'] . '&scope=' . $app['scope'] . '&redirect_uri=' . $app['redirecturi'] . '&response_type=code';
 				}
 				setcookie(
-					'mo_oauth_sso_' . $appname . '_state',
+					'mo_oauth_sso_state',
 					$state_cookie,
 					array(
 						'expires'  => time() + 300,   // 5 minutes
@@ -1092,7 +1092,7 @@ function mooauth_validate_state( $state_encoded ) {
 	}
 
 	$timestamp_hmac = hash_hmac( 'sha256', $timestamp, $hmac_secret );
-	$cookie_name    = 'mo_oauth_sso_' . $appname . '_state';
+	$cookie_name    = 'mo_oauth_sso_state';
 	$cookie_state   = sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ?? '' ) );
 	$current_ip     = mooauth_get_client_ip();
 	if ( ! empty( $cookie_state ) ) {
