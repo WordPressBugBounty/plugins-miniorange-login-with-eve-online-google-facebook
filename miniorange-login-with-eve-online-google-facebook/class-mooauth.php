@@ -307,7 +307,7 @@ class MOOAuth {
 				'blocking'    => true,
 				'headers'     => array(),
 				'cookies'     => array(),
-				'sslverify'   => false,
+				'sslverify'   => MO_OAuth_Utils::get_ssl_verify_setting( $url ),
 			)
 		);
 
@@ -685,10 +685,10 @@ class MOOAuth {
 						$provider_se = null;
 
 						if ( ( filter_var( $discovery_endpoint, FILTER_VALIDATE_URL ) ) ) {
-							$content = wp_remote_get( $discovery_endpoint, array( 'sslverify' => false ) );
+							$content = wp_remote_get( $discovery_endpoint, array( 'sslverify' => MO_OAuth_Utils::get_ssl_verify_setting( $discovery_endpoint ) ) );
 							if ( ! empty( $newapp['realm'] ) && wp_remote_retrieve_response_code( $content ) !== 200 ) {
 								$discovery_endpoint = str_replace( '/auth', '', $discovery_endpoint );
-								$content            = wp_remote_get( $discovery_endpoint, array( 'sslverify' => false ) );
+								$content            = wp_remote_get( $discovery_endpoint, array( 'sslverify' => MO_OAuth_Utils::get_ssl_verify_setting( $discovery_endpoint ) ) );
 							}
 							$provider_se = array();
 							if ( ! is_wp_error( $content ) && wp_remote_retrieve_response_code( $content ) === 200 ) {
@@ -1247,7 +1247,6 @@ class MOOAuth {
 		delete_option( 'mo_oauth_icon_height' );
 		delete_option( 'mo_oauth_icon_margin' );
 		delete_option( 'mo_oauth_icon_configure_css' );
-		delete_option( 'mo_oauth_redirect_url' );
 		delete_option( 'mo_oauth_attr_name_list' );
 		delete_option( 'mo_oauth_authorizations' );
 		delete_option( 'mo_oauth_set_val' );
@@ -1273,4 +1272,6 @@ class MOOAuth {
 		delete_option( 'mo_oauth_login_icon_custom_color' );
 		delete_option( 'mo_oauth_login_icon_custom_boundary' );
 	}
+
+
 }

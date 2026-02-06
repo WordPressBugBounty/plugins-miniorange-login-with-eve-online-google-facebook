@@ -134,6 +134,14 @@ class MO_OAuth_Client_Admin_Menu {
 		$mo_log_enable = get_option( 'mo_debug_enable' );
 
 		$mo_oauth_debug = get_option( 'mo_oauth_debug' );
+
+		$log_dir = dirname( $log_file_path );
+
+		$index_path = trailingslashit( $log_dir ) . 'index.php';
+		if ( ! function_exists( 'request_filesystem_credentials' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		$credentials = request_filesystem_credentials( site_url() );
 		if ( 'on' === $mo_log_enable && ( ! $mo_oauth_debug || ! file_exists( $log_file_path ) ) ) {
 			if ( ! $mo_oauth_debug ) {
 				update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
@@ -141,14 +149,9 @@ class MO_OAuth_Client_Admin_Menu {
 				$log_file_path  = MOOAuth_Debug::get_log_file_path();
 			}
 			if ( ! file_exists( $log_file_path ) ) {
-				if ( ! function_exists( 'request_filesystem_credentials' ) ) {
-					require_once ABSPATH . 'wp-admin/includes/file.php';
-				}
-				$credentials = request_filesystem_credentials( site_url() );
 				if ( WP_Filesystem( $credentials ) ) {
 					global $wp_filesystem;
 					$log_content = 'This is the miniOrange OAuth plugin Debug Log file';
-					$log_dir     = dirname( $log_file_path );
 					if ( ! $wp_filesystem->is_dir( $log_dir ) ) {
 						$wp_filesystem->mkdir( $log_dir, FS_CHMOD_DIR );
 					}
@@ -156,6 +159,16 @@ class MO_OAuth_Client_Admin_Menu {
 						$wp_filesystem->chmod( $log_file_path, 0644 );
 					}
 				}
+			}
+		}
+		if ( 'on' === get_option( 'mo_debug_enable' ) && ! file_exists( $index_path ) ) {
+			if ( WP_Filesystem( $credentials ) ) {
+				global $wp_filesystem;
+				$wp_filesystem->put_contents(
+					$index_path,
+					"<?php\n// Silence is golden.\n",
+					0600
+				);
 			}
 		}
 

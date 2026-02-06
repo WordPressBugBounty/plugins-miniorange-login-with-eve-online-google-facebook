@@ -11,7 +11,7 @@
 /**
  * Handle OAuth1.0 SSO flow.
  */
-class MO_OAuth_Custom_OAuth1_Flow {
+class MOOAuth_Custom_OAuth1_Flow {
 
 	/**
 	 * Private key of the configured application.
@@ -279,7 +279,7 @@ class MO_OAuth_Custom_OAuth1_Flow {
 	 */
 	public function mo_oauth1_url_encode_rfc3986( $input ) {
 		if ( is_array( $input ) ) {
-			return array_map( array( 'MO_OAuth_Custom_OAuth1_Flow', 'mo_oauth1_url_encode_rfc3986' ), $input );
+			return array_map( array( 'MOOAuth_Custom_OAuth1_Flow', 'mo_oauth1_url_encode_rfc3986' ), $input );
 		} elseif ( is_scalar( $input ) ) {
 			return str_replace( '+', ' ', str_replace( '%7E', '~', rawurlencode( $input ) ) );
 		} else {

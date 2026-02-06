@@ -95,7 +95,7 @@ class MO_OAuth_Handler {
 				'headers'     => $headers,
 				'body'        => $body,
 				'cookies'     => array(),
-				'sslverify'   => false,
+				'sslverify'   => MO_OAuth_Utils::get_ssl_verify_setting( $tokenendpoint ),
 			)
 		);
 		if ( is_wp_error( $response ) ) {
@@ -189,7 +189,7 @@ class MO_OAuth_Handler {
 		MOOAuth_Debug::mo_oauth_log( $headers );
 		MOOAuth_Debug::mo_oauth_log( 'Resource Owner Endpoint: ' . $resourceownerdetailsurl );
 
-		$response = wp_remote_post(
+		$response = wp_remote_get(
 			$resourceownerdetailsurl,
 			array(
 				'method'      => 'GET',
@@ -199,7 +199,7 @@ class MO_OAuth_Handler {
 				'blocking'    => true,
 				'headers'     => $headers,
 				'cookies'     => array(),
-				'sslverify'   => false,
+				'sslverify'   => MO_OAuth_Utils::get_ssl_verify_setting( $resourceownerdetailsurl ),
 			)
 		);
 

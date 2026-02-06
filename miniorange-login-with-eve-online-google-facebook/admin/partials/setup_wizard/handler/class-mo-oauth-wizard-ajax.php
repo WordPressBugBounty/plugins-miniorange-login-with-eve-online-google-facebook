@@ -112,11 +112,11 @@ class MO_OAuth_Wizard_Ajax {
 			$provider_se                   = null;
 			if ( '4' === $app['mo_oauth_step'] ) {
 				if ( ( filter_var( $discovery_endpoint, FILTER_VALIDATE_URL ) ) ) {
-					$content = wp_remote_get( $discovery_endpoint, array( 'sslverify' => false ) );
+					$content = wp_remote_get( $discovery_endpoint, array( 'sslverify' => MO_OAuth_Utils::get_ssl_verify_setting( $discovery_endpoint ) ) );
 					if ( ! empty( $tag ) && ( 'realm' === $tag && wp_remote_retrieve_response_code( $content ) !== 200 ) ) {
 						// Keycloak v18 check.
 						$discovery_endpoint = str_replace( '/auth', '', $discovery_endpoint );
-						$content            = wp_remote_get( $discovery_endpoint, array( 'sslverify' => false ) );
+						$content            = wp_remote_get( $discovery_endpoint, array( 'sslverify' => MO_OAuth_Utils::get_ssl_verify_setting( $discovery_endpoint ) ) );
 					}
 					$provider_se = array();
 					$scope       = array();
@@ -247,11 +247,11 @@ class MO_OAuth_Wizard_Ajax {
 			$provider_se = null;
 
 			if ( ( filter_var( $discovery_endpoint, FILTER_VALIDATE_URL ) ) ) {
-				$content = wp_remote_get( $discovery_endpoint, array( 'sslverify' => false ) );
+				$content = wp_remote_get( $discovery_endpoint, array( 'sslverify' => MO_OAuth_Utils::get_ssl_verify_setting( $discovery_endpoint ) ) );
 				if ( ! empty( $tag ) && ( 'realm' === $tag && wp_remote_retrieve_response_code( $content ) !== 200 ) ) {
 					// Keycloak v18 check.
 					$discovery_endpoint = str_replace( '/auth', '', $discovery_endpoint );
-					$content            = wp_remote_get( $discovery_endpoint, array( 'sslverify' => false ) );
+					$content            = wp_remote_get( $discovery_endpoint, array( 'sslverify' => MO_OAuth_Utils::get_ssl_verify_setting( $discovery_endpoint ) ) );
 				}
 				$provider_se = array();
 				if ( ! is_wp_error( $content ) && wp_remote_retrieve_response_code( $content ) === 200 ) {

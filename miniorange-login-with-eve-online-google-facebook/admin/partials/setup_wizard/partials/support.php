@@ -9,9 +9,15 @@
  */
 
 /**
- * Support form
+ * Display the support form for the setup wizard.
+ *
+ * Renders a support contact form that allows users to submit queries
+ * to miniOrange support team via AJAX. The form includes email input
+ * and query textarea fields, along with JavaScript handlers for form submission.
+ *
+ * @return void Outputs HTML and JavaScript for the support form.
  */
-function mo_oauth_client_setup_support() {
+function mo_oauth_client_setup_support() { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 	echo '<div class="support-icon" style="display: block;">
 			<div class="help-container" id="help-container" style="display: block;">
 			  	<span class="span1">

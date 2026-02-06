@@ -8,7 +8,7 @@
  * @link       https://miniorange.com
  */
 
-namespace MO_Plugins;
+namespace MOOAuth_Plugins;
 
 use MOOAuth_Debug;
 

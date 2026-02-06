@@ -100,7 +100,7 @@ class MOOAuth_Widget extends WP_Widget {
 	 */
 	public function mo_oauth_start_session() {
 		if ( ! session_id() && ! mooauth_client_is_ajax_request() && ! mooauth_client_is_rest_api_call() ) {
-			session_start();
+			@session_start();
 		}
 
 		if ( isset( $_REQUEST['option'] ) && sanitize_text_field( wp_unslash( $_REQUEST['option'] ) ) === 'testattrmappingconfig' ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
@@ -116,9 +116,9 @@ class MOOAuth_Widget extends WP_Widget {
 	 */
 	public function mo_oauth_end_session() {
 		if ( ! session_id() ) {
-			session_start();
+			@session_start();
 		}
-		session_destroy();
+		@session_destroy();
 	}
 
 	/**
@@ -218,7 +218,7 @@ class MOOAuth_Widget extends WP_Widget {
 		}
 
 		function moOAuthLoginNew(app_name) {
-			window.location.href = '<?php echo esc_attr( site_url() ); ?>' + '/?option=oauthredirect&app_name=' + app_name;
+			window.location.href = '<?php echo esc_attr( site_url() ); ?>' + '/?option=oauthredirect&app_name=' + encodeURIComponent(app_name) + '&time=' + Date.now();
 		}
 	</script>
 		<?php
@@ -256,9 +256,6 @@ function mooauth_login_validate() {
 	if ( isset( $_REQUEST['option'] ) && strpos( sanitize_text_field( wp_unslash( $_REQUEST['option'] ) ), 'oauthredirect' ) !== false ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
 		$appname  = ! empty( $_REQUEST['app_name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['app_name'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
 		$appslist = get_option( 'mo_oauth_apps_list' );
-		if ( isset( $_REQUEST['redirect_url'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-			update_option( 'mo_oauth_redirect_url', sanitize_text_field( wp_unslash( $_REQUEST['redirect_url'] ) ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-		}
 
 		if ( isset( $_REQUEST['test'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
 			setcookie( 'mo_oauth_test', true, time() + 3600, '/', '', true, true );
@@ -278,7 +275,7 @@ function mooauth_login_validate() {
 				if ( 'twitter' === $app['appId'] || 'oauth1' === $app['appId'] ) {
 					include 'class-mo-oauth-custom-oauth1.php';
 					setcookie( 'tappname', $appname, time() + 3600, '/', '', true, true );
-					$setcookie = ! empty( $_COOKIE['tappname'] ) ? MO_OAuth_Custom_OAuth1::mo_oauth1_auth_request( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) ) : '';
+					$setcookie = ! empty( $_COOKIE['tappname'] ) ? MOOAuth_Custom_OAuth1::mo_oauth1_auth_request( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) ) : '';
 					exit();
 				}
 
@@ -350,7 +347,7 @@ function mooauth_login_validate() {
 				}
 
 				if ( session_id() === '' || ! isset( $_SESSION ) ) {
-					session_start();
+					@session_start();
 				}
 				$_SESSION['oauth2state'] = $state_cookie;
 				$_SESSION['appname']     = $appname;
@@ -379,7 +376,7 @@ function mooauth_login_validate() {
 					)
 				);
 				if ( session_id() === '' || ! isset( $_SESSION ) ) {
-					session_start();
+					@session_start();
 				}
 				$_SESSION['oauth2state'] = $state_cookie;
 				$_SESSION['appname']     = $appname;
@@ -417,7 +414,7 @@ function mooauth_login_validate() {
 			}
 		}
 
-		$resource_owner = MO_OAuth_Custom_OAuth1::mo_oidc1_get_access_token( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) );
+		$resource_owner = MOOAuth_Custom_OAuth1::mo_oidc1_get_access_token( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) );
 		$username       = '';
 		$email          = '';
 		update_option( 'mo_oauth_attr_name_list', $resource_owner );
@@ -516,21 +513,17 @@ function mooauth_login_validate() {
 			wp_set_current_user( $user->ID );
 			wp_set_auth_cookie( $user->ID );
 			$user = get_user_by( 'ID', $user->ID );
-			do_action( 'wp_login', $user->user_login, $user );
+			do_action( 'wp_login', $user->user_login, $user ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			MOOAuth_Debug::mo_oauth_log( 'User logged-in.' );
 
-			$redirect_to = get_option( 'mo_oauth_redirect_url' );
-
-			if ( false === $redirect_to ) {
-				$redirect_to = home_url();
-			}
+			$redirect_to = home_url();
 
 			wp_safe_redirect( $redirect_to );
 			exit;
 		}
 	} elseif ( ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/wp-json/moserver/token' ) === false && ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/oauthcallback' ) !== false || isset( $_REQUEST['code'] ) ) ) || ( ! empty( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'openid.ns' ) !== false ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
 		if ( session_id() === '' || ! isset( $_SESSION ) ) {
-			session_start();
+			@session_start();
 		}
 		MOOAuth_Debug::mo_oauth_log( 'OAuth plugin catched the flow, $_REQUEST array=>' );
 		MOOAuth_Debug::mo_oauth_log( $_REQUEST ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL.
@@ -773,7 +766,7 @@ function mooauth_login_validate() {
 					wp_set_current_user( $user->ID );
 					wp_set_auth_cookie( $user->ID );
 
-					$redirect_to = get_option( 'mo_oauth_redirect_url' );
+					$redirect_to = home_url();
 					if ( has_action( 'mo_hack_login_session_redirect' ) ) {
 						$token    = mooauth_gen_rand_str();
 						$password = mooauth_gen_rand_str();
@@ -785,12 +778,8 @@ function mooauth_login_validate() {
 						do_action( 'mo_hack_login_session_redirect', $user, $password, $token, $redirect_to );
 					}
 					$user = get_user_by( 'ID', $user->ID );
-					do_action( 'wp_login', $user->user_login, $user );
+					do_action( 'wp_login', $user->user_login, $user ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 					MOOAuth_Debug::mo_oauth_log( 'User logged in, login cookie setted.' );
-
-					if ( false === $redirect_to ) {
-						$redirect_to = home_url();
-					}
 
 					wp_safe_redirect( $redirect_to );
 					exit;
@@ -983,7 +972,7 @@ function mooauth_client_is_ajax_request() {
  *
  * @return array valid html.
  **/
-function mo_oauth_get_valid_html( $args = array() ) {
+function mooauth_get_valid_html( $args = array() ) {
 	$retval = array(
 		'strong' => array(),
 		'em'     => array(),

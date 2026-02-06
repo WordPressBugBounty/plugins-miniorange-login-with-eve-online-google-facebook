@@ -239,8 +239,7 @@ class MO_OAuth_Client_Customer {
 		$subject                = 'Call Request: WordPress ' . MO_OAUTH_PLUGIN_NAME . ' ' . $plugin_version;
 		$site_url               = site_url();
 
-		global $user;
-		$user = wp_get_current_user();
+		$current_user = wp_get_current_user();
 
 		if ( $send_config ) {
 			$mo_oauth       = new MOOAuth();
@@ -250,9 +249,9 @@ class MO_OAuth_Client_Customer {
 		}
 
 		if ( $issue_description ) {
-			$content = ! empty( $_SERVER['SERVER_NAME'] ) ? '<div>Hello,<br><br>First Name : ' . $user->user_firstname . '<br><br>Last Name : ' . $user->user_lastname . '<br><br>Company : <a href="' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '" target="_blank" >' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '</a><br><br>Email : <a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Preferred time (' . $call_time_zone . ') : ' . $call_time . ', ' . $call_date . '<br><br>IST time : ' . $ist_time . ', ' . $ist_date . '<br><br>Issue : ' . $issue . ' <b>:</b> ' . $issue_description . '<br><br>Description : ' . $desc . '</div>' : '';
+			$content = ! empty( $_SERVER['SERVER_NAME'] ) ? '<div>Hello,<br><br>First Name : ' . $current_user->user_firstname . '<br><br>Last Name : ' . $current_user->user_lastname . '<br><br>Company : <a href="' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '" target="_blank" >' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '</a><br><br>Email : <a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Preferred time (' . $call_time_zone . ') : ' . $call_time . ', ' . $call_date . '<br><br>IST time : ' . $ist_time . ', ' . $ist_date . '<br><br>Issue : ' . $issue . ' <b>:</b> ' . $issue_description . '<br><br>Description : ' . $desc . '</div>' : '';
 		} else {
-			$content = ! empty( $_SERVER['SERVER_NAME'] ) ? '<div>Hello,<br><br>First Name : ' . $user->user_firstname . '<br><br>Last Name : ' . $user->user_lastname . '<br><br>Company : <a href="' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '" target="_blank" >' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '</a><br><br>Email : <a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Preferred time (' . $call_time_zone . ') : ' . $call_time . ', ' . $call_date . '<br><br>IST time : ' . $ist_time . ', ' . $ist_date . '<br><br>Issue : ' . $issue . '<br><br>Description : ' . $desc . '</div>' : '';
+			$content = ! empty( $_SERVER['SERVER_NAME'] ) ? '<div>Hello,<br><br>First Name : ' . $current_user->user_firstname . '<br><br>Last Name : ' . $current_user->user_lastname . '<br><br>Company : <a href="' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '" target="_blank" >' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '</a><br><br>Email : <a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Preferred time (' . $call_time_zone . ') : ' . $call_time . ', ' . $call_date . '<br><br>IST time : ' . $ist_time . ', ' . $ist_date . '<br><br>Issue : ' . $issue . '<br><br>Description : ' . $desc . '</div>' : '';
 		}
 		$fields                   = array(
 			'customerKey' => $customer_key,
@@ -399,11 +398,10 @@ class MO_OAuth_Client_Customer {
 		$subject                = $subject . ' ' . $plugin_version;
 		$site_url               = site_url();
 
-		global $user;
-		$user  = wp_get_current_user();
-		$query = '[WP ' . MO_OAUTH_PLUGIN_NAME . ' ' . $plugin_version . '] : ' . sanitize_text_field( $message );
+		$current_user = wp_get_current_user();
+		$query        = '[WP ' . MO_OAUTH_PLUGIN_NAME . ' ' . $plugin_version . '] : ' . sanitize_text_field( $message );
 
-		$content = ! empty( $_SERVER['SERVER_NAME'] ) ? '<div >Hello, <br><br>First Name :' . $user->user_firstname . '<br><br>Last  Name :' . $user->user_lastname . '   <br><br>Company :<a href="' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '" target="_blank" >' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '</a><br><br>Email :<a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Query :' . $query : '';
+		$content = ! empty( $_SERVER['SERVER_NAME'] ) ? '<div >Hello, <br><br>First Name :' . $current_user->user_firstname . '<br><br>Last  Name :' . $current_user->user_lastname . '   <br><br>Company :<a href="' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '" target="_blank" >' . esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ) . '</a><br><br>Email :<a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Query :' . $query : '';
 		if ( false === $skip ) {
 			$content .= '<br><br>' . $reply;
 			$content .= '</div>';
@@ -478,9 +476,8 @@ class MO_OAuth_Client_Customer {
 		$from_email             = $email;
 		$site_url               = site_url();
 
-		global $user;
-		$user    = wp_get_current_user();
-		$content = '<div >Hello, </a><br><br>Email :<a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Requested Demo for     : ' . $demo_plan . '<br><br>Add-ons     : ' . $addons_selected . '<br><br>Requirements (User usecase)           : ' . $message . '</div>';
+		$current_user = wp_get_current_user();
+		$content      = '<div >Hello, </a><br><br>Email :<a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br>Requested Demo for     : ' . $demo_plan . '<br><br>Add-ons     : ' . $addons_selected . '<br><br>Requirements (User usecase)           : ' . $message . '</div>';
 
 		$fields                   = array(
 			'customerKey' => $customer_key,
@@ -552,9 +549,8 @@ class MO_OAuth_Client_Customer {
 		$from_email             = $email;
 		$site_url               = site_url();
 
-		global $user;
-		$user    = wp_get_current_user();
-		$content = '<div >Hello, </a><br><br>Email :<a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br> Customer local time (' . $call_time_zone . ') : ' . $call_time . ' on ' . $call_date . '<br><br>IST format    : ' . $ist_time . ' on ' . $ist_date . '<br><br>Requirements (User usecase)           : ' . $query . '</div>';
+		$current_user = wp_get_current_user();
+		$content      = '<div >Hello, </a><br><br>Email :<a href="mailto:' . $from_email . '" target="_blank">' . $from_email . '</a><br><br> Customer local time (' . $call_time_zone . ') : ' . $call_time . ' on ' . $call_date . '<br><br>IST format    : ' . $ist_time . ' on ' . $ist_date . '<br><br>Requirements (User usecase)           : ' . $query . '</div>';
 
 		$fields                   = array(
 			'customerKey' => $customer_key,

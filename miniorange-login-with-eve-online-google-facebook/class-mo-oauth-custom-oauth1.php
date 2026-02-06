@@ -17,7 +17,7 @@ require_once 'class-mo-oauth-custom-oauth1-flow.php';
 /**
  * Handle Authorization and Token request for OAuth1.0 protocol.
  */
-class MO_OAuth_Custom_OAuth1 {
+class MOOAuth_Custom_OAuth1 {
 
 	/**
 	 * Handle OAuth1.0 request
@@ -34,7 +34,7 @@ class MO_OAuth_Custom_OAuth1 {
 		$access_token_url  = $appslist[ $appname ]['accesstokenurl'];
 		$userinfo_url      = $appslist[ $appname ]['resourceownerdetailsurl'];
 
-		$oauth1_getrequest_object = new MO_OAuth_Custom_OAuth1_Flow( $client_id, $client_secret, $request_token_url, $access_token_url, $userinfo_url );
+		$oauth1_getrequest_object = new MOOAuth_Custom_OAuth1_Flow( $client_id, $client_secret, $request_token_url, $access_token_url, $userinfo_url );
 		$request_token            = $oauth1_getrequest_object->mo_oauth1_get_request_token();
 		if ( strpos( $authorize_url, '?' ) === false ) {
 			$authorize_url .= '?';
@@ -75,7 +75,7 @@ class MO_OAuth_Custom_OAuth1 {
 		$access_token_url  = $appslist[ $appname ]['accesstokenurl'];
 		$userinfo_url      = $appslist[ $appname ]['resourceownerdetailsurl'];
 
-		$mo_oauth1_getaccesstoken_object = new MO_OAuth_Custom_OAuth1_Flow( $client_id, $client_secret, $request_token_url, $access_token_url, $userinfo_url );
+		$mo_oauth1_getaccesstoken_object = new MOOAuth_Custom_OAuth1_Flow( $client_id, $client_secret, $request_token_url, $access_token_url, $userinfo_url );
 		$oauth_token                     = $mo_oauth1_getaccesstoken_object->mo_oauth1_get_access_token( $oauth_verifier[1], $mo_oauth1_oauth_token[1] );
 
 		$response_parse = explode( '&', $oauth_token );
@@ -92,7 +92,7 @@ class MO_OAuth_Custom_OAuth1 {
 			}
 		}
 
-		$mo_oauth1_get_profile_signature_object = new MO_OAuth_Custom_OAuth1_Flow( $client_id, $client_secret, $request_token_url, $access_token_url, $userinfo_url );
+		$mo_oauth1_get_profile_signature_object = new MOOAuth_Custom_OAuth1_Flow( $client_id, $client_secret, $request_token_url, $access_token_url, $userinfo_url );
 		$oauth_access_token1                    = isset( $oauth_access_token[1] ) ? $oauth_access_token[1] : '';
 		$oauth_token_secret1                    = isset( $oauth_token_secret[1] ) ? $oauth_token_secret[1] : '';
 		$screen_name1                           = isset( $screen_name[1] ) ? $screen_name[1] : '';

@@ -2,9 +2,9 @@
 Contributors: cyberlord92
 Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.0
-Stable tag: 6.26.14
+Stable tag: 6.26.17
 License: Expat
 License URI: https://plugins.miniorange.com/mit-license
 
@@ -15,11 +15,11 @@ WordPress SSO (Single Sign On) with Azure, Azure B2C, Cognito, Okta, Classlink, 
 **WordPress Single Sign-On** (WordPress SSO) with our **[OAuth & OpenID Connect plugin](https://plugins.miniorange.com/wordpress-sso?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_1)** allows unlimited login/SSO (Single Sign On) with your **[Azure AD](https://plugins.miniorange.com/azure-ad-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_2)**, **[Azure B2C](https://plugins.miniorange.com/azure-b2c-ad-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_3)**, **[G Suite / Google Apps / Google Workspace](https://plugins.miniorange.com/google-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_4)**, **[ClassLink](https://plugins.miniorange.com/classlink-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_12)**, **[Clever](https://plugins.miniorange.com/clever-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_11)**, **[Office 365](https://plugins.miniorange.com/office-365-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_5)**, **[AWS Cognito](https://plugins.miniorange.com/aws-cognito-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_6)**, **[Discord](https://plugins.miniorange.com/discord-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_7)**, **[PingFederate](https://plugins.miniorange.com/ping-federate-single-sign-on-wordpress-sso-oauth-openid-connect)**, **[Salesforce](https://plugins.miniorange.com/salesforce-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_10)**, **[Keycloak](https://plugins.miniorange.com/keycloak-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_9)**, **[Okta](https://plugins.miniorange.com/okta-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_8)**, **[Identity Server](https://plugins.miniorange.com/identityserver4-single-sign-on-wordpress-sso-oauth-openid-connect)**, **[Invision Community](https://plugins.miniorange.com/invision-community-single-sign-on-wordpress-sso-oauth-openid-connect)** or other custom OAuth 2.0 and OpenID Connect providers. WordPress SSO plugin supports Single Sign On (SSO) with many OAuth 2.0, OAuth 2.1, OAuth 1.0 & OpenID Connect (OIDC) 1.0 providers.
 
 
-An unlimited number of users can perform Single Sign-On (SSO) with OAuth/OIDC supported Identity Providers on WordPress using Single Sign-On (SSO) capabilities.  
+An unlimited number of users can perform Single Sign-On with OAuth/OIDC supported Identity Providers on WordPress using SSO capabilities.  
 
  |<a href="https://plugins.miniorange.com/wordpress-sso#key-features" target="_blank"> Features </a>| <a href="https://plugins.miniorange.com/wordpress-single-sign-on-sso-with-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_13" target="_blank"> OAuth / OpenID Providers Setup guides </a>|<a href="https://youtu.be/Vff0E0KxM3k" target="_blank"> Videos </a>|
 
- = POPULAR OAUTH AND OPENID CONNECT (OIDC) PROVIDERS SINGLE SIGN-ON (SSO) =
+ = POPULAR OAUTH AND OPENID CONNECT (OIDC) PROVIDERS SINGLE SIGN-ON =
 
 The following providers support OAuth 2.0/OpenID Connect SSO for WordPress login.
 
@@ -35,6 +35,7 @@ The following providers support OAuth 2.0/OpenID Connect SSO for WordPress login
 *	[Clever SSO | Login with Clever](https://plugins.miniorange.com/clever-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_11)
 *	[Google Classroom SSO | Login with Google Classroom](https://plugins.miniorange.com/google-classroom-single-sign-on-sso)
 *	[Salesforce SSO | Login with Salesforce](https://plugins.miniorange.com/salesforce-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_10)
+*	[Criipto SSO | Login with Criipto](https://plugins.miniorange.com/wordpress-oauth-openid-connect-single-sign-on-sso-using-criipto?utm_source=Readme&utm_medium=Readme&utm_campaign=Readme&utm_id=wpor_15)
 *	[G Suite / Google Apps SSO | Login with Google](https://plugins.miniorange.com/google-single-sign-on-wordpress-sso-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_4)
 *	[Ping Federate SSO ( Ping / Ping Identity ) | Login with Ping Federate](https://plugins.miniorange.com/ping-federate-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[IdentityServer4 SSO | Login with IdentityServer4](https://plugins.miniorange.com/identityserver4-single-sign-on-wordpress-sso-oauth-openid-connect)
@@ -47,38 +48,29 @@ The following providers support OAuth 2.0/OpenID Connect SSO for WordPress login
 *   [Signicat SSO | User Verification with Signicat](https://plugins.miniorange.com/signicat-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[ID.me SSO | Login with ID.me](https://plugins.miniorange.com/id-me-oauth-and-openid-connect-single-sign-on-sso-login)
 *	[Canvas SSO | Login with Canvas](https://plugins.miniorange.com/canvas-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[SSO | Login with WordPress](https://plugins.miniorange.com/guide-to-setup-single-sign-on-between-two-wordpress-sites)
+*	[WordPress SSO | Login with WordPress](https://plugins.miniorange.com/guide-to-setup-single-sign-on-between-two-wordpress-sites)
 *	[WSO2 SSO | Login with WSO2](https://plugins.miniorange.com/wso2-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[OpenAthens SSO | Login with OpenAthens](https://plugins.miniorange.com/openathens-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[HP SSO | Login with HP](https://plugins.miniorange.com/hp-single-sign-on-sso-oauth-and-openid-connect)
 *	[Servicenow SSO | Login with Servicenow](https://plugins.miniorange.com/servicenow-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[Invision Community SSO | Login with Invision Community](https://plugins.miniorange.com/invision-community-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[OpenAM / Forgerock SSO | Login with Forgerock](https://plugins.miniorange.com/forgerock-open-am-single-sign-on-for-wordpress-using-oauth)
-*	[Laravel Passport SSO | Login with Laravel Passport](https://plugins.miniorange.com/laravel-passport-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[NextCloud SSO | Login with NextCloud](https://plugins.miniorange.com/nextcloud-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[Orcid SSO | Login with Orcid](https://plugins.miniorange.com/orcid-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[Memberclicks SSO | Login with MemberClicks](https://plugins.miniorange.com/memberclicks-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[Open edX / eduNEXT SSO | Login with Open edX](https://plugins.miniorange.com/open-edx-edunext-oauth-and-openid-connect-single-sign-on-sso-login)
 *	[SheepCRM SSO | Login with SheepCRM](https://plugins.miniorange.com/sheepcrm-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[IBM APP ID SSO | Login with IBM](https://plugins.miniorange.com/ibm-app-id-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[Amazon SSO | Login with Amazon](https://plugins.miniorange.com/amazon-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[UNA SSO | Login with UNA](https://plugins.miniorange.com/una-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[Bitrix24 SSO | Login with Bitrix24](https://plugins.miniorange.com/bitrix24-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[Slack SSO | Login with Slack](https://plugins.miniorange.com/slack-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[Yahoo SSO | Login with Yahoo](https://plugins.miniorange.com/yahoo-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[LinkedIn SSO | Login with LinkedIn](https://plugins.miniorange.com/linkedin-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[Gitlab SSO | Login with Gitlab](https://plugins.miniorange.com/gitlab-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[GitHub SSO | Login with GitHub](https://plugins.miniorange.com/github-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[ SSO | Login with Apple](https://plugins.miniorange.com/login-with-apple-app-using-wordpress-oauth-client)
+*	[Apple SSO | Login with Apple](https://plugins.miniorange.com/login-with-apple-app-using-wordpress-oauth-client)
 *	[Strava SSO | Login with Strava](https://plugins.miniorange.com/strava-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[Blizzard / Battle.net SSO | Login with Battle.net](https://plugins.miniorange.com/blizzard-single-sign-on-wordpress-sso-oauth-openid-connect)
-*	[Basecamp SSO | Login with Basecamp](https://plugins.miniorange.com/basecamp-oauth-and-openid-connect-single-sign-on-sso-login)
-*	[PayPal SSO | Login with PayPal](https://plugins.miniorange.com/paypal-single-sign-on-wordpress-sso-oauth-openid-connect)
 *	[Eve Online SSO | Login with Eve Online](https://plugins.miniorange.com/eve-online-single-sign-on-wordpress-sso-oauth-openid-connect)
-*   [Intuit SSO | Login with Intuit](https://plugins.miniorange.com/login-with-intuit-using-wordpress-oauth-openid-connect)
 *   [Hubspot SSO | Login with Hubspot](https://plugins.miniorange.com/hubspot-single-sign-on-for-wordpress-using-oauth)
 *   [X(Twitter) SSO | Login with Twitter](https://plugins.miniorange.com/twitter-single-sign-on-wordpress-sso-oauth-openid-connect)
-*   [Oracle IDCS SSO | Login with Oracle IDCS](https://plugins.miniorange.com/oracle-idcs-oauth-and-openid-connect-single-sign-on-sso-login)
 *   [Zoho SSO | Login with Zoho](https://plugins.miniorange.com/zoho-single-sign-on-wordpress-sso-oauth-openid-connect)
 *   [Idaptive SSO | CyberArk SSO | Login with CyberArk](https://plugins.miniorange.com/idaptive-single-sign-on-for-wordpress-using-oauth)
 *   [WHMCS SSO | Login with WHMCS](https://plugins.miniorange.com/whmcs-single-sign-on-wordpress-sso-oauth-openid-connect)
@@ -86,83 +78,83 @@ The following providers support OAuth 2.0/OpenID Connect SSO for WordPress login
 
 
 = OTHER OAUTH AND OPENID CONNECT (OIDC) PROVIDERS WE SUPPORT FOR WORDPRESS SINGLE SIGN-ON (SSO) =
-*	Other OAuth 2.0 and OpenId Connect ( OIDC ) 1.0 servers WordPress Single Sign-On ( SSO ) plugin support includes Office 365, AWS Cognito, Microsoft Dynamic CRM 365, Auth0, Google Workspace, Egnyte, Autodesk, Zendesk, Foursquare, Harvest, Mailchimp, Bitrix24, Spotify, Vkontakte, Huddle, Reddit, Strava, Ustream, Yammer, RunKeeper, Instagram, SoundCloud, Pocket, PayPal, Pinterest, Vimeo, Nest, Heroku, DropBox, Buffer, Box, Hubic, Deezer, DeviantArt, Delicious, Dailymotion, Bitly, Mondo, Netatmo, Amazon, FitBit, Clever, Sqaure Connect, Windows, Microsoft Live, Dash 10, Github, Invision Community, Blizzard, authlete, Keycloak, Procore, Eve Online, Laravel Passport, Nextcloud, Renren, Soundcloud, OpenAM / Forgerock, IdentityServer, ORCID, Diaspora, Timezynk, Idaptive CyberArk, Duo Security, Rippling, Crowd, Janrain, Numina Solutions, Ubuntu Single Sign-On, Apple, Ipsilon, Zoho, Stripe, Itthinx, Fellowshipone, Miro, Naver, Clever, Coil, Parallel Markets, VATSIM, Liferay, Fatsecret, Intuit, iMIS, ORY Hydra, FusionAuth, Kakao, ID.me, MoxiWorks, HR Answerlink / Support center, ClassLink, Google Classroom, MemberClicks, BankID, CSI, Splitwise, Infusionsoft, Hubspot, Join It, MyAcademicID, MemberConnex, Novi, Coassemble, Servicenow, IBM APP ID, Nimble AMS, iSpring LMS, Neon CRM, EPIC, IPB forum, Wiziq, Sprinklr, Elvanto, ABSORB LMS, Wechat, Weibo, Shibboleth, Centrify, FranceConnect, Church Online, Bigcommerce, Sewobe, PracticePanther, SubscribeStar, Eventbrite, Medi-Access, Lichess, CILogon, Servicem8, Gigya, PhantAuth, XING, Simplecast, SURF, MediaWiki, UNA, NetSuite, Oracle IDCS, Globus, Square, SimpleSAMLphp, Basecamp, HP, SHELL, Otoy, Steam, Webflow, Simplepass, Feide, SingPass, Asmodee, SwissID, Miro, Alkami, Switch, Citrix, Schoology, iGov, LearnWorlds, France Connect, DID, Blackboard, UAEPass, Polar, CodeB, Vincere CRM, F5, TicketMaster, BizLibrary, Skolon, Rapattoni, PowerSchool, Minecraft, NETS, Joomla, Drupal, ASP.NET, CA Siteminder, Outseta, XUMM, ID Austria, Ubisecure, Gravitee.io, SheepCRM, Wahoo, WeatherFlow Tempest, OneWelcome / iWelcome, Xbox, Trovo, Cornerstone, Criipto, bare.id, Discourse, Authentik, Sailpoint, Coil, Asset Bank, GrowthZone, Vipps, Authorizer, Deviant Art, Miracl, Teamsnap, Authelia, Teachable, Django, IDsampa, Cvent, SERMO, Pixelfed, Finys, Login.gov, Fastcase, Acuity, ARPA, Zitadel, Yeti, myID.be, memberful, Teachable, Mindbody etc. This comprehensive SSO support facilitates seamless integration and secure authentication across a wide range of platforms.
+*	Other OAuth 2.0 and OpenId Connect ( OIDC ) 1.0 servers WordPress Single Sign-On ( SSO ) plugin support includes Office 365, AWS Cognito, Microsoft Dynamic CRM 365, Auth0, Google Workspace, Egnyte, Autodesk, Zendesk, Foursquare, Harvest, Mailchimp, Bitrix24, Spotify, Vkontakte, Huddle, Reddit, Strava, Ustream, Yammer, RunKeeper, Instagram, SoundCloud, Pocket, PayPal, Pinterest, Vimeo, Nest, Heroku, DropBox, Buffer, Box, Hubic, Deezer, DeviantArt, Delicious, Dailymotion, Bitly, Mondo, Netatmo, Amazon, FitBit, Clever, Sqaure Connect, Windows, Microsoft Live, Dash 10, Github, Invision Community, Blizzard, authlete, Keycloak, Procore, Eve Online, Laravel Passport, Nextcloud, Renren, Soundcloud, OpenAM / Forgerock, IdentityServer, ORCID, Diaspora, Timezynk, Idaptive CyberArk, Duo Security, Rippling, Crowd, Janrain, Numina Solutions, Ubuntu Single Sign-On, Apple, Ipsilon, Zoho, Stripe, Itthinx, Fellowshipone, Miro, Naver, Clever, Coil, Parallel Markets, VATSIM, Liferay, Fatsecret, Intuit, iMIS, ORY Hydra, FusionAuth, Kakao, ID.me, MoxiWorks, HR Answerlink / Support center, ClassLink, Google Classroom, MemberClicks, BankID, CSI, Splitwise, Infusionsoft, Hubspot, Join It, MyAcademicID, MemberConnex, Novi, Coassemble, Servicenow, IBM APP ID, Nimble AMS, iSpring LMS, Neon CRM, EPIC, IPB forum, Wiziq, Sprinklr, Elvanto, ABSORB LMS, Wechat, Weibo, Shibboleth, Centrify, FranceConnect, Church Online, Bigcommerce, Sewobe, PracticePanther, SubscribeStar, Eventbrite, Medi-Access, Lichess, CILogon, Servicem8, Gigya, PhantAuth, XING, Simplecast, SURF, MediaWiki, UNA, NetSuite, Oracle IDCS, Globus, Square, SimpleSAMLphp, Basecamp, HP, SHELL, Otoy, Steam, Webflow, Simplepass, Feide, SingPass, Asmodee, SwissID, Miro, Alkami, Switch, Citrix, Schoology, iGov, LearnWorlds, France Connect, DID, Blackboard, UAEPass, Polar, CodeB, Vincere CRM, F5, TicketMaster, BizLibrary, Skolon, Rapattoni, PowerSchool, Minecraft, NETS, Joomla, Drupal, ASP.NET, CA Siteminder, Outseta, XUMM, ID Austria, Ubisecure, Gravitee.io, SheepCRM, Wahoo, WeatherFlow Tempest, OneWelcome / iWelcome, Xbox, Trovo, Cornerstone, Criipto, bare.id, Discourse, Authentik, Sailpoint, Coil, Asset Bank, GrowthZone, Vipps, Authorizer, Deviant Art, Miracl, Teamsnap, Authelia, Django, IDsampa, Cvent, SERMO, Pixelfed, Finys, Login.gov, Fastcase, Acuity, ARPA, Zitadel, Yeti, myID.be, memberful,Open edX / eduNEXT, Teachable, Mindbody etc. This comprehensive SSO support facilitates seamless integration and secure authentication across a wide range of platforms.
 
  
-= WordPress Single Sign-On / SSO ( Login to WordPress ) =
+= WordPress Single Sign-On ( Login to WordPress ) =
 
-WordPress Single Sign-On (WordPress SSO) allows users to log into any website/application using the single set of credentials of another app/site through the SSO feature.
-**Example:**Let’s say you have all your users/customers/members/employees stored on a site, called ‘site A’ and you want all of them to register/login using WordPress SSO to your WordPress site called ‘site B’. In this scenario, you can register/login all your users of site A into site B using the login credentials/account of site A. This is called Single Sign-On or SSO, and it simplifies user management through SSO.
+WordPress Single Sign-On allows users to log into any website/application using the single set of credentials of another app/site through the SSO feature.
+**Example:**Let’s say you have all your users/customers/members/employees stored on a site, called ‘site A’ and you want all of them to register/login using SSO to your WordPress site called ‘site B’. In this scenario, you can register/login all your users of site A into site B using the login credentials/account of site A. This is called Single Sign-On, and it simplifies user management.
 
-= WordPress Single Sign-On ( WordPress SSO ) supported Third-Party Application / OAuth OpenID Provider =
+= WordPress Single Sign-On supported Third-Party Application / OAuth OpenID Provider =
 * The Third-Party Application can be anything where user accounts are stored or a site/application where you want to store/migrate all the users. It can be your social login app, WordPress site, OAuth provider, OpenID provider, custom provider or any database.
-* Applications/providers such as OAuth Identity Provider, OAuth Server, OpenID Connect Server, OpenID Connect Provider, and OIDC Application support Single Sign-On (SSO). SSO integration ensures smooth user authentication and management across these platforms.
+* Identity providers such as OAuth Identity Provider, OAuth Server, OpenID Connect Server, OpenID Connect Provider, and OIDC Application support Single Sign-On. SSO integration ensures secure user authentication and management across these platforms.
 
-OAuth and OpenID Connect are token-based Single Sign-On (SSO) protocols that allow an end user's account information to be used by third-party services without exposing the user's password.
+* OAuth and OpenID Connect are token-based Single Sign-On protocols that allow an end user's account information to be used by third-party services without exposing the user's password.
 
-The SSO plugin supports OAuth 1.0, OAuth 2.0, and OAuth 2.1, along with the latest OAuth and OpenID Connect protocols. It includes secure 2-Factor Authentication (2FA) and Multi-Factor Authentication (MFA) if enabled by the provider. These industry-standard protocols enable seamless WordPress SSO, providing a good SSO experience for your WordPress site.
 
-= WordPress Single Sign-On ( WordPress SSO ) USE CASES =
+= WordPress Single Sign-On USE CASES =
 
-* Single Sign On (SSO) to one/multiple WordPress site (single/multisite) using User Credentials stored on another WordPress site with WordPress SSO plugin.
-* Single Sign On (SSO) to one/multiple WordPress site (single / multisite) using User Credentials stored on your OAuth / OpenID Connect (OIDC) application with WordPress SSO plugin.
-* Single Sign On ( WordPress SSO ) into WordPress using existing User stores (Active Directory/Database)
+* **WordPress to WordPress SSO**: Single Sign On to one/multiple WordPress site (single/multisite) using User Credentials stored on another WordPress site with WordPress SSO plugin.
+* Single Sign On to one/multiple WordPress site (single / multisite) using User Credentials stored on your OAuth / OpenID Connect (OIDC) application.
+* Single Sign On into WordPress using existing User stores (Active Directory/Database)
 * SSO and extended plugin functionality using tokens (access_token / JWT token / id_token) such as secure API calls using third-party token
-* Others: eCommerce Single Sign On (SSO)/Login & other third-party integration with SSO features
+* Others: eCommerce Single Sign On/Login, Single sign on for Educational and Healthcare paltforms
 
 **Microsoft SSO/Azure SSO**
 
-This WordPress Single Sign-On (OAuth / OpenID Connect SSO) plugin supports SSO with Microsoft apps like Azure AD, Azure B2C, Office 365, Microsoft Dynamics CRM, Microsoft Teams, and Windows Live. It also supports policy-based login redirections, including sign-up, sign-in, forgot password, and custom policies, enhancing the SSO experience across Microsoft services.
+This WordPress Single Sign-On (OAuth / OpenID Connect SSO) plugin supports SSO with Microsoft apps like Azure AD, Azure B2C, Office 365, Microsoft Dynamics CRM, Microsoft Teams, and Windows Live. It also supports policy-based login redirections, including sign-up, sign-in, forgot password, and custom policies, enhancing the login experience across Microsoft services.
 
-WordPress integrates with Microsoft services like Azure AD, Azure B2C, and Office 365 for secure Single Sign-On (SSO) across single-site and multisite networks (including subdomains). Users can perform single sign-on (SSO), map profile attributes, and manage role-based access across applications and tenants using SSO
+WordPress integrates with Microsoft services like Azure AD, Azure B2C, and Office 365 for secure Single Sign-On across single-site and multisite networks (including subdomains). Users can perform single sign-on, map profile attributes, and manage role-based access across applications and tenants using SSO
 
-Apart from Single Sign-On (SSO), it also supports WordPress-Azure integrations and customizations, such as token-based calls to specific APIs and the Microsoft Graph API, enhancing the Single Sign On (SSO) experience
+Apart from SSO, it also supports WordPress-Azure integrations and customizations, such as token-based calls to specific APIs and the Microsoft Graph API, enhancing the login experience
 
 **Cognito SSO**
 
-The WordPress Single Sign-On (SSO) plugin supports WordPress Login with AWS Cognito, Amazon, and WordPress using Cognito. It provides user profile syncing, role mapping, and token fetching from AWS Cognito for API calls. Customizations include integrating Cognito SDKs, syncing new registrations, logging in via the default WordPress form instead of Cognito’s SSO page, connecting to the Cognito User Pool, and configuring login redirections.
+The WordPress Single Sign-On plugin supports WordPress Login with AWS Cognito, Amazon, and WordPress using Cognito. It provides user profile syncing, role mapping, and token fetching from AWS Cognito for API calls. Customizations include integrating Cognito SDKs, syncing new registrations, logging in via the default WordPress form instead of Cognito’s SSO page, connecting to the Cognito User Pool, and configuring login redirections.
 
 **Discord SSO**
-This WordPress Single Sign-On (SSO) plugin enables Discord login into WordPress. It supports syncing user profiles from Discord to WordPress, mapping Discord roles to WordPress roles, mapping WordPress roles to Discord roles, and managing Discord role memberships based on WordPress purchases.
+This WordPress Single Sign-On plugin enables Discord login into WordPress. It supports syncing user profiles from Discord to WordPress, mapping Discord roles to WordPress roles, mapping WordPress roles to Discord roles, and managing Discord role memberships based on WordPress purchases.
 
 **Keycloak SSO**
-The WordPress Single Sign-On (OAuth / OpenID Connect SSO) plugin supports SSO with Keycloak. SSO provides hooks for using Keycloak access tokens, allowing WordPress to make REST calls to remote services with these tokens. The OAuth/OIDC SSO plugin also supports role-based access control (RBAC) by mapping WordPress roles to Keycloak roles and capabilities enhancing the Single Sign-On (SSO) experience.
+The WordPress Single Sign-On (OAuth / OpenID Connect SSO) plugin works with Keycloak to enable SSO on your WordPress site. It also lets WordPress use Keycloak access tokens to call external services. In addition, the plugin supports role-based access control (RBAC), so you can map Keycloak roles to WordPress roles and capabilities.
 
 **Ping Federate SSO**
-The WordPress SSO (OAuth / OpenID Connect SSO) plugin enables Login to WordPress using PingFederate. It supports Single Sign-On (SSO) with authorized access to Ping REST APIs via access tokens or bearer tokens, ensuring seamless SSO integration and secure interactions with PingFederate.
+Oauth Single sign-on plugin enables Login to WordPress using PingFederate. It supports Single Sign-On  with authorized access to Ping REST APIs via access tokens or bearer tokens, ensuring seamless SSO integration and secure interactions with PingFederate.
 
 **Clever SSO**
-The WordPress SSO (OAuth / OpenID Connect SSO) plugin supports WordPress Login with Clever for users (teachers, students, admins) and integrates with LearnDash to sync lessons and assignments. It also provides WordPress Single Sign-On (SSO) with other IDPs like ClassLink, Google Classroom, and Canvas, as well as any Identity Provider (SAML, OAuth, OpenID Connect, Active Directory, databases) via miniOrange IDP, enabling seamless WordPress SSO.
+Oauth Single sign-on plugin supports WordPress Login with Clever for users (teachers, students, admins) and integrates with LearnDash to sync lessons and assignments. It also provides SSO with other IDPs like ClassLink, Google Classroom, and Canvas, as well as any Identity Provider (SAML, OAuth, OpenID Connect, Active Directory, databases) via miniOrange IDP.
+
 
 = FREE VERSION FEATURES =
 
-*	WordPress Single Sign-On (WordPress SSO) OAuth & OpenID Connect Login supports unlimited SSO with any 3rd party OAuth & OpenID Connect server or custom OAuth & OpenID Connect server like AWS Cognito, Azure AD, Azure AD B2C, Office 365, Google Apps, etc.
-*	**WordPress Single Sign-On ( WordPress SSO ) Grant Support** - Standard OAuth2 Grant: Authorization Code
-*	**Auto Create Users ( User Provisioning )** : After Single Sign On (SSO), a new user automatically gets created in WordPress
+*	WordPress Single Sign-On OAuth & OpenID Connect Login supports unlimited SSO with any 3rd party OAuth & OpenID Connect server or custom OAuth & OpenID Connect server like AWS Cognito, Azure AD, Azure AD B2C, Office 365, Google Apps, etc.
+*	**WordPress Single Sign-On  Grant Support** - Standard OAuth2 Grant: Authorization Code
+*	**Auto Create Users ( User Provisioning )** : After Single Sign On, a new user automatically gets created in WordPress
 *	**Account Linking** : After SSO, if the user already exists in WordPress, then their profile gets updated. Else, a new WordPress User is created.
 *	**Attribute Mapping** : OAuth Login allows you to map your Identity Provider’s unique attribute with WordPress Username Attribute.
-*	**Login Widget** : Use Widgets to integrate the Single Sign-On (SSO) login on your WordPress site easily.
-*	**OpenID Connect & OAuth Provider Support** : WordPress Single Sign On (OAuth Login) supports any OpenID Connect & OAuth Provider seamless Single Sign-On (SSO).
-*	**Redirect URL after Login** : WordPress Single Sign On (OAuth Login) automatically redirects the user after successful Single Sign-On (SSO) login.
+*	**Login Widget** : Use Widgets to integrate the Single Sign-On login on your WordPress site easily.
+*	**OpenID Connect & OAuth Provider Support** : WordPress Single Sign On (OAuth Login) supports any OpenID Connect & OAuth Provider seamless Single Sign-On.
+*	**Redirect URL after Login** : WordPress Single Sign On (OAuth Login) automatically redirects the user after successful Single Sign-On login.
 *	**Logging** : If you run into issues, WordPress Single Sign On (OAuth Login) can be helpful to enable debug logging.
 
 
 = PAID FEATURES =
 
-*  **WordPress Single Sign-On (WordPress SSO) Grant Support**: Standard OAuth2 Grants including **Authorization Code**, **Implicit Grant**, **Password Grant**, **Refresh Token Grant**, **Client Credential Grant**, **authorization code grant with PKCE flow**, and **Hybrid Grant** (Customization Available)
-*  **Auto Register Users**: Automatic user registration after WordPress SSO if the user is not already registered with your site.
-*  **Advanced Attribute Mapping**: Ability to map WordPress user profile attributes, such as username, first name, last name, and email , via SSO.
-*  **Advanced Role Mapping**: Assign roles to users based on defined rules through Single Sign-On (SSO).
-*  **Force Authentication / Protect Complete Site**: Protect the entire website for public users and grant access only to authenticated users through Single Sign-on (WordPress SSO).
-*  **Custom Attribute Mapping**: Map custom user attributes received from OAuth / OpenID Connect providers to any WordPress user attribute for Single Sign-On (SSO).
+*  **WordPress Single Sign-On Grant Support**: Standard OAuth2 Grants including **Authorization Code**, **Implicit Grant**, **Password Grant**, **Refresh Token Grant**, **Client Credential Grant**, **authorization code grant with PKCE flow**, and **Hybrid Grant** (Customization Available)
+*  **Auto Register Users**: Automatic user registration after SSO if the user is not already registered with your site.
+*  **Advanced Attribute Mapping**: Ability to map WordPress user profile attributes, such as username, first name, last name, and email.
+*  **Advanced Role Mapping**: Assign roles to users based on defined rules through Single Sign-On.
+*  **Force Authentication / Protect Complete Site**: Protect the entire website for public users and grant access only to authenticated users through Single Sign-on.
+*  **Custom Attribute Mapping**: Map custom user attributes received from OAuth / OpenID Connect providers to any WordPress user attribute for Single Sign-On.
 *  **Multiple OAuth & OpenID Connect Provider Support**: Support for multiple SSO providers.
-*  **Single Login button for Multiple Apps**: Provides a single SSO login button for multiple providers.
-*  **Extended OAuth API Support**: Extend OAuth / OpenID Connect API support for enhanced Single Sign-On (SSO) functionality.
-*  **WordPress Single Sign-On ( SSO ) Login Reports**: Generate user login and registration reports based on the application used for SSO.
+*  **Single Login button for Multiple Apps**: Provides a single login button for multiple providers.
+*  **Extended OAuth API Support**: Extend OAuth / OpenID Connect API support for enhanced Single Sign-On functionality.
+*  **WordPress Single Sign-On Login Reports**: Generate user login and registration reports based on the application used for SSO.
 *  **Enable / Disable WordPress Default Login**: Option to disable the default WordPress login form and use SSO instead.
-*  **FrontChannel & BackChannel Single Logout Support**: Allows users to be logged out from WordPress as well as the IDP through Single Sign-On (SSO).
-*  **Third-Party Plugin Compatibility for Single Sign-On (SSO)**: Compatible with WooCommerce and other third-party plugins for seamless Single Sign-On (SSO) integration.
-*  **Add-on Support with SSO Plugin**: Support for various add-ons including SCIM User Provisioning, Page & Post Restriction, BuddyPress Integration, Login Form Add-on, LearnDash Integration, Media Restriction, Attribute/Membership-Based Redirection, SSO Session Management, Paid Membership Pro Integrator, WooCommerce Integrator, SSO Login Audit, Memberpress Integration, and Guest User Login.
+*  **FrontChannel & BackChannel Single Logout Support**: Allows users to be logged out from WordPress as well as the IDP through Single Sign-On.
+*  **Third-Party Plugin Compatibility for Single Sign-On**: Compatible with WooCommerce and other third-party plugins for seamless Single Sign-On integration.
+*  **Add-on Support with Plugin**: Support for various add-ons including SCIM User Provisioning, Page & Post Restriction, BuddyPress Integration, Login Form Add-on, LearnDash Integration, Media Restriction, Attribute/Membership-Based Redirection, SSO Session Management, Paid Membership Pro Integrator, WooCommerce Integrator, SSO Login Audit, Memberpress Integration, and Guest User Login.
 *  **No SSL Restriction**: Allows SSO login without SSL or HTTPS-enabled site using Google credentials or any other app.
 
 
@@ -183,7 +175,7 @@ The WordPress SSO (OAuth / OpenID Connect SSO) plugin supports WordPress Login w
 Please email us for more information on SSO solution at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>. You can also submit your query from plugin's configuration page.
 
 = How do I configure the applications? =
-On **Configure OAuth** page, check if your app is already there in default app list, if not then select the custom OAuth 2.0 app or Custom OpenID Connect Provider app based on the protocol supported by your provider. Then click on **How to Configure** link to see configuration instructions steps for Single Sign-On (SSO).
+On **Configure OAuth** page, check if your app is already there in default app list, if not then select the custom OAuth 2.0 app or Custom OpenID Connect Provider app based on the protocol supported by your provider. Then click on **How to Configure** link to see configuration instructions steps for Single Sign-On.
 
 = This WordPress SSO / Login plugin is not compatible with plugins installed on my site. What can I do? =
 Please email us at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>. You can also submit your query from plugin's configuration page.
@@ -195,13 +187,13 @@ You can activate the plugin on any subsite of the Multisite network instead of a
 We will help you in integrating this plugin with your other installed plugins. This plugin is already compatible with WooCommerce, MemberPress, BuddyPress & Learndash. Please email us at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> or <a href="http://miniorange.com/contact" target="_blank">Contact us</a> for other integrations. You can also submit your query from plugin's configuration page.
 
 = Can I add multiple SSO options on my WordPress sites? =
-Yes, you can add multiple IDPs for Single Sign-on ( WordPress SSO) on your WordPress sites. e.g. Azure AD, G Suite / Google Apps, Office 365, Salesforce, Keycloak, and many more.
+Yes, you can add multiple IDPs for Single Sign-on on your WordPress sites. e.g. Azure AD, G Suite / Google Apps, Office 365, Salesforce, Keycloak, and many more.
 
 = I would like to change our license domain. How do we do this? =
-Yes, You can now activate the license on your new domain to enable WordPress Single Sign-on (SSO). Write us at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> we will help you set up.
+Yes, You can now activate the license on your new domain to enable WordPress Single Sign-on. Write us at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> we will help you set up.
 
 = Is it possible to set a different redirect URL after login & logout =
-Yes, with a standard license, you can set a different redirect URL to redirect to after Single Sign-On (SSO) login as well as after logout.
+Yes, with a standard license, you can set a different redirect URL to redirect to after Single Sign-On login as well as after logout.
 
 = For any other query/problem/request =
 Please email us for more information on this SSO solution at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>. You can also submit your query from plugin's configuration page.
@@ -219,6 +211,20 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.26.17 =
+* Removed Cyber Monday sale advertise
+
+= 6.26.16 =
+* Added WordPress 6.9 Compatibility
+* Added Cyber Monday sale advertise
+
+= 6.26.15 =
+* Added timestamp to SSO link to prevent caching 
+* Fixed incorrect redirection after SSO caused by an invalid URL stored in the database 
+* Corrected SSLverify argument in remote requests to prevent against MITM 
+* Updated class name prefixes for improved consistency and compatibility
+* Added BFCM sale advertise
+
 = 6.26.14 =
 * Fixed cookie naming error
 
@@ -827,6 +833,20 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+= 6.26.17 =
+* Removed Cyber Monday sale advertise
+
+= 6.26.16 =
+* Added WordPress 6.9 Compatibility
+* Added Cyber Monday sale advertise
+
+= 6.26.15 =
+* Added timestamp to SSO link to prevent caching 
+* Fixed incorrect redirection after SSO caused by an invalid URL stored in the database 
+* Corrected SSLverify argument in remote requests to prevent against MITM 
+* Updated class name prefixes for improved consistency and compatibility
+* Added BFCM sale advertise
+
 = 6.26.14 =
 * Fixed cookie naming error
 

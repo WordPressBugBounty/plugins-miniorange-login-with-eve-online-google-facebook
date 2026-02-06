@@ -468,7 +468,6 @@ opacity: 1;
 <script type="text/javascript">
 	function upgradeform(planType) {
 				if(planType === "") {
-				   
 					location.href = "https://wordpress.org/plugins/miniorange-login-with-eve-online-google-facebook/";
 					return;
 				} else {	

@@ -41,6 +41,6 @@ if ( ! defined( 'MO_OAUTH_CLIENT_DISCOUNT_URL' ) ) {
 }
 
 if ( ! defined( 'MO_OAUTH_LOG_DIR' ) && function_exists( 'wp_upload_dir' ) ) {
-	$upload_dir = wp_upload_dir();
-	define( 'MO_OAUTH_LOG_DIR', $upload_dir['basedir'] . '/miniorange-login-with-eve-online-google-facebook' );
+	$mooauth_upload_dir = wp_upload_dir();
+	define( 'MO_OAUTH_LOG_DIR', $mooauth_upload_dir['basedir'] . '/miniorange-login-with-eve-online-google-facebook' );
 }

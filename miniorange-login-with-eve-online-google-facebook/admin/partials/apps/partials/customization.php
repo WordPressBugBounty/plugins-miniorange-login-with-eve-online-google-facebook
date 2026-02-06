@@ -243,7 +243,7 @@ function mooauth_client_customization_ui() {
 				<td><input class="mo_oauth_textfield_css mo_oauth_input_disabled" style="border: 1px solid ; width: 350px;" type="text" placeholder="SSO with : "/></td>
 			   
 	</tr>
-</table>    
+</table>
 <hr>
 <table class="mo_oauth_custom_settings_table" id="mo_custom_icon_table">
 <tr>

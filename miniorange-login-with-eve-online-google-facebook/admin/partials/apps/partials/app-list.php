@@ -124,7 +124,7 @@ function mooauth_client_get_app_list() {
 					<script>
 						function mooauth_testConfiguration(){
 							var mo_oauth_app_name = jQuery("#mo_oauth_app_nameid").html();
-							var myWindow = window.open('<?php echo esc_attr( site_url() ); ?>' + '/?option=testattrmappingconfig&app='+mo_oauth_app_name, "Test Attribute Configuration", "width=600, height=600");
+							var myWindow = window.open('<?php echo esc_attr( site_url() ); ?>' + '/?option=testattrmappingconfig&app=' + encodeURIComponent(mo_oauth_app_name) + '&time=' + Date.now(), "Test Attribute Configuration", "width=600, height=600");
 							}
 					</script>
 					<?php

@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Check if the autoloader is already registered to prevent duplicates.
-if ( ! function_exists( 'mo_plugins_adv_classes_autoloader' ) ) {
+if ( ! function_exists( 'mooauth_plugins_adv_classes_autoloader' ) ) {
 
 	/**
 	 * Autoload the files required for the advertisement framework.
@@ -20,8 +20,8 @@ if ( ! function_exists( 'mo_plugins_adv_classes_autoloader' ) ) {
 	 *
 	 * @return void
 	 */
-	function mo_plugins_adv_classes_autoloader( $class ) {
-		$namespace = 'MO_Plugins';
+	function mooauth_plugins_adv_classes_autoloader( $class ) {
+		$namespace = 'MOOAuth_Plugins';
 
 		// Ensure the class belongs to the specified namespace.
 		if ( strpos( $class, $namespace ) !== 0 ) {
@@ -52,5 +52,5 @@ if ( ! function_exists( 'mo_plugins_adv_classes_autoloader' ) ) {
 	}
 
 	// Register the autoloader function.
-	spl_autoload_register( 'mo_plugins_adv_classes_autoloader' );
+	spl_autoload_register( 'mooauth_plugins_adv_classes_autoloader' );
 }

@@ -38,7 +38,8 @@ class MO_OAuth_Client_Support {
 				$config_app_usecase_present = true;
 			}
 		}
-		if ( $config_app_usecase_present ) {?>
+		if ( $config_app_usecase_present ) {
+			?>
 		<div id="mo_support_layout" class="mo_support_layout mo_oauth_outer_div">
 		<div class="mo_oauth_usecase_discription_container">
 				<div class="mo_oauth_usecase_discription_main_card" style="padding:5px 10px;"> 

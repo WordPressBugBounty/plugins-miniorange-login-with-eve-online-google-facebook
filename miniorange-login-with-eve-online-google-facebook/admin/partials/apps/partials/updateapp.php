@@ -337,7 +337,7 @@ function mooauth_client_update_app_page( $appname ) {
 
 		function mooauth_testConfiguration(){
 			var mo_oauth_app_name = jQuery("#mo_oauth_app_nameid").val();
-			var myWindow = window.open('<?php echo esc_attr( site_url() ); ?>' + '/?option=testattrmappingconfig&app='+mo_oauth_app_name, "Test Attribute Configuration", "width=600, height=600");
+			var myWindow = window.open('<?php echo esc_attr( site_url() ); ?>' + '/?option=testattrmappingconfig&app=' + mo_oauth_app_name + '&time=' + Date.now(), "Test Attribute Configuration", "width=600, height=600");
 			/*try {
 				while(1) {
 					if(myWindow.closed()) {

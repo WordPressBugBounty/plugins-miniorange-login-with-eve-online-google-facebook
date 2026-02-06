@@ -11,7 +11,7 @@
 /**
  * Class for handling FAQ
  */
-class MO_OAuth_Client_Faq {
+class MOOAuth_Login_Client_Faq {
 
 	/**
 	 * Call internal FAQ function to display FAQ page
