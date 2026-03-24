@@ -4,7 +4,7 @@ Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
 Tested up to: 6.9
 Requires PHP: 7.0
-Stable tag: 6.26.17
+Stable tag: 6.26.18
 License: Expat
 License URI: https://plugins.miniorange.com/mit-license
 
@@ -120,10 +120,10 @@ This WordPress Single Sign-On plugin enables Discord login into WordPress. It su
 The WordPress Single Sign-On (OAuth / OpenID Connect SSO) plugin works with Keycloak to enable SSO on your WordPress site. It also lets WordPress use Keycloak access tokens to call external services. In addition, the plugin supports role-based access control (RBAC), so you can map Keycloak roles to WordPress roles and capabilities.
 
 **Ping Federate SSO**
-Oauth Single sign-on plugin enables Login to WordPress using PingFederate. It supports Single Sign-On  with authorized access to Ping REST APIs via access tokens or bearer tokens, ensuring seamless SSO integration and secure interactions with PingFederate.
+OAuth Single sign-on plugin enables Login to WordPress using PingFederate. It supports Single Sign-On  with authorized access to Ping REST APIs via access tokens or bearer tokens, ensuring seamless SSO integration and secure interactions with PingFederate.
 
 **Clever SSO**
-Oauth Single sign-on plugin supports WordPress Login with Clever for users (teachers, students, admins) and integrates with LearnDash to sync lessons and assignments. It also provides SSO with other IDPs like ClassLink, Google Classroom, and Canvas, as well as any Identity Provider (SAML, OAuth, OpenID Connect, Active Directory, databases) via miniOrange IDP.
+OAuth Single sign-on plugin supports WordPress Login with Clever for users (teachers, students, admins) and integrates with LearnDash to sync lessons and assignments. It also provides SSO with other IDPs like ClassLink, Google Classroom, and Canvas, as well as any Identity Provider (SAML, OAuth, OpenID Connect, Active Directory, databases) via miniOrange IDP.
 
 
 = FREE VERSION FEATURES =
@@ -211,6 +211,11 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.26.18 =
+* Fixed client IP detection in multi-proxy setups
+* Fixed error when configuring an invalid UserInfo endpoint
+* Fixed Debug log unexpected character issue.
+
 = 6.26.17 =
 * Removed Cyber Monday sale advertise
 
@@ -833,6 +838,11 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+= 6.26.18 =
+* Fixed client IP detection in multi-proxy setups
+* Fixed error when configuring an invalid UserInfo endpoint
+* Fixed Debug log unexpected character issue.
+
 = 6.26.17 =
 * Removed Cyber Monday sale advertise
 

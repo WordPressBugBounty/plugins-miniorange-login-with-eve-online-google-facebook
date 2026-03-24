@@ -205,8 +205,8 @@ class MO_OAuth_Handler {
 
 		if ( is_wp_error( $response ) ) {
 			MOOAuth_Debug::mo_oauth_log( 'Invalid response recieved while fetching resource owner details' );
-			MOOAuth_Debug::mo_oauth_log( $response );
-			wp_die( esc_html( $response ) );
+			MOOAuth_Debug::mo_oauth_log( $response->get_error_message() );
+			wp_die( esc_html( $response->get_error_message() ) );
 		}
 
 		$response = $response['body'];

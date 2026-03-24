@@ -132,6 +132,10 @@
 	"Battle.net": {
 		"label":"battle.net", "type":"oauth", "image":"battlenet.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://oauth.battle.net/authorize", "token": "https://oauth.battle.net/token", "userinfo": "https://oauth.battle.net/userinfo", "guide":"", "logo_class":"fa fa-lock", "video":"", "send_header":"1", "send_body":"0"
 	},
+	"imisCloud": {
+		"label":"iMIS Cloud", "type":"oauth", "image":"imiscloud.png", "scope": "openid email profile", "domain": "", "discovery":"", "authorize": "https://{your-domain}/openid/authenticate", "token": "https://{your-domain}/openid/token", "userinfo": "https://{your-domain}/openid/userinfo", "guide":"https://plugins.miniorange.com/imis-oauth-and-openid-connect-single-sign-on-sso", "logo_class":"fa fa-lock"
+	, "video":"", "send_header":"1", "send_body":"0"
+	},
 	"gapps": {
 		"label":"Google", "type":"openidconnect", "image":"google.png", "scope": "openid profile email", "domain":"", "avl_domain":"", "discovery":"", "authorize": "https://accounts.google.com/o/oauth2/auth", "token": "https://www.googleapis.com/oauth2/v4/token", "userinfo": "https://www.googleapis.com/oauth2/v1/userinfo", "guide":"https://plugins.miniorange.com/google-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-google-plus"
 	, "video":"https://youtu.be/fpOewMgaQgc", "send_header":"1", "send_body":"0"

@@ -43,7 +43,9 @@ class MO_OAuth_Utils {
 		);
 
 		$context = stream_context_create( $context_options );
-		$client  = @stream_socket_client(
+
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- stream_socket_client() can emit warnings on expected SSL/connection failures; failure is handled via false and $errno/$errstr.
+		$client = @stream_socket_client(
 			"ssl://{$host}:{$port}",
 			$errno,
 			$errstr,
@@ -53,6 +55,15 @@ class MO_OAuth_Utils {
 		);
 
 		if ( false === $client ) {
+			if ( class_exists( 'MOOAuth_Debug' ) && ( 0 !== $errno || '' !== $errstr ) ) {
+				MOOAuth_Debug::mo_oauth_log(
+					sprintf(
+						'SSL Certificate Check: Connection failed. errno: %d, errstr: %s',
+						$errno,
+						$errstr
+					)
+				);
+			}
 			return false;
 		}
 

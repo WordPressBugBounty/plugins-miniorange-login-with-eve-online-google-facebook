@@ -31,6 +31,19 @@ class MOOAuth {
 	}
 
 	/**
+	 * Sanitize log file content by stripping HTML tags while preserving plain text like "=>".
+	 *
+	 * @param string $content The log file content to sanitize.
+	 * @return string Sanitized content with HTML tags removed but plain text preserved.
+	 */
+	private function mo_oauth_sanitize_log_content( $content ) {
+		$sanitized = wp_kses( $content, array() );
+		$decoded = html_entity_decode( $sanitized, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+
+		return $decoded;
+	}
+
+	/**
 	 * Handle Client support script hooks
 	 */
 	public function mo_oauth_client_support_script_hook() {
@@ -458,6 +471,10 @@ class MOOAuth {
 			}
 			global $wp_filesystem;
 
+			$file_contents = $wp_filesystem->get_contents( $mo_filepath );
+			$sanitized_content = $this->mo_oauth_sanitize_log_content( $file_contents );
+			$content_length = strlen( $sanitized_content );
+
 			header( 'Content-Description: File Transfer' );
 			header( 'Content-Type: text/plain' );
 			header( 'Content-Disposition: attachment; filename="' . basename( $mo_filepath ) . '"' );
@@ -465,10 +482,10 @@ class MOOAuth {
 			header( 'Expires: 0' );
 			header( 'Cache-Control: must-revalidate' );
 			header( 'Pragma: public' );
-			header( 'Content-Length: ' . filesize( $mo_filepath ) );
+			header( 'Content-Length: ' . $content_length );
 
-			// Output the file contents using WP_Filesystem.
-			echo esc_html( $wp_filesystem->get_contents( $mo_filepath ) );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is sanitized with wp_kses in mo_oauth_sanitize_log_content().
+			echo $sanitized_content;
 			ob_flush();
 			flush();
 			exit;

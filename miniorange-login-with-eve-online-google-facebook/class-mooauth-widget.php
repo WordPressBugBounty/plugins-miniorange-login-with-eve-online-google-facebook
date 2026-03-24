@@ -99,8 +99,15 @@ class MOOAuth_Widget extends WP_Widget {
 	 * Redirect to SSO after clicking on button
 	 */
 	public function mo_oauth_start_session() {
-		if ( ! session_id() && ! mooauth_client_is_ajax_request() && ! mooauth_client_is_rest_api_call() ) {
-			@session_start();
+		if ( session_status() === PHP_SESSION_NONE && ! mooauth_client_is_ajax_request() && ! mooauth_client_is_rest_api_call() ) {
+			$session_path = session_save_path();
+			if ( empty( $session_path ) ) {
+				$session_path = sys_get_temp_dir();
+			}
+
+			if ( is_writable( $session_path ) ) {
+				session_start();
+			}
 		}
 
 		if ( isset( $_REQUEST['option'] ) && sanitize_text_field( wp_unslash( $_REQUEST['option'] ) ) === 'testattrmappingconfig' ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
@@ -115,10 +122,21 @@ class MOOAuth_Widget extends WP_Widget {
 	 * Destroy user session.
 	 */
 	public function mo_oauth_end_session() {
-		if ( ! session_id() ) {
-			@session_start();
+		if ( session_status() === PHP_SESSION_NONE ) {
+
+			$session_path = session_save_path();
+			if ( empty( $session_path ) ) {
+				$session_path = sys_get_temp_dir();
+			}
+
+			if ( is_writable( $session_path ) ) {
+				session_start();
+			}
 		}
-		@session_destroy();
+
+		if ( session_status() === PHP_SESSION_ACTIVE ) {
+			session_destroy();
+		}
 	}
 
 	/**
@@ -346,8 +364,16 @@ function mooauth_login_validate() {
 					$authorization_url = $authorization_url . '?' . http_build_query( $params );
 				}
 
-				if ( session_id() === '' || ! isset( $_SESSION ) ) {
-					@session_start();
+				if ( session_status() === PHP_SESSION_NONE ) {
+
+					$session_path = session_save_path();
+					if ( empty( $session_path ) ) {
+						$session_path = sys_get_temp_dir();
+					}
+
+					if ( is_writable( $session_path ) ) {
+						session_start();
+					}
 				}
 				$_SESSION['oauth2state'] = $state_cookie;
 				$_SESSION['appname']     = $appname;
@@ -375,8 +401,15 @@ function mooauth_login_validate() {
 						'domain'   => COOKIE_DOMAIN,
 					)
 				);
-				if ( session_id() === '' || ! isset( $_SESSION ) ) {
-					@session_start();
+				if ( session_status() === PHP_SESSION_NONE ) {
+					$session_path = session_save_path();
+					if ( empty( $session_path ) ) {
+						$session_path = sys_get_temp_dir();
+					}
+
+					if ( is_writable( $session_path ) ) {
+						session_start();
+					}
 				}
 				$_SESSION['oauth2state'] = $state_cookie;
 				$_SESSION['appname']     = $appname;
@@ -522,8 +555,16 @@ function mooauth_login_validate() {
 			exit;
 		}
 	} elseif ( ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/wp-json/moserver/token' ) === false && ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/oauthcallback' ) !== false || isset( $_REQUEST['code'] ) ) ) || ( ! empty( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'openid.ns' ) !== false ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-		if ( session_id() === '' || ! isset( $_SESSION ) ) {
-			@session_start();
+		if ( session_status() === PHP_SESSION_NONE ) {
+
+			$session_path = session_save_path();
+			if ( empty( $session_path ) ) {
+				$session_path = sys_get_temp_dir();
+			}
+
+			if ( is_writable( $session_path ) ) {
+				session_start();
+			}
 		}
 		MOOAuth_Debug::mo_oauth_log( 'OAuth plugin catched the flow, $_REQUEST array=>' );
 		MOOAuth_Debug::mo_oauth_log( $_REQUEST ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL.
@@ -552,7 +593,7 @@ function mooauth_login_validate() {
 					foreach ( $appslist as $key => $app ) {
 						MOOAuth_Debug::mo_oauth_log( 'Send State Value: ' );
 						MOOAuth_Debug::mo_oauth_log( $app['send_state'] );
-						if ( isset( $app['send_state'] ) && $app['send_state'] == true ) {
+						if ( isset( $app['send_state'] ) && true == $app['send_state'] ) {
 							$state_required = true;
 							break;
 						}
@@ -827,7 +868,7 @@ function mooauth_handle_user_registration( $username, $email = null ) {
 
 	$user_create_response = wp_create_user( $username, $random_password, $email );
 	if ( is_wp_error( $user_create_response ) ) {
-		wp_die( esc_attr( $user_create_response ) );
+		wp_die( esc_html( $user_create_response->get_error_message() ) );
 	}
 
 	$user = get_user_by( 'login', $username );
@@ -1039,6 +1080,10 @@ function mooauth_get_client_ip() {
 	} else {
 		$ipaddress = 'UNKNOWN';
 	}
+
+	$ips       = array_map( 'trim', explode( ',', $ipaddress ) );
+	$ipaddress = $ips[0];
+
 	return $ipaddress;
 }
 
