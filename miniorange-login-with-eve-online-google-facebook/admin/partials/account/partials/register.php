@@ -8,6 +8,9 @@
  * @link       https://miniorange.com
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Display the UI to login/register a user in miniOrange
  */

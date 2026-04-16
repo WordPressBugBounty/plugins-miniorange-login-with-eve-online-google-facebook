@@ -8,6 +8,9 @@
  * @link       https://miniorange.com
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * [Description MO_OAuth_Client]
  */

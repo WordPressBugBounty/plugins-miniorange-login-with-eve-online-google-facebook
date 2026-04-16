@@ -8,6 +8,9 @@
  * @link       https://miniorange.com
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Adding required files.
  */
@@ -28,6 +31,15 @@ class MOOAuth_Widget extends WP_Widget {
 		add_action( 'init', array( $this, 'mo_oauth_add_email_verification_option' ) );
 		add_action( 'wp_logout', array( $this, 'mo_oauth_end_session' ) );
 		add_action( 'login_form', array( $this, 'mo_oauth_wplogin_form_button' ) );
+		add_action( 'woocommerce_login_form_end', array( $this, 'mo_oauth_wplogin_form_button' ) );
+		add_action(
+			'wp_enqueue_scripts',
+			function() {
+				if ( apply_filters( 'miniorange_oauth_force_load_login_script', false ) ) {
+					$this->mo_oauth_load_login_script();
+				}
+			}
+		);
 		parent::__construct( 'mooauth_widget', MO_OAUTH_ADMIN_MENU, array( 'description' => __( 'Login to Apps with OAuth', 'miniorange-login-with-eve-online-google-facebook' ) ) );
 
 	}
@@ -70,9 +82,10 @@ class MOOAuth_Widget extends WP_Widget {
 				if ( isset( $app['show_on_login_page'] ) && 1 === $app['show_on_login_page'] ) {
 
 					$this->mo_oauth_wplogin_form_style();
-
 					echo '<br>';
-					echo '<h4>Connect with :</h4><br>';
+					if ( current_filter() === 'login_form' ) {
+						echo '<h4>Connect with :</h4><br>';
+					}
 					echo '<div class="row">';
 
 					$logo_class = $this->mo_oauth_client_login_button_logo( $app['appId'] );
@@ -104,8 +117,12 @@ class MOOAuth_Widget extends WP_Widget {
 			if ( empty( $session_path ) ) {
 				$session_path = sys_get_temp_dir();
 			}
-
-			if ( is_writable( $session_path ) ) {
+			global $wp_filesystem;
+			if ( empty( $wp_filesystem ) ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				WP_Filesystem();
+			}
+			if ( $wp_filesystem && $wp_filesystem->is_writable( $session_path ) ) {
 				session_start();
 			}
 		}
@@ -122,16 +139,9 @@ class MOOAuth_Widget extends WP_Widget {
 	 * Destroy user session.
 	 */
 	public function mo_oauth_end_session() {
+
 		if ( session_status() === PHP_SESSION_NONE ) {
-
-			$session_path = session_save_path();
-			if ( empty( $session_path ) ) {
-				$session_path = sys_get_temp_dir();
-			}
-
-			if ( is_writable( $session_path ) ) {
-				session_start();
-			}
+			session_start();
 		}
 
 		if ( session_status() === PHP_SESSION_ACTIVE ) {
@@ -365,15 +375,7 @@ function mooauth_login_validate() {
 				}
 
 				if ( session_status() === PHP_SESSION_NONE ) {
-
-					$session_path = session_save_path();
-					if ( empty( $session_path ) ) {
-						$session_path = sys_get_temp_dir();
-					}
-
-					if ( is_writable( $session_path ) ) {
-						session_start();
-					}
+					session_start();
 				}
 				$_SESSION['oauth2state'] = $state_cookie;
 				$_SESSION['appname']     = $appname;
@@ -402,14 +404,7 @@ function mooauth_login_validate() {
 					)
 				);
 				if ( session_status() === PHP_SESSION_NONE ) {
-					$session_path = session_save_path();
-					if ( empty( $session_path ) ) {
-						$session_path = sys_get_temp_dir();
-					}
-
-					if ( is_writable( $session_path ) ) {
-						session_start();
-					}
+					session_start();
 				}
 				$_SESSION['oauth2state'] = $state_cookie;
 				$_SESSION['appname']     = $appname;
@@ -556,15 +551,7 @@ function mooauth_login_validate() {
 		}
 	} elseif ( ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/wp-json/moserver/token' ) === false && ! isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/oauthcallback' ) !== false || isset( $_REQUEST['code'] ) ) ) || ( ! empty( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'openid.ns' ) !== false ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
 		if ( session_status() === PHP_SESSION_NONE ) {
-
-			$session_path = session_save_path();
-			if ( empty( $session_path ) ) {
-				$session_path = sys_get_temp_dir();
-			}
-
-			if ( is_writable( $session_path ) ) {
-				session_start();
-			}
+			session_start();
 		}
 		MOOAuth_Debug::mo_oauth_log( 'OAuth plugin catched the flow, $_REQUEST array=>' );
 		MOOAuth_Debug::mo_oauth_log( $_REQUEST ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL.
@@ -816,6 +803,7 @@ function mooauth_login_validate() {
 							'user_password' => $password,
 						);
 						set_transient( $token, $config );
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 						do_action( 'mo_hack_login_session_redirect', $user, $password, $token, $redirect_to );
 					}
 					$user = get_user_by( 'ID', $user->ID );

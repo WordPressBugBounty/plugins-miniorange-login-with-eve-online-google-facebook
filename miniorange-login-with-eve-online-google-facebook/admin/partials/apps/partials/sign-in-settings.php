@@ -8,6 +8,9 @@
  * @link       https://miniorange.com
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Display Sign in Settings UI
  */

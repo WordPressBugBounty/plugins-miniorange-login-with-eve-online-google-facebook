@@ -8,6 +8,9 @@
  * @link       https://miniorange.com
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * When a user attempts to register with an already registered email address, display the UI for logging in with miniOrange.
  */

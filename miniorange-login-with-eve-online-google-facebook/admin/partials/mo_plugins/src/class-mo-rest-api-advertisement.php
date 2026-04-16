@@ -10,6 +10,9 @@
 
 namespace MOOAuth_Plugins;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 use MOOAuth_Debug;
 
 /**

@@ -8,6 +8,9 @@
  * @link       https://miniorange.com
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Main class for handling and processing the Front end data.
  */
@@ -38,7 +41,7 @@ class MOOAuth {
 	 */
 	private function mo_oauth_sanitize_log_content( $content ) {
 		$sanitized = wp_kses( $content, array() );
-		$decoded = html_entity_decode( $sanitized, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$decoded   = html_entity_decode( $sanitized, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 
 		return $decoded;
 	}
@@ -176,6 +179,7 @@ class MOOAuth {
 	 * Load text domain.
 	 */
 	public function mo_load_plugin_textdomain() {
+		// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound
 		load_plugin_textdomain(
 			'miniorange-login-with-eve-online-google-facebook',
 			false,
@@ -343,6 +347,7 @@ class MOOAuth {
 	 * Handle widget text domain.
 	 */
 	public function mo_login_widget_text_domain() {
+		// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound
 		load_plugin_textdomain( 'miniorange-login-with-eve-online-google-facebook', false, basename( __DIR__ ) . DIRECTORY_SEPARATOR . 'languages' );
 	}
 
@@ -471,9 +476,9 @@ class MOOAuth {
 			}
 			global $wp_filesystem;
 
-			$file_contents = $wp_filesystem->get_contents( $mo_filepath );
+			$file_contents     = $wp_filesystem->get_contents( $mo_filepath );
 			$sanitized_content = $this->mo_oauth_sanitize_log_content( $file_contents );
-			$content_length = strlen( $sanitized_content );
+			$content_length    = strlen( $sanitized_content );
 
 			header( 'Content-Description: File Transfer' );
 			header( 'Content-Type: text/plain' );

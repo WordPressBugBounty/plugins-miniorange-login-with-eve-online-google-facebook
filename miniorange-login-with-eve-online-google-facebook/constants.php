@@ -8,6 +8,9 @@
  * @link       https://miniorange.com
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 if ( ! defined( 'MO_OAUTH_PLUGIN_NAME' ) ) {
 	define( 'MO_OAUTH_PLUGIN_NAME', 'OAuth Single Sign On' );
 }
