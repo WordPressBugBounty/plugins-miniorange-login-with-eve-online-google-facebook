@@ -76,20 +76,44 @@ class MOOAuth_Widget extends WP_Widget {
 	public function mo_oauth_wplogin_form_button() {
 		$appslist = get_option( 'mo_oauth_apps_list' );
 		if ( is_array( $appslist ) && count( $appslist ) > 0 ) {
-			$this->mo_oauth_load_login_script();
+			$scripts_loaded = false;
+			$show_button    = false;
+
 			foreach ( $appslist as $key => $app ) {
+				$show_button = false;
 
-				if ( isset( $app['show_on_login_page'] ) && 1 === $app['show_on_login_page'] ) {
-
-					$this->mo_oauth_wplogin_form_style();
-					echo '<br>';
-					if ( current_filter() === 'login_form' ) {
-						echo '<h4>Connect with :</h4><br>';
+				// WordPress Login Form.
+				if ( 'login_form' === current_filter() ) {
+					$show_on_login_page = isset( $app['show_on_login_page'] ) && 1 === (int) $app['show_on_login_page'];
+					if ( $show_on_login_page ) {
+						if ( ! $scripts_loaded ) {
+							$this->mo_oauth_load_login_script();
+							$this->mo_oauth_wplogin_form_style();
+							$scripts_loaded = true;
+							echo '<h4 class="mo_oauth_connect_heading">' . esc_html__( 'Connect with :', 'miniorange-login-with-eve-online-google-facebook' ) . '</h4>';
+						}
+						$show_button = true;
 					}
+				}
+
+				// WooCommerce Login Form.
+				if ( 'woocommerce_login_form_end' === current_filter() ) {
+					$show_on_woocommerce = isset( $app['mo_oauth_show_on_woocommerce_login_form'] ) && 'true' === $app['mo_oauth_show_on_woocommerce_login_form'];
+					if ( $show_on_woocommerce ) {
+						if ( ! $scripts_loaded ) {
+							$this->mo_oauth_load_login_script();
+							$this->mo_oauth_wplogin_form_style();
+							$scripts_loaded = true;
+						}
+						$show_button = true;
+					}
+				}
+
+				// Render button.
+				if ( $show_button ) {
+					echo '<br>';
 					echo '<div class="row">';
-
 					$logo_class = $this->mo_oauth_client_login_button_logo( $app['appId'] );
-
 					echo '<a style="text-decoration:none" href="javascript:void(0)" onClick="moOAuthLoginNew(\'' . esc_attr( $key ) . '\');"><div class="mo_oauth_login_button mo_oauth_login_button_text"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon"></i>Login with ' . esc_attr( ucwords( $key ) ) . '</div></a>';
 					echo '</div><br><br>';
 				}

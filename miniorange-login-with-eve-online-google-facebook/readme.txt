@@ -2,9 +2,9 @@
 Contributors: cyberlord92
 Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenId
 Requires at least: 3.0.1
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 6.26.19
+Stable tag: 6.26.20
 License: Expat
 License URI: https://plugins.miniorange.com/mit-license
 
@@ -211,6 +211,11 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO
 
 == Changelog ==
+= 6.26.20 =
+* Added AI / MCP Abilities API integration (8 abilities for configuring SSO, diagnosing errors, and submitting support queries via AI agents)
+* Added AI Setup tab in Troubleshooting page with instant-save toggle
+* Security fixes
+
 = 6.26.19 =
 * Added filter to load SSO button on WooCommerce login page
 * Added filter to load SSO button on Blocksy theme login page
@@ -843,6 +848,11 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+= 6.26.20 =
+* Added AI / MCP Abilities API integration (8 abilities for configuring SSO, diagnosing errors, and submitting support queries via AI agents)
+* Added AI Setup tab in Troubleshooting page with instant-save toggle
+* Security fixes
+
 = 6.26.19 =
 * Added filter to load SSO button on WooCommerce login page
 * Added filter to load SSO button on Blocksy theme login page

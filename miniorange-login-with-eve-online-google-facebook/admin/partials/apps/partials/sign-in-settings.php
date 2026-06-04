@@ -19,6 +19,8 @@ function mooauth_client_sign_in_settings_ui() {
 	$mo_oauth_email_verify_check  = $mo_oauth_email_verify_config['mo_oauth_email_verify_check'];
 	$mo_oauth_email_verify_key    = $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'];
 	$mo_oauth_email_verify_value  = $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'];
+	$appslist                     = get_option( 'mo_oauth_apps_list', array() );
+	$first_app                    = ! empty( $appslist ) ? reset( $appslist ) : null;
 	?>
 <div  id="wid-shortcode" class="mo_table_layout mo_oauth_attribute_page_font mo_oauth_outer_div">
 <div class="mo_oauth_customization_header"><div class="mo_oauth_attribute_map_heading" style="display: inline;"><b class="mo_oauth_position"><?php esc_html_e( 'Sign in options', 'miniorange-login-with-eve-online-google-facebook' ); ?></b></div><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >Know how this is useful</span><a style="text-decoration: none;" target="_blank" href="https://developers.miniorange.com/docs/oauth/wordpress/client/login-options" rel="noopener noreferrer">
@@ -39,6 +41,27 @@ function mooauth_client_sign_in_settings_ui() {
 			<?php esc_html_e( 'in WordPress pages or posts.', 'miniorange-login-with-eve-online-google-facebook' ); ?>
 		</li>
 	</ul>
+
+	<?php if ( ! empty( $appslist ) ) : ?>
+	<form id="mo_oauth_woocommerce_login_form" name="mo_oauth_woocommerce_login_form" method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=mo_oauth_settings&tab=signinsettings' ) ); ?>">
+		<?php wp_nonce_field( 'mo_oauth_woocommerce_login_form', 'mo_oauth_woocommerce_login_form_field' ); ?>
+		<input type="hidden" name="option" value="mo_oauth_woocommerce_login_settings" />
+		<h4><?php esc_html_e( 'Option 3: WooCommerce Login', 'miniorange-login-with-eve-online-google-facebook' ); ?></h4>
+		<ul>
+			<li>
+				<input type="checkbox" name="mo_oauth_show_on_woocommerce_login_form" class="mo_input_checkbox" id="mo_oauth_woocommerce_checkbox" value="true" 
+				<?php
+				if ( isset( $first_app['mo_oauth_show_on_woocommerce_login_form'] ) && 'true' === $first_app['mo_oauth_show_on_woocommerce_login_form'] ) {
+					echo 'checked';
+				}
+				?>
+				/>
+				<label for="mo_oauth_woocommerce_checkbox"><?php esc_html_e( 'Show a SSO button on WooCommerce login form', 'miniorange-login-with-eve-online-google-facebook' ); ?></label>
+			</li>
+		</ul>
+		<input type="submit" class="button button-primary button-large" value="<?php esc_html_e( 'Save Settings', 'miniorange-login-with-eve-online-google-facebook' ); ?>">
+	</form>
+	<?php endif; ?>
 </div>
 
 <div  id="wid-shortcode" class="mo_table_layout mo_oauth_attribute_page_font mo_oauth_outer_div">

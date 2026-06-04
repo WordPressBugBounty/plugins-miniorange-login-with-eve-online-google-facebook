@@ -31,6 +31,45 @@ class MOOAuth {
 		add_action( 'check_if_wp_rest_apis_are_open', array( $this, 'mo_oauth_scheduled_task' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_debug_log_ajax_hook' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_client_support_script_hook' ) );
+		add_action( 'wp_ajax_mo_oauth_abilities_toggle_ajax', array( $this, 'mo_oauth_abilities_toggle_ajax' ) );
+	}
+
+	/**
+	 * AJAX handler for the AI / MCP Abilities API toggle on the Troubleshoot tab.
+	 *
+	 * Returns JSON: { success: bool, enabled: bool, message: string }.
+	 */
+	public function mo_oauth_abilities_toggle_ajax() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json( array(
+				'success' => false,
+				'message' => 'forbidden',
+			), 403 );
+			return;
+		}
+		if ( ! isset( $_POST['mo_oauth_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mo_oauth_nonce'] ) ), 'mo_oauth_abilities_toggle_nonce' ) ) {
+			wp_send_json( array(
+				'success' => false,
+				'message' => 'invalid_nonce',
+			), 400 );
+			return;
+		}
+		if ( version_compare( get_bloginfo( 'version' ), '6.9', '<' ) ) {
+			update_option( 'mo_oauth_enable_abilities_api', 'false' );
+			wp_send_json( array(
+				'success' => false,
+				'enabled' => false,
+				'message' => 'Requires WordPress 6.9 or newer.',
+			) );
+			return;
+		}
+		$enable = isset( $_POST['enable'] ) && 'true' === sanitize_text_field( wp_unslash( $_POST['enable'] ) );
+		update_option( 'mo_oauth_enable_abilities_api', $enable ? 'true' : 'false' );
+		wp_send_json( array(
+			'success' => true,
+			'enabled' => $enable,
+			'message' => $enable ? 'Abilities API enabled. AI agents can now call mo-oauth-client/* abilities.' : 'Abilities API disabled.',
+		) );
 	}
 
 	/**
@@ -771,13 +810,23 @@ class MOOAuth {
 				}
 			}
 		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_email_verified' && isset( $_REQUEST['mo_oauth_email_verified_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_email_verified_form_field'] ) ), 'mo_oauth_email_verified_form' ) ) {
-			$email_verify_check                              = isset( $_POST['mo_oauth_email_verify_check'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_email_verify_check'] ) ) ) : '';
-			$email_verify_key                                = isset( $_POST['mo_oauth_idp_email_verified_key'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_idp_email_verified_key'] ) ) ) : '';
-			$email_verify_value                              = isset( $_POST['mo_oauth_idp_email_verified_value'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_idp_email_verified_value'] ) ) ) : '';
-			$app_config['mo_oauth_email_verify_check']       = $email_verify_check;
-			$app_config['mo_oauth_idp_email_verified_key']   = $email_verify_key;
-			$app_config['mo_oauth_idp_email_verified_value'] = $email_verify_value;
+			$email_verify_check                                    = isset( $_POST['mo_oauth_email_verify_check'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_email_verify_check'] ) ) ) : '';
+			$email_verify_key                                      = isset( $_POST['mo_oauth_idp_email_verified_key'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_idp_email_verified_key'] ) ) ) : '';
+			$email_verify_value                                    = isset( $_POST['mo_oauth_idp_email_verified_value'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_idp_email_verified_value'] ) ) ) : '';
+			$app_config['mo_oauth_email_verify_check']             = $email_verify_check;
+			$app_config['mo_oauth_idp_email_verified_key']         = $email_verify_key;
+			$app_config['mo_oauth_idp_email_verified_value']       = $email_verify_value;
 			update_option( 'mo_oauth_login_settings_option', $app_config );
+
+		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_woocommerce_login_settings' && isset( $_REQUEST['mo_oauth_woocommerce_login_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_woocommerce_login_form_field'] ) ), 'mo_oauth_woocommerce_login_form' ) ) {
+			if ( current_user_can( 'manage_options' ) ) {
+				$app_list = get_option( 'mo_oauth_apps_list', array() );
+				if ( ! empty( $app_list ) ) {
+					$app_name                                                         = key( $app_list );
+					$app_list[ $app_name ]['mo_oauth_show_on_woocommerce_login_form'] = isset( $_POST['mo_oauth_show_on_woocommerce_login_form'] ) ? 'true' : 'false';
+					update_option( 'mo_oauth_apps_list', $app_list );
+				}
+			}
 
 		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_attribute_mapping' && isset( $_REQUEST['mo_oauth_attr_role_mapping_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_attr_role_mapping_form_field'] ) ), 'mo_oauth_attr_role_mapping_form' ) ) {
 
