@@ -196,7 +196,7 @@ Yes, You can now activate the license on your new domain to enable WordPress Sin
 Yes, with a standard license, you can set a different redirect URL to redirect to after Single Sign-On login as well as after logout.
 
 = For any other query/problem/request =
-Please email us for more information on this SSO solution at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>. You can also submit your query from plugin's configuration page.
+Please email us for more information on this SSO solution at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> or <a href="http://miniorange.com/contact" target="_blank">Contact us</a>. You can also submit your query from plugin's configuration page<a href="https://patchstack.com/database/vdp/847ee830-f4e9-4837-928e-9f27d562f23e" target="_blank">.</a>
 
 
 
