@@ -36,32 +36,13 @@ function mooauth_client_setup_callback() {
 	            <label>Callback URL</label> 
 	            <input title="Copy this Redirect URI and provide to your provider"
 				 type="text" class="mo-normal-text" id="callbackurl" name="url" value="' . esc_url_raw( site_url() ) . '" readonly="true"> 
-	           <div class="mo_oauth_tooltip" style="display: inline;"><span class="mo_tooltiptext" style="position: absolute;top: -2rem" id="moTooltip"></span><i class="fa fa-clipboard fa-border" style="font-size:20px; align-items: center;vertical-align: middle; cursor:pointer" aria-hidden="true" onclick="mooauth_copyUrl()" onmouseout="mooauth_outFunc()"></i></div>
+	           <div class="mo_oauth_tooltip mo-w-tooltip-inline"><span class="mo_tooltiptext mo-w-tooltip-abs" id="moTooltip"></span><i class="fa fa-clipboard fa-border mo-w-clipboard-icon" aria-hidden="true" onclick="mooauth_copyUrl()" onmouseout="mooauth_outFunc()"></i></div>
 	            <div class="description">
 	                <p>
 						"Copy below Callback URL (Redirect URI) and configure it in your OAuth/OIDC Provider.
 	                </p>                
 	            </div>
 	        </div>';?>
-			<script type="text/javascript">
-			function mooauth_outFunc() {
-				var tooltip = document.getElementById("moTooltip");
-				setTimeout(function() {
-				tooltip.innerText = "";
-				}, 3000);
-			}
-
-			function mooauth_copyUrl() {
-				var copyText = document.getElementById("callbackurl");
-				mooauth_outFunc();
-				copyText.select();
-				copyText.setSelectionRange(0, 99999); 
-				document.execCommand("copy");
-				var tooltip = document.getElementById("moTooltip");
-				tooltip.innerText  = "Copied";
-
-			}
-		</script>
 	<?php
 }
 

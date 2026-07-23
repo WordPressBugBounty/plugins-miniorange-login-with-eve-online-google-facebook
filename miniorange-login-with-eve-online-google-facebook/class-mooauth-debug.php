@@ -48,7 +48,7 @@ class MOOAuth_Debug {
 	 */
 	public static function get_log_file_path() {
 
-		return MO_OAUTH_LOG_DIR . DIRECTORY_SEPARATOR . get_option( 'mo_oauth_debug' ) . '.log';
+		return mo_oauth_get_log_dir() . DIRECTORY_SEPARATOR . get_option( 'mo_oauth_debug' ) . '.log';
 	}
 
 	/**

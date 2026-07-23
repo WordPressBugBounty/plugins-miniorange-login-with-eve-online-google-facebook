@@ -23,8 +23,7 @@ function mooauth_client_show_default_apps() { ?>
 	<ul id="mo_oauth_client_default_apps">
 		<div id="mo_oauth_client_searchable_apps">
 		<?php
-			$defaultapps = wp_remote_get( plugin_dir_url( __FILE__ ) . 'defaultapps.json' );
-			$defaultapps = json_decode( wp_remote_retrieve_body( $defaultapps ) );
+			$defaultapps = MO_OAuth_Utils::get_default_apps();
 			$custom_apps = array();
 		foreach ( $defaultapps as $app_id => $application ) {
 			if ( 'other' === $app_id || 'openidconnect' === $app_id || 'oauth1' === $app_id ) {
@@ -46,14 +45,6 @@ function mooauth_client_show_default_apps() { ?>
 			?>
 		</div>
 	</ul>
-	<script>
-
-		jQuery("#mo_oauth_client_default_apps li").click(function(){
-			var appId = jQuery(this).data("appid");
-				window.location.href += "&appId="+appId;
-		});
-
-	</script>
 
 <?php }
 
@@ -64,7 +55,7 @@ function mooauth_client_show_default_apps() { ?>
  * @param mixed $current_app_id current app.
  */
 function mooauth_client_get_app( $current_app_id ) {
-	$defaultapps = wp_json_file_decode( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'defaultapps.json' );
+	$defaultapps = MO_OAuth_Utils::get_default_apps();
 	foreach ( $defaultapps as $app_id => $application ) {
 		if ( $app_id === $current_app_id ) {
 			$application->appId = $app_id; //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- Ignoring camel case because it is not a variable but the key inside JSON file which is in snake case.

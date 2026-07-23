@@ -25,13 +25,21 @@ class MOOAuth_Widget extends WP_Widget {
 	 * Initialzie widget parameters.
 	 */
 	public function __construct() {
-		update_option( 'host_name', 'https://login.xecurify.com' );
+		// Only write when the value actually needs to change — this constructor runs
+		// on every front-end/admin request (widgets_init instantiates the widget
+		// every time), so an unconditional update_option() here re-ran the write on
+		// every single page load.
+		if ( MO_OAUTH_HOSTNAME !== get_option( 'host_name' ) ) {
+			update_option( 'host_name', MO_OAUTH_HOSTNAME );
+		}
 		add_action( 'wp_enqueue_scripts', array( $this, 'mo_oauth_register_plugin_styles' ) );
 		add_action( 'init', array( $this, 'mo_oauth_start_session' ) );
 		add_action( 'init', array( $this, 'mo_oauth_add_email_verification_option' ) );
 		add_action( 'wp_logout', array( $this, 'mo_oauth_end_session' ) );
 		add_action( 'login_form', array( $this, 'mo_oauth_wplogin_form_button' ) );
-		add_action( 'woocommerce_login_form_end', array( $this, 'mo_oauth_wplogin_form_button' ) );
+		if ( class_exists( 'WooCommerce' ) ) {
+			add_action( 'woocommerce_login_form_end', array( $this, 'mo_oauth_wplogin_form_button' ) );
+		}
 		add_action(
 			'wp_enqueue_scripts',
 			function() {
@@ -136,17 +144,24 @@ class MOOAuth_Widget extends WP_Widget {
 	 * Redirect to SSO after clicking on button
 	 */
 	public function mo_oauth_start_session() {
-		if ( session_status() === PHP_SESSION_NONE && ! mooauth_client_is_ajax_request() && ! mooauth_client_is_rest_api_call() ) {
+		// Only start a PHP session on requests that are actually part of the SSO
+		// flow (redirect-out, IdP callback, or test-configuration). Starting one on
+		// every page view sends a PHPSESSID cookie plus no-cache headers (defeating
+		// full-page/proxy caching) and holds PHP's session-file lock, serializing
+		// concurrent requests from the same visitor.
+		$request_uri = ! empty( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$sso_option  = isset( $_REQUEST['option'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['option'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only used to decide whether this request is part of the SSO flow; no state is changed here.
+		$is_sso_flow = in_array( $sso_option, array( 'oauthredirect', 'testattrmappingconfig' ), true )
+			|| isset( $_REQUEST['code'] ) //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- IdP callback detection only; the value is not read here.
+			|| false !== strpos( $request_uri, '/oauthcallback' )
+			|| false !== strpos( $request_uri, 'openid.ns' );
+
+		if ( $is_sso_flow && session_status() === PHP_SESSION_NONE && ! mooauth_client_is_ajax_request() && ! mooauth_client_is_rest_api_call() ) {
 			$session_path = session_save_path();
 			if ( empty( $session_path ) ) {
 				$session_path = sys_get_temp_dir();
 			}
-			global $wp_filesystem;
-			if ( empty( $wp_filesystem ) ) {
-				require_once ABSPATH . 'wp-admin/includes/file.php';
-				WP_Filesystem();
-			}
-			if ( $wp_filesystem && $wp_filesystem->is_writable( $session_path ) ) {
+			if ( is_writable( $session_path ) ) { //phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- This checks the PHP session save path, not a WordPress file; bootstrapping WP_Filesystem here would needlessly load the whole filesystem API on every single request.
 				session_start();
 			}
 		}
@@ -270,7 +285,15 @@ class MOOAuth_Widget extends WP_Widget {
 		}
 
 		function moOAuthLoginNew(app_name) {
-			window.location.href = '<?php echo esc_attr( site_url() ); ?>' + '/?option=oauthredirect&app_name=' + encodeURIComponent(app_name) + '&time=' + Date.now();
+			var redirectTo = new URLSearchParams(window.location.search).get('redirect_to');
+			if ( ! redirectTo && window.location.href.indexOf('wp-login.php') === -1 ) {
+				redirectTo = window.location.href;
+			}
+			var url = '<?php echo esc_url( site_url() ); ?>' + '/?option=oauthredirect&app_name=' + encodeURIComponent(app_name) + '&time=' + Date.now();
+			if ( redirectTo ) {
+				url += '&redirect_to=' + encodeURIComponent(redirectTo);
+			}
+			window.location.href = url;
 		}
 	</script>
 		<?php
@@ -280,9 +303,43 @@ class MOOAuth_Widget extends WP_Widget {
 
 	/**
 	 * Register Plugin styles.
+	 *
+	 * style_login_widget.min.css only styles the widget's logged-in/"Howdy" state
+	 * (.login_wid) and the shortcode's premium-upsell fallback
+	 * (.mo_oauth_premium_option_text) — the login button itself is styled by
+	 * login-page.min.css, enqueued separately at the point it actually renders
+	 * (mo_oauth_wplogin_form_style()). So this stylesheet is only ever needed on
+	 * a page that actually renders the widget or the [mo_oauth_login] shortcode,
+	 * not on every front-end page view.
 	 */
 	public function mo_oauth_register_plugin_styles() {
+		if ( ! $this->mo_oauth_login_widget_or_shortcode_in_use() ) {
+			return;
+		}
 		wp_enqueue_style( 'style_login_widget', plugins_url( 'css/style_login_widget.min.css', __FILE__ ), array(), MO_OAUTH_CSS_JS_VERSION );
+	}
+
+	/**
+	 * Whether the current page is expected to render the login widget or the
+	 * [mo_oauth_login] shortcode.
+	 *
+	 * @return bool
+	 */
+	private function mo_oauth_login_widget_or_shortcode_in_use() {
+		if ( is_active_widget( false, false, 'mooauth_widget' ) ) {
+			return true;
+		}
+
+		if ( is_singular() ) {
+			$post = get_post();
+			if ( $post instanceof WP_Post && has_shortcode( $post->post_content, 'mo_oauth_login' ) ) {
+				return true;
+			}
+		}
+
+		// Escape hatch for shortcodes placed outside post_content (page builders,
+		// footer text widgets, etc.) that the checks above can't see.
+		return (bool) apply_filters( 'mo_oauth_force_load_widget_style', false );
 	}
 
 
@@ -315,12 +372,34 @@ function mooauth_login_validate() {
 			setcookie( 'mo_oauth_test', false, time() + 3600, '/', '', true, true );
 		}
 
+		$mo_oauth_redirect_to = ! empty( $_REQUEST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_REQUEST['redirect_to'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only a landing URL; validated below via wp_validate_redirect().
+		$mo_oauth_redirect_to = $mo_oauth_redirect_to ? wp_validate_redirect( $mo_oauth_redirect_to, '' ) : '';
+		if ( ! empty( $mo_oauth_redirect_to ) ) {
+			setcookie(
+				'mo_oauth_redirect_to',
+				$mo_oauth_redirect_to,
+				array(
+					'expires'  => time() + 300,
+					'httponly' => true,
+					'secure'   => is_ssl(),
+					'samesite' => 'Lax',
+					'path'     => COOKIEPATH,
+					'domain'   => COOKIE_DOMAIN,
+				)
+			);
+		}
+
 		if ( false === $appslist ) {
 			MOOAuth_Debug::mo_oauth_log( 'ERROR : Looks like you have not configured OAuth provider, please try to configure OAuth provider first' );
 			exit( 'Looks like you have not configured OAuth provider, please try to configure OAuth provider first' );
 		}
 
 		foreach ( $appslist as $key => $app ) {
+
+			// OIDC nonce: generated per-request for OpenID Connect apps only, to bind the ID token
+			// back to this specific authorization request and block replay of a captured token.
+			$is_oidc_app = isset( $app['apptype'] ) && 'openidconnect' === $app['apptype'];
+			$oidc_nonce  = $is_oidc_app ? bin2hex( \openssl_random_pseudo_bytes( 32 ) ) : '';
 
 			if ( $appname === $key && ( isset( $app['send_state'] ) !== true || $app['send_state'] | 'oauth1' === $app['appId'] || 'twitter' === $app['appId'] ) ) {
 
@@ -350,6 +429,10 @@ function mooauth_login_validate() {
 					$authorization_url = $authorization_url . '?client_id=' . $app['clientid'] . '&scope=' . $app['scope'] . '&redirect_uri=' . $app['redirecturi'] . '&response_type=code&state=' . $state;
 				}
 
+				if ( ! empty( $oidc_nonce ) ) {
+					$authorization_url .= '&nonce=' . $oidc_nonce;
+				}
+
 				setcookie(
 					'mo_oauth_sso_state',
 					$state_cookie,
@@ -362,6 +445,21 @@ function mooauth_login_validate() {
 						'domain'   => COOKIE_DOMAIN,
 					)
 				);
+
+				if ( ! empty( $oidc_nonce ) ) {
+					setcookie(
+						'mo_oauth_sso_nonce',
+						$oidc_nonce,
+						array(
+							'expires'  => time() + 300,   // 5 minutes
+							'httponly' => true,
+							'secure'   => is_ssl(),
+							'samesite' => 'Lax',
+							'path'     => COOKIEPATH,
+							'domain'   => COOKIE_DOMAIN,
+						)
+					);
+				}
 
 				if ( strpos( $authorization_url, 'apple' ) !== false ) {
 					$authorization_url = str_replace( 'response_type=code', 'response_type=code+id_token', $authorization_url );
@@ -415,6 +513,11 @@ function mooauth_login_validate() {
 				} else {
 					$authorization_url = $authorization_url . '?client_id=' . $app['clientid'] . '&scope=' . $app['scope'] . '&redirect_uri=' . $app['redirecturi'] . '&response_type=code';
 				}
+
+				if ( ! empty( $oidc_nonce ) ) {
+					$authorization_url .= '&nonce=' . $oidc_nonce;
+				}
+
 				setcookie(
 					'mo_oauth_sso_state',
 					$state_cookie,
@@ -427,6 +530,21 @@ function mooauth_login_validate() {
 						'domain'   => COOKIE_DOMAIN,
 					)
 				);
+
+				if ( ! empty( $oidc_nonce ) ) {
+					setcookie(
+						'mo_oauth_sso_nonce',
+						$oidc_nonce,
+						array(
+							'expires'  => time() + 300,   // 5 minutes
+							'httponly' => true,
+							'secure'   => is_ssl(),
+							'samesite' => 'Lax',
+							'path'     => COOKIEPATH,
+							'domain'   => COOKIE_DOMAIN,
+						)
+					);
+				}
 				if ( session_status() === PHP_SESSION_NONE ) {
 					session_start();
 				}
@@ -510,42 +628,47 @@ function mooauth_login_validate() {
 		if ( $user ) {
 			$user_id = $user->ID;
 
-			if ( in_array( 'administrator', $user->roles, true ) ) {
-				if ( ! $allow_admin_sso ) {
-					MOOAuth_Debug::mo_oauth_log( 'WPO004: Invalid Login attempt. Please login using email and password.' );
-					wp_die( 'WPO004: Invalid Login attempt. Please login using email and password.' );
-				} else {
-					$current_admin_email          = $user->user_email;
-					$mo_oauth_email_verify_config = get_option( 'mo_oauth_login_settings_option' );
-					$mo_oauth_email_verify_check  = $mo_oauth_email_verify_config['mo_oauth_email_verify_check'];
+			if ( in_array( 'administrator', $user->roles, true ) && ! $allow_admin_sso ) {
+				MOOAuth_Debug::mo_oauth_log( 'WPO004: Invalid Login attempt. Please login using email and password.' );
+				wp_die( 'WPO004: Invalid Login attempt. Please login using email and password.' );
+			}
 
-					if ( strtolower( $current_admin_email ) !== strtolower( $email ) ) {
-						MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
-						wp_die( 'Error : WPO01 Invalid login attempt.' );
-					}
+			// Whenever the IdP asserts an email for this login (email_attr is mapped),
+			// verify it against the matched account for EVERY user, not only
+			// administrators: matching solely on a claim value (username or email)
+			// with no cross-check would let a forged/mismatched claim log in as any
+			// existing account. This used to run only for administrators. App
+			// configs that map only a username attribute (no email_attr) have no
+			// email signal to check here and are unaffected, exactly as before.
+			if ( ! empty( $email_attr ) ) {
+				$current_user_email           = $user->user_email;
+				$mo_oauth_email_verify_config = get_option( 'mo_oauth_login_settings_option' );
+				$mo_oauth_email_verify_check  = isset( $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] ) ? $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] : false;
 
-					if ( $mo_oauth_email_verify_check ) {
+				if ( strtolower( $current_user_email ) !== strtolower( $email ) ) {
+					MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
+					wp_die( 'Error : WPO01 Invalid login attempt.' );
+				}
 
-						$idp_email_verified_key = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'] ) && '' !== $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
-						? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
-						: 'email_verified';
+				if ( $mo_oauth_email_verify_check ) {
 
-						$idp_email_verified_value = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'] ) && '' !== $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
-						? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
-						: '1';
+					$idp_email_verified_key = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'] ) && '' !== $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
+					? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
+					: 'email_verified';
 
-						if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
-							$email_verified = $resource_owner[ $idp_email_verified_key ];
-							if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
-								MOOAuth_Debug::mo_oauth_log( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
-								wp_die( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
-							}
+					$idp_email_verified_value = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'] ) && '' !== $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
+					? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
+					: '1';
+
+					if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
+						$email_verified = $resource_owner[ $idp_email_verified_key ];
+						if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
+							MOOAuth_Debug::mo_oauth_log( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
+							wp_die( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
 						}
 					}
 				}
-			}
 
-			if ( ! empty( $email_attr ) ) {
 				wp_update_user(
 					array(
 						'ID'         => $user_id,
@@ -568,7 +691,7 @@ function mooauth_login_validate() {
 			do_action( 'wp_login', $user->user_login, $user ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			MOOAuth_Debug::mo_oauth_log( 'User logged-in.' );
 
-			$redirect_to = home_url();
+			$redirect_to = mooauth_get_sso_redirect_to();
 
 			wp_safe_redirect( $redirect_to );
 			exit;
@@ -676,6 +799,15 @@ function mooauth_login_validate() {
 						if ( ! isset( $currentapp['send_body'] ) ) {
 							$currentapp['send_body'] = false;
 						}
+
+						// Read back the nonce bound to this authorization request (set in the redirect step
+						// above) and clear it immediately so it can't be reused against a second callback.
+						$expected_nonce = '';
+						if ( isset( $_COOKIE['mo_oauth_sso_nonce'] ) ) {
+							$expected_nonce = sanitize_text_field( wp_unslash( $_COOKIE['mo_oauth_sso_nonce'] ) );
+							setcookie( 'mo_oauth_sso_nonce', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+						}
+
 						$token_response = $mo_oauth_handler->get_id_token(
 							$currentapp['accesstokenurl'],
 							'authorization_code',
@@ -690,7 +822,12 @@ function mooauth_login_validate() {
 						$id_token = isset( $token_response['id_token'] ) ? $token_response['id_token'] : $token_response['access_token'];
 						MOOAuth_Debug::mo_oauth_log( 'ID Token => ' );
 						MOOAuth_Debug::mo_oauth_log( $id_token );
-						$resource_owner = $mo_oauth_handler->get_resource_owner_from_id_token( $id_token );
+						$resource_owner = $mo_oauth_handler->get_resource_owner_from_id_token(
+							$id_token,
+							isset( $currentapp['discovery'] ) ? $currentapp['discovery'] : '',
+							isset( $currentapp['clientid'] ) ? $currentapp['clientid'] : '',
+							$expected_nonce
+						);
 						MOOAuth_Debug::mo_oauth_log( 'Resource Owner Response => ' . wp_json_encode( $resource_owner ) );
 					}
 				} else {
@@ -764,42 +901,48 @@ function mooauth_login_validate() {
 				if ( $user ) {
 					$user_id = $user->ID;
 
-					if ( in_array( 'administrator', $user->roles, true ) ) {
-						if ( ! $allow_admin_sso ) {
-							MOOAuth_Debug::mo_oauth_log( 'WPO005: Invalid Login attempt. Please login using email and password.' );
-							wp_die( 'WPO005: Invalid Login attempt. Please login using email and password.' );
-						} else {
-							$current_admin_email          = $user->user_email;
-							$mo_oauth_email_verify_config = get_option( 'mo_oauth_login_settings_option' );
-							$mo_oauth_email_verify_check  = $mo_oauth_email_verify_config['mo_oauth_email_verify_check'];
+					if ( in_array( 'administrator', $user->roles, true ) && ! $allow_admin_sso ) {
+						MOOAuth_Debug::mo_oauth_log( 'WPO005: Invalid Login attempt. Please login using email and password.' );
+						wp_die( 'WPO005: Invalid Login attempt. Please login using email and password.' );
+					}
 
-							if ( strtolower( $current_admin_email ) !== strtolower( $email ) ) {
-								MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
-								wp_die( 'Error : WPO01 Invalid login attempt.' );
-							}
+					// Whenever the IdP asserts an email for this login (email_attr is
+					// mapped), verify it against the matched account for EVERY user,
+					// not only administrators: matching solely on a claim value
+					// (username or email) with no cross-check would let a
+					// forged/mismatched claim log in as any existing account. This
+					// used to run only for administrators. App configs that map only
+					// a username attribute (no email_attr) have no email signal to
+					// check here and are unaffected, exactly as before.
+					if ( ! empty( $email_attr ) ) {
+						$current_user_email           = $user->user_email;
+						$mo_oauth_email_verify_config = get_option( 'mo_oauth_login_settings_option' );
+						$mo_oauth_email_verify_check  = isset( $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] ) ? $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] : false;
 
-							if ( $mo_oauth_email_verify_check ) {
+						if ( strtolower( $current_user_email ) !== strtolower( $email ) ) {
+							MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
+							wp_die( 'Error : WPO01 Invalid login attempt.' );
+						}
 
-								$idp_email_verified_key = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'] )
-								? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
-								: 'email_verified';
+						if ( $mo_oauth_email_verify_check ) {
 
-								$idp_email_verified_value = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'] )
-								? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
-								: '1';
+							$idp_email_verified_key = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'] )
+							? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
+							: 'email_verified';
 
-								if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
-									$email_verified = $resource_owner[ $idp_email_verified_key ];
-									if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
-										MOOAuth_Debug::mo_oauth_log( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
-										wp_die( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
-									}
+							$idp_email_verified_value = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'] )
+							? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
+							: '1';
+
+							if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
+								$email_verified = $resource_owner[ $idp_email_verified_key ];
+								if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
+									MOOAuth_Debug::mo_oauth_log( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
+									wp_die( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
 								}
 							}
 						}
-					}
 
-					if ( ! empty( $email_attr ) ) {
 						wp_update_user(
 							array(
 								'ID'         => $user_id,
@@ -818,7 +961,7 @@ function mooauth_login_validate() {
 					wp_set_current_user( $user->ID );
 					wp_set_auth_cookie( $user->ID );
 
-					$redirect_to = home_url();
+					$redirect_to = mooauth_get_sso_redirect_to();
 					if ( has_action( 'mo_hack_login_session_redirect' ) ) {
 						$token    = mooauth_gen_rand_str();
 						$password = mooauth_gen_rand_str();
@@ -1048,7 +1191,7 @@ function mooauth_get_valid_html( $args = array() ) {
  * @return [type]
  */
 function mooauth_client_is_rest_api_call() {
-	return ! empty( $_SERVER['REQUEST_URI'] ) ? strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/wp-json' ) === false : '';
+	return ! empty( $_SERVER['REQUEST_URI'] ) ? strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/wp-json' ) !== false : false;
 }
 
 /**
@@ -1097,6 +1240,26 @@ function mooauth_get_client_ip() {
 	$ipaddress = $ips[0];
 
 	return $ipaddress;
+}
+
+/**
+ * Resolve where the user should be sent after a successful SSO login.
+ *
+ * @return string Safe redirect URL.
+ */
+function mooauth_get_sso_redirect_to() {
+	$redirect_to = home_url();
+
+	if ( ! empty( $_COOKIE['mo_oauth_redirect_to'] ) ) {
+		$stored = wp_validate_redirect( esc_url_raw( wp_unslash( $_COOKIE['mo_oauth_redirect_to'] ) ), '' );
+		if ( ! empty( $stored ) ) {
+			$redirect_to = $stored;
+		}
+		// One-time use: clear the stored URL now that we've consumed it.
+		setcookie( 'mo_oauth_redirect_to', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+	}
+
+	return $redirect_to;
 }
 
 /**

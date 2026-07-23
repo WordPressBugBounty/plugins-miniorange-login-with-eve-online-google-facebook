@@ -31,7 +31,50 @@ class MOOAuth {
 		add_action( 'check_if_wp_rest_apis_are_open', array( $this, 'mo_oauth_scheduled_task' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_debug_log_ajax_hook' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_client_support_script_hook' ) );
+		add_action( 'admin_init', array( $this, 'mo_oauth_disable_autoload_for_admin_only_options' ), 5 );
 		add_action( 'wp_ajax_mo_oauth_abilities_toggle_ajax', array( $this, 'mo_oauth_abilities_toggle_ajax' ) );
+	}
+
+	/**
+	 * One-time performance fix: several options are only ever read on wp-admin/AJAX
+	 * screens (debug log state, setup wizard scratch data, save-settings feedback
+	 * messages) but were being created with the default `autoload = yes`, meaning
+	 * they get loaded into the global "alloptions" cache on every single front-end
+	 * and admin request, whether or not the plugin is doing anything on that request.
+	 *
+	 * This re-saves each option (when present) with autoload disabled, without
+	 * changing its value. Runs once, guarded by a flag option.
+	 */
+	public function mo_oauth_disable_autoload_for_admin_only_options() {
+		if ( get_option( 'mo_oauth_admin_only_options_autoload_fixed' ) ) {
+			return;
+		}
+
+		$admin_only_options = array(
+			'mo_oauth_attr_name_list',
+			'mo_oauth_debug',
+			'message',
+			'mo_discovery_validation',
+			'mo_ajax_scopes_test',
+			'mo_oauth_setup_wizard_app',
+			'mo_oc_valid_discovery_ep',
+			'mo_oauth_client_custom_token_endpoint_no_csecret',
+			'mo_debug_check',
+			'mo_debug_time',
+		);
+
+		foreach ( $admin_only_options as $option_name ) {
+			$value = get_option( $option_name, null );
+			// update_option() no-ops (including the autoload column) when the value
+			// is unchanged, so an existing option's autoload flag can only be
+			// corrected by re-creating the row via delete_option() + add_option().
+			if ( null !== $value ) {
+				delete_option( $option_name );
+				add_option( $option_name, $value, '', 'no' );
+			}
+		}
+
+		update_option( 'mo_oauth_admin_only_options_autoload_fixed', true, 'no' );
 	}
 
 	/**
@@ -232,7 +275,7 @@ class MOOAuth {
 	public function mo_oauth_success_message() {
 		$class   = 'error';
 		$message = get_option( 'message' );
-		echo "<div style='display:flex; margin:15px 19px 0px 0px; border-radius:5px;' class='" . esc_attr( $class ) . "'><div><img style='margin-bottom:-12px' src='" . esc_url( plugin_dir_url( __FILE__ ) ) . "/images/mo_oauth_error.png' ></div><div><p> &nbsp;&nbsp;" . esc_attr( $message ) . '</p></div></div>';
+		echo "<div class='mo_oauth_admin_notice_flex " . esc_attr( $class ) . "'><div><img class='mo_oauth_admin_notice_img' src='" . esc_url( plugin_dir_url( __FILE__ ) . 'images/mo_oauth_error.png' ) . "' ></div><div><p> &nbsp;&nbsp;" . esc_attr( $message ) . '</p></div></div>';
 	}
 
 	/**
@@ -248,26 +291,8 @@ class MOOAuth {
 	public function mo_oauth_error_message() {
 		$class   = 'updated';
 		$message = get_option( 'message' );
-		echo "<div style='display:flex; margin:15px 19px 0px 0px; border-radius:5px;' class='" . esc_attr( $class ) . "'><div><img style='margin-bottom:-12px' src='" . esc_url( plugin_dir_url( __FILE__ ) ) . "/images/mo_oauth_success.png' ></div><div><p> &nbsp;&nbsp;" . esc_attr( $message ) . '</p></div></div>';
+		echo "<div class='mo_oauth_admin_notice_flex " . esc_attr( $class ) . "'><div><img class='mo_oauth_admin_notice_img' src='" . esc_url( plugin_dir_url( __FILE__ ) . 'images/mo_oauth_success.png' ) . "' ></div><div><p> &nbsp;&nbsp;" . esc_attr( $message ) . '</p></div></div>';
 	}
-
-	/*
-		*   Custom Intervals
-		*   Name             dispname                Interval
-		*   three_minutes    Every Three minutes     3  * MINUTE_IN_SECONDS (3 * 60)
-		*   five_minutes     Every Five minutes      5  * MINUTE_IN_SECONDS (5 * 60)
-		*   ten_minutes      Every Ten minutes       10 * MINUTE_IN_SECONDS (10 * 60)
-		*   three_days       Every Three days        3  * 24 * 60 * MINUTE_IN_SECONDS
-		*   five_days        Every Five days         5  * 24 * 60 * MINUTE_IN_SECONDS
-		*
-		*
-		*   Default Intervals
-		*   Name         dispname        Interval (in sec)
-		*   hourly       Once Hourly     3600 (1 hour)
-		*   twicedaily   Twice Daily     43200 (12 hours)
-		*   daily        Once Daily      86400 (1 day)
-		*   weekly       Once Weekly     604800 (1 week)
-	*/
 
 	/**
 	 * Set cron job
@@ -312,43 +337,6 @@ class MOOAuth {
 
 
 	/**
-	 * Add cron schedules.
-	 *
-	 * @param mixed $schedules cron schedules.
-	 */
-	public function add_cron_interval( $schedules ) {
-
-		if ( isset( $schedules['three_minutes'] ) ) {
-			$schedules['three_minutes'] = array(
-				'interval' => 3 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Three minutes', 'miniorange-login-with-eve-online-google-facebook' ),
-			);
-		} elseif ( isset( $schedules['five_minutes'] ) ) {
-			$schedules['five_minutes'] = array(
-				'interval' => 5 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Five minutes', 'miniorange-login-with-eve-online-google-facebook' ),
-			);
-		} elseif ( isset( $schedules['ten_minutes'] ) ) {
-			$schedules['ten_minutes'] = array(
-				'interval' => 10 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Ten minutes', 'miniorange-login-with-eve-online-google-facebook' ),
-			);
-		} elseif ( isset( $schedules['three_days'] ) ) {
-			$schedules['three_days'] = array(
-				'interval' => 3 * 24 * 60 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Three days', 'miniorange-login-with-eve-online-google-facebook' ),
-			);
-		} elseif ( isset( $schedules['five_days'] ) ) {
-			$schedules['five_days'] = array(
-				'interval' => 5 * 24 * 60 * MINUTE_IN_SECONDS,
-				'display'  => esc_html__( 'Every Five days', 'miniorange-login-with-eve-online-google-facebook' ),
-			);
-		}
-
-		return $schedules;
-	}
-
-	/**
 	 * Check REST APIs.
 	 */
 	public function mo_oauth_scheduled_task() {
@@ -357,7 +345,7 @@ class MOOAuth {
 			$url,
 			array(
 				'method'      => 'GET',
-				'timeout'     => 45,
+				'timeout'     => 10, // A loopback reachability check to the site's own REST API; 10s is ample and avoids tying up a cron worker for up to 45s on a slow/unreachable response.
 				'redirection' => 5,
 				'httpversion' => 1.0,
 				'blocking'    => true,
@@ -460,6 +448,9 @@ class MOOAuth {
 		isset( $_REQUEST['mo_oauth_clear_debug_nonce'] ) &&
 		wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_clear_debug_nonce'] ) ), 'mo_oauth_clear_debug' )
 		) {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'miniorange-login-with-eve-online-google-facebook' ) );
+			}
 			// Get uploads directory and log folder path.
 			$upload_dir = wp_upload_dir();
 
@@ -494,6 +485,9 @@ class MOOAuth {
 		isset( $_REQUEST['mo_oauth_enable_debug_download_nonce'] ) &&
 		wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_enable_debug_download_nonce'] ) ), 'mo_oauth_enable_debug_download' )
 		) {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'miniorange-login-with-eve-online-google-facebook' ) );
+			}
 			// Prevent any extra output.
 			while ( ob_get_level() ) {
 				ob_end_clean();
@@ -1067,7 +1061,7 @@ class MOOAuth {
 				$query     = ! empty( $_POST['mo_oauth_video_demo_request_usecase_text'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_video_demo_request_usecase_text'] ) ) ) : '';
 				$customer  = new MO_OAuth_Client_Customer();
 
-				if ( $this->mo_oauth_check_empty_or_null( $email ) || $this->mo_oauth_check_empty_or_null( $call_date ) || $this->mo_oauth_check_empty_or_null( $query ) || $this->mo_oauth_check_empty_or_null( $time_diff ) || $this->mo_oauth_check_empty_or_null( $call_time ) ) {
+				if ( $this->mo_oauth_check_empty_or_null( $email ) || $this->mo_oauth_check_empty_or_null( $call_date ) || $this->mo_oauth_check_empty_or_null( $query ) || '' === $time_diff || $this->mo_oauth_check_empty_or_null( $call_time ) ) {
 					update_option( 'message', 'Please fill up Usecase, Email field and Requested demo plan to submit your query.' );
 					$this->mo_oauth_show_error_message();
 				} else {
@@ -1077,9 +1071,9 @@ class MOOAuth {
 					$call_date                             = isset( $_POST['mo_oauth_video_demo_request_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mo_oauth_video_demo_request_date'] ) ) : '';
 					$time_diff                             = isset( $_POST['mo_oauth_video_demo_time_diff'] ) ? sanitize_text_field( wp_unslash( $_POST['mo_oauth_video_demo_time_diff'] ) ) : ''; // timezone offset.
 					$call_time                             = isset( $_POST['mo_oauth_video_demo_request_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mo_oauth_video_demo_request_time'] ) ) : ''; // time input.
-					$query                                 = ! empty( $_POST['mo_oauth_video_demo_email'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_video_demo_request_usecase_text'] ) ) ) : '';
+					$query                                 = ! empty( $_POST['mo_oauth_video_demo_request_usecase_text'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_video_demo_request_usecase_text'] ) ) ) : '';
 
-					if ( ! ( $this->mo_oauth_check_empty_or_null( $email ) || $this->mo_oauth_check_empty_or_null( $query ) || $this->mo_oauth_check_empty_or_null( $call_date ) || $this->mo_oauth_check_empty_or_null( $time_diff ) || $this->mo_oauth_check_empty_or_null( $call_time ) ) ) {
+					if ( ! ( $this->mo_oauth_check_empty_or_null( $email ) || $this->mo_oauth_check_empty_or_null( $query ) || $this->mo_oauth_check_empty_or_null( $call_date ) || '' === $time_diff || $this->mo_oauth_check_empty_or_null( $call_time ) ) ) {
 						// Please modify the $time_diff to test for the different timezones.
 						// Note - $time_diff for IST is -330.
 						$hrs      = floor( abs( $time_diff ) / 60 );
@@ -1264,7 +1258,7 @@ class MOOAuth {
 	 */
 	public function mo_oauth_shortcode_login() {
 		if ( mooauth_migrate_customers() || ! mooauth_is_customer_registered() ) {
-			return '<div class="mo_oauth_premium_option_text" style="text-align: center;border: 1px solid;margin: 5px;padding-top: 25px;"><p>This feature is supported only in standard and higher versions.</p>
+			return '<div class="mo_oauth_premium_option_text"><p>This feature is supported only in standard and higher versions.</p>
 				<p><a href="' . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . '" target="_blank">Click Here</a> to see our full list of Features.</p></div>';
 		}
 		$mowidget = new MOOAuth_Widget();

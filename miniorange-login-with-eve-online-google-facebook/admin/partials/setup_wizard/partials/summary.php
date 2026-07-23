@@ -26,16 +26,16 @@ function mooauth_client_summary() {
 	echo '
     <label>Callback URL :</label>
       <div class="mo-summary-callback mo-summary-data">' . esc_url_raw( site_url() ) . '</div>
-      <a class="mo-editstep" data-step="2" style="color:red">&nbsp[Editable in premium]</a>
+      <a class="mo-editstep mo-w-red" data-step="2">&nbsp[Editable in premium]</a>
     </li><li class="summary-form-row">';
 
 	echo '<label>Client ID :</label>
-      <input type="text"  style="border:none;"  class="mo-summary-id mo-summary-data" id="client_id_summary" readonly="true"></input>
+      <input type="text" class="mo-summary-id mo-summary-data mo-w-borderless" id="client_id_summary" readonly="true">
       <a  class="mo-editstep" data-step="2"></a>
       </li><li class="summary-form-row">';
-	echo '<label>Client Secret :</label>  <div style="position: relative;">  
+	echo '<label>Client Secret :</label>  <div class="mo-w-rel">  
       <i class="fa fa-eye" onclick="mooauth_showClientSecret(\'client_secret_summary\',\'show_button_summary\')" id="show_button_summary"></i> 
-      <input type="password" style="border:none;" class="mo-summary-secret mo-summary-data" readonly="true" id ="client_secret_summary" ></input></div>
+      <input type="password" class="mo-summary-secret mo-summary-data mo-w-borderless" readonly="true" id="client_secret_summary" ></div>
       <a class="mo-editstep" data-step="2"></a>
       </li><li class="summary-form-row">';
 	echo '<label>Scopes :</label>
@@ -49,12 +49,7 @@ function mooauth_client_summary() {
 	echo '<li class="summary-form-row">';
 	echo '<label> SSO Test :</label>
       <div class="mo-summary-callback mo-summary-data"><input type="checkbox" class="mo_input_checkbox" name="debug" id="debug" checked>Enable Test Debugging History</div><div></div>
-    </li></ui></div>
-  <script type="text/javascript">
-  jQuery(document.body).on("click", ".mo-editstep" ,function(e){
-        mooauth_get_step(jQuery(e.target).attr("data-step"));
-    });
-</script>';
+    </li></ui></div>';
 
 }
 

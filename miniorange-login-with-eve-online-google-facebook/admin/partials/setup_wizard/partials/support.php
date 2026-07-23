@@ -21,13 +21,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return void Outputs HTML and JavaScript for the support form.
  */
 function mo_oauth_client_setup_support() { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
-	echo '<div class="support-icon" style="display: block;">
-			<div class="help-container" id="help-container" style="display: block;">
+	echo '<div class="support-icon mo-w-block">
+			<div class="help-container mo-w-block" id="help-container">
 			  	<span class="span1">
 					<div class="need">
 					  <span class="span2"></span>
 						<div id="mo-support-msg">Need Help? We are right here!</div>
-						<span class="fa fa-times fa-1x " id="mo-support-msg-hide" style="cursor:pointer;float:right;disply:inline;">
+						<span class="fa fa-times fa-1x mo-w-close-icon" id="mo-support-msg-hide">
 					</span>
 					</div>
 			  	</span>
@@ -40,15 +40,15 @@ function mo_oauth_client_setup_support() { // phpcs:ignore WordPress.NamingConve
 			</div>
 		</div>';
 
-	echo '<div class="support-form-container" style="display: none;">
+	echo '<div class="support-form-container mo-hidden">
  			<div class="widget-header">
 				Contact miniOrange Support
 				<div class="widget-header-close-icon">
-					<span class="fa fa-times fa-1x" style="cursor: pointer;float:right;" id="mo-support-form-hide">
+					<span class="fa fa-times fa-1x mo-w-close-icon" id="mo-support-form-hide">
 					</span>
 				</div>
 		  	</div>
-		  	<div class="support-form top-label" style="display: block;">
+		  	<div class="support-form top-label mo-w-block">
 		  			<label for="email">
 						Your Contact E-mail
 		  			</label>
@@ -60,25 +60,5 @@ function mo_oauth_client_setup_support() { // phpcs:ignore WordPress.NamingConve
 		  			<button id="mo-oauth-submit-support" type="submit" class="mo-button" value="Submit" aria-disabled="false">Submit</button>
 	  		</div>
 		</div>';
-	echo '<script>
-			jQuery("#mo-oauth-submit-support").click(function(){
-			    var data={
-			        "action"			: "mo_outh_ajax",
-			        "mo_oauth_option"	: "query_submit",
-			        "mo_oauth_email" 	: jQuery("#person_email").val(),
-			        "mo_oauth_query"  	: jQuery("#person_query").val(),
-			        "mo_oauth_nonce" 	: jQuery("#nonce").val()
-			    };			    
-				jQuery("#mo-support-msg").empty();
-				jQuery("#mo-support-msg").append("We are processing your request. Please wait!!");
-				jQuery("#help-container").show();
-			      	jQuery(".support-form-container").hide();
-				jQuery.post(mo_oauth_ajax_object.ajax_url, data, function(response){
-					console.log(response);
-					jQuery("#mo-support-msg").empty();
-					jQuery("#mo-support-msg").append(response);
-				});
-			});
-	</script>';
 }
 

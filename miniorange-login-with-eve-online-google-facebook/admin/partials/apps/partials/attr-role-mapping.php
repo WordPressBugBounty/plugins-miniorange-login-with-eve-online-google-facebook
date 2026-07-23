@@ -32,24 +32,27 @@ function mooauth_client_attribite_role_mapping_ui() {
 		}
 	}
 	?>
+<div class="mo_oauth_card">
+	<div class="mo_oauth_card_header"><h3><?php esc_html_e( 'Attribute/Role Mapping', 'miniorange-login-with-eve-online-google-facebook' ); ?></h3></div>
+	<div class="mo_oauth_card_body">
 	<div class="mo_table_layout mo_oauth_attribute_page_font mo_oauth_outer_div" id="attribute-mapping">
 		<form id="form-common" name="form-common" method="post" action="admin.php?page=mo_oauth_settings&tab=attributemapping">
 			<?php wp_nonce_field( 'mo_oauth_attr_role_mapping_form', 'mo_oauth_attr_role_mapping_form_field' ); ?>
-		<div class="mo_oauth_attribute_map_header"><div class="mo_oauth_attribute_map_heading"><?php esc_html_e( 'Attribute Mapping ', 'miniorange-login-with-eve-online-google-facebook' ); ?></div><div style="font-size:20px;"><small>[<?php esc_html_e( 'Required for SSO & Account Linking', 'miniorange-login-with-eve-online-google-facebook' ); ?>]</small></div></div> 
-</br><div style="display:flex; justify-content: space-between;"><div>	
-		<p style="font-size:15px;margin-left:15px;"><?php wp_nonce_field( 'mo_oauth_attr_role_mapping_form', 'mo_oauth_attr_role_mapping_form_field' ); ?><?php esc_html_e( 'Do ', 'miniorange-login-with-eve-online-google-facebook' ); ?><b style="color:#dc2424;"><?php esc_html_e( 'Test Configuration', 'miniorange-login-with-eve-online-google-facebook' ); ?></b><?php esc_html_e( ' to get configuration for attribute mapping.', 'miniorange-login-with-eve-online-google-facebook' ); ?><br></p>
+		<div class="mo_oauth_attribute_map_header"><div class="mo_oauth_attribute_map_heading"><?php esc_html_e( 'Attribute Mapping ', 'miniorange-login-with-eve-online-google-facebook' ); ?></div><div class="mo_oauth_x_attrrolemapping_1"><small>[<?php esc_html_e( 'Required for SSO & Account Linking', 'miniorange-login-with-eve-online-google-facebook' ); ?>]</small></div></div>
+</br><div class="mo_oauth_x_attrrolemapping_2"><div>
+		<p class="mo_oauth_x_attrrolemapping_3"><?php wp_nonce_field( 'mo_oauth_attr_role_mapping_form', 'mo_oauth_attr_role_mapping_form_field' ); ?><?php esc_html_e( 'Do ', 'miniorange-login-with-eve-online-google-facebook' ); ?><b class="mo_oauth_x_attrrolemapping_4"><?php esc_html_e( 'Test Configuration', 'miniorange-login-with-eve-online-google-facebook' ); ?></b><?php esc_html_e( ' to get configuration for attribute mapping.', 'miniorange-login-with-eve-online-google-facebook' ); ?><br></p>
 		</div>
-		<div><span style="float: right;"><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext" style="bottom: 110%;" >How to map Attributes?</span><a
+		<div><span class="mo_oauth_x_attrrolemapping_5"><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext mo_oauth_x_attrrolemapping_6" >How to map Attributes?</span><a
 			href="https://developers.miniorange.com/docs/oauth/wordpress/client/attribute-mapping" target="_blank"
-			rel="noopener"><img class="mo_oauth_guide_img" style="margin:0px;" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_info-icon.png" alt="miniOrange Premium Plans Logo" aria-hidden="true"></a></div>
+			rel="noopener"><img class="mo_oauth_guide_img mo_oauth_x_attrrolemapping_7" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_info-icon.png" alt="miniOrange Premium Plans Logo" aria-hidden="true"></a></div>
 		</span></div></div>
 		<input type="hidden" name="option" value="mo_oauth_attribute_mapping" />
 		<input class="mo_table_textbox" required="" type="hidden" id="mo_oauth_app_name" name="mo_oauth_app_name" value="<?php echo esc_attr( $currentappname ); ?>">
 		<input class="mo_table_textbox" required="" type="hidden" name="mo_oauth_custom_app_name" value="<?php echo esc_attr( $currentappname ); ?>">
-		<table class="mo_settings_table mo_oauth_attribute_map_table" style="margin:-20px;">
+		<table class="mo_settings_table mo_oauth_attribute_map_table mo_oauth_x_attrrolemapping_8">
 			<tr id="mo_oauth_email_attr_div">
 				<td>
-					<strong class="mo_strong"><font color="#FF0000">*</font><?php esc_html_e( 'Username:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>
+					<div><strong class="mo_strong"><?php esc_html_e( 'Username', 'miniorange-login-with-eve-online-google-facebook' ); ?> <span class="mo_oauth_x_demo_3">*</span>: </strong></div>
 					<br/>
 					<div class="mo_oauth_username_notice"><span class="mo_oauth_username_notice_span"><?php esc_html_e( '[ Map unique attribute with username ]', 'miniorange-login-with-eve-online-google-facebook' ); ?></span></div>
 				</td>
@@ -57,12 +60,8 @@ function mooauth_client_attribite_role_mapping_ui() {
 					<?php
 					if ( is_array( $attr_name_list ) ) {
 						?>
-						<select class="mo_table_textbox" 
-						<?php
-						if ( get_option( 'mo_attr_option' ) === 'manual' ) {
-							echo 'style="display:none"';}
-						?>
-						id="mo_oauth_username_attr_select" 
+						<select class="mo_table_textbox<?php echo ( get_option( 'mo_attr_option' ) === 'manual' ) ? ' mo_oauth_x_attrrolemapping_9' : ''; ?>"
+						id="mo_oauth_username_attr_select"
 						<?php
 						if ( get_option( 'mo_attr_option' ) === false || get_option( 'mo_attr_option' ) === 'automatic' ) {
 							echo 'name="mo_oauth_username_attr"';}
@@ -81,30 +80,6 @@ function mooauth_client_attribite_role_mapping_ui() {
 							}
 							?>
 						</select>
-						<script>
-						function mooauth_change_form_field(fieldType) {
-							var select_box = document.getElementById('mo_oauth_' + fieldType + '_attr_select');
-							var input_tag = document.getElementById('mo_oauth_' + fieldType + '_attr_input');
-							var attr_option = document.getElementById('mo_attr_option');
-							var change_p = document.getElementById('mo_' + fieldType + '_attr_change_p');
-
-							if (select_box.style.display != "none") {
-								select_box.name = "";
-								select_box.style.display = "none";
-								input_tag.name = "mo_oauth_" + fieldType + "_attr";
-								input_tag.style.display = "block";
-								change_p.innerHTML = "Change to automatic mode";
-								attr_option.value = "manual";
-							} else {
-								select_box.name = "mo_oauth_" + fieldType + "_attr";
-								select_box.style.display = "block";
-								input_tag.name = "";
-								input_tag.style.display = "none";
-								change_p.innerHTML = "Change to manual mode";
-								attr_option.value = "automatic";
-							}
-						}
-						</script>
 						<input type="hidden" id="mo_attr_option" name="mo_attr_option" value="
 						<?php
 						if ( get_option( 'mo_attr_option' ) ) {
@@ -113,16 +88,12 @@ function mooauth_client_attribite_role_mapping_ui() {
 							echo 'automatic'; }
 						?>
 						">
-						<input 
+						<input
 						<?php
 						if ( get_option( 'mo_attr_option' ) === 'manual' ) {
 							echo 'name="mo_oauth_username_attr"';}
 						?>
-						class="mo_table_textbox" 
-						<?php
-						if ( get_option( 'mo_attr_option' ) === 'automatic' || get_option( 'mo_attr_option' ) === false ) {
-							echo 'style="display:none"';}
-						?>
+						class="mo_table_textbox<?php echo ( get_option( 'mo_attr_option' ) === 'automatic' || get_option( 'mo_attr_option' ) === false ) ? ' mo_oauth_x_attrrolemapping_9' : ''; ?>"
 						placeholder="Enter attribute name for Username" type="text" id="mo_oauth_username_attr_input" value=" <?php echo isset( $currentapp['username_attr'] ) ? esc_attr( $currentapp['username_attr'] ) : ( isset( $currentapp['email_attr'] ) ? esc_attr( $currentapp['email_attr'] ) : '' ); ?> ">
 						</td>
 						<?php $textattr = get_option( 'mo_attr_option' ) ? get_option( 'mo_attr_option' ) === 'manual' ? 'Change to automatic mode' : 'Change to manual mode' : 'Change to manual mode'; ?>
@@ -154,17 +125,13 @@ function mooauth_client_attribite_role_mapping_ui() {
 			</tr>
 			</td>
 			<tr id="mo_oauth_email_attr_div">
-				<td><strong class="mo_strong"><font color="#FF0000">*</font><?php esc_html_e( 'Email:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
+				<td><div><strong class="mo_strong"><?php esc_html_e( 'Email', 'miniorange-login-with-eve-online-google-facebook' ); ?> <span class="mo_oauth_x_demo_3">*</span>: </strong></div></td>
 				<td>
 					<?php
 					if ( is_array( $attr_name_list ) ) {
 						?>
-						<select class="mo_table_textbox" 
-						<?php
-						if ( get_option( 'mo_attr_option' ) === 'manual' ) {
-							echo 'style="display:none"'; }
-						?>
-						id="mo_oauth_email_attr_select" 
+						<select class="mo_table_textbox<?php echo ( get_option( 'mo_attr_option' ) === 'manual' ) ? ' mo_oauth_x_attrrolemapping_9' : ''; ?>"
+						id="mo_oauth_email_attr_select"
 						<?php
 						if ( get_option( 'mo_attr_option' ) === false || get_option( 'mo_attr_option' ) === 'automatic' ) {
 							echo 'name="mo_oauth_email_attr"'; }
@@ -196,11 +163,7 @@ function mooauth_client_attribite_role_mapping_ui() {
 						if ( get_option( 'mo_attr_option' ) === 'manual' ) {
 							echo 'name="mo_oauth_email_attr"'; }
 						?>
-						class="mo_table_textbox" 
-						<?php
-						if ( get_option( 'mo_attr_option' ) === 'automatic' || get_option( 'mo_attr_option' ) === false ) {
-							echo 'style="display:none"'; }
-						?>
+						class="mo_table_textbox<?php echo ( get_option( 'mo_attr_option' ) === 'automatic' || get_option( 'mo_attr_option' ) === false ) ? ' mo_oauth_x_attrrolemapping_9' : ''; ?>"
 						placeholder="Enter attribute name for Email" type="text" id="mo_oauth_email_attr_input" value=" <?php echo isset( $currentapp['email_attr'] ) ? esc_attr( $currentapp['email_attr'] ) : ''; ?> ">
 						</td>
 						<?php $textattr = get_option( 'mo_attr_option' ) ? get_option( 'mo_attr_option' ) === 'manual' ? 'Change to automatic mode' : 'Change to manual mode' : 'Change to manual mode'; ?>
@@ -230,7 +193,7 @@ function mooauth_client_attribite_role_mapping_ui() {
 		<?php
 		echo '<tr>
 			<td></td><td>
-            <b><p style="margin-left:2px" class=" mop_table">' . esc_html__( 'Advanced attribute mapping is available in', 'miniorange-login-with-eve-online-google-facebook' ) . '
+            <b><p class="mop_table mo_oauth_x_attrrolemapping_10">' . esc_html__( 'Advanced attribute mapping is available in', 'miniorange-login-with-eve-online-google-facebook' ) . '
 			<a href="' . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . '" target="_blank">premium</a> version.</b>
             </p>
 			</td>
@@ -263,19 +226,19 @@ function mooauth_client_attribite_role_mapping_ui() {
 			<tr><td colspan="3"><hr class="mo-divider"></td></tr>
 			<tr></tr>
 			<tr><td  colspan="2">
-			<h3 class="mo_oauth_attribute_page_font">' . esc_html__( 'Map Custom Attributes ', 'miniorange-login-with-eve-online-google-facebook' ) . '<div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span><a style="text-decoration: none;" href="' . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . '" target="_blank" rel="noopener noreferrer">
+			<h3 class="mo_oauth_attribute_page_font">' . esc_html__( 'Map Custom Attributes ', 'miniorange-login-with-eve-online-google-facebook' ) . '<div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span><a class="mo_oauth_x_attrrolemapping_11" href="' . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . '" target="_blank" rel="noopener noreferrer">
 			<span><img class="mo_oauth_premium-label" src="' . esc_url( dirname( plugin_dir_url( __FILE__ ) ) ) . '/images/mo_oauth_premium-label.png" alt="miniOrange Premium Plans Logo"></span></a></div></span></h3></td>
-			<td><span style="float: right;"><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >How to map Custom Attributes?</span><a
+			<td><span class="mo_oauth_x_attrrolemapping_5"><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >How to map Custom Attributes?</span><a
                 href="https://developers.miniorange.com/docs/oauth/wordpress/client/attribute-mapping#custom-attr-map" target="_blank"
                 rel="noopener"><img class="mo_oauth_guide_img" src="' . esc_url( dirname( plugin_dir_url( __FILE__ ) ) ) . '/images/mo_oauth_info-icon.png" alt="miniOrange Premium Plans Logo" aria-hidden="true"></a></div>
             </span></td>
 			</tr>
 			<tr><td  colspan="2">
 			<p>' . esc_html__( 'Map extra OAuth Provider attributes which you wish to be included in the user profile below', 'miniorange-login-with-eve-online-google-facebook' ) . '</p></td>
-			<td><span style="float: right;"><input disabled type="button" value="+" class="button button-primary mo_disabled_btn"  /><input disabled type="button" value="-" class="button button-primary mo_disabled_btn"   />
+			<td><span class="mo_oauth_x_attrrolemapping_5"><input disabled type="button" value="+" class="button button-primary mo_disabled_btn"  /><input disabled type="button" value="-" class="button button-primary mo_disabled_btn"   />
             </span></td>
 			</tr>
-			<tr><td style="width="30%"><input disabled class="mo_oauth_input_disabled" type="text" placeholder="' . esc_html__( 'Enter field meta name', 'miniorange-login-with-eve-online-google-facebook' ) . '" /></td>
+			<tr><td class="mo_oauth_x_attrrolemapping_12"><input disabled class="mo_oauth_input_disabled" type="text" placeholder="' . esc_html__( 'Enter field meta name', 'miniorange-login-with-eve-online-google-facebook' ) . '" /></td>
 			<td><input disabled type="text" placeholder="' . esc_html__( 'Enter attribute name from OAuth Provider', 'miniorange-login-with-eve-online-google-facebook' ) . '" class="mo_table_textbox mo_oauth_input_disabled" /></td>
 			</tr>';
 		?>
@@ -289,14 +252,14 @@ function mooauth_client_attribite_role_mapping_ui() {
 		</div>
 		<div class="mo_table_layout mo_oauth_attribute_page_font mo_oauth_outer_div" id="role-mapping">
 		<div class="mo_oauth_customization_header">
-		<h3 class="mo_oauth_signing_heading" style="margin-top:0px; margin-bottom:0px;"><?php esc_html_e( 'Role Mapping ', 'miniorange-login-with-eve-online-google-facebook' ); ?><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext"  >PREMIUM</span><a style="text-decoration: none;" href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer">
+		<h3 class="mo_oauth_signing_heading mo_oauth_x_attrrolemapping_13"><?php esc_html_e( 'Role Mapping ', 'miniorange-login-with-eve-online-google-facebook' ); ?><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext"  >PREMIUM</span><a class="mo_oauth_x_attrrolemapping_11" href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer">
 		<span><img class="mo_oauth_premium-label" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_premium-label.png" alt="miniOrange Premium Plans Logo"></span></a></div></h3>
-		<span style="float: right;"><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >How to map Roles?</span><a
+		<span class="mo_oauth_x_attrrolemapping_5"><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >How to map Roles?</span><a
 				href="https://developers.miniorange.com/docs/oauth/wordpress/client/role-mapping" target="_blank"
 				rel="noopener"><img class="mo_oauth_guide_img" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_info-icon.png" alt="miniOrange Premium Plans Logo" aria-hidden="true"></a></div>
 			</span>
 		</div><br>
-		<p class="mo_oauth_upgrade_warning" style="padding:12px"><b>NOTE: </b><?php esc_html_e( 'Role will be assigned only to non-admin users (user that do NOT have Administrator privileges). You will have to manually change the role of Administrator users.', 'miniorange-login-with-eve-online-google-facebook' ); ?></p>
+		<p class="mo_oauth_upgrade_warning mo_oauth_x_attrrolemapping_14"><b>NOTE: </b><?php esc_html_e( 'Role will be assigned only to non-admin users (user that do NOT have Administrator privileges). You will have to manually change the role of Administrator users.', 'miniorange-login-with-eve-online-google-facebook' ); ?></p>
 		<form id="role_mapping_form" name="f" method="post" action="">
 		<?php wp_nonce_field( 'mo_oauth_role_mapping_form_nonce', 'mo_oauth_role_mapping_form_field' ); ?>
 		<input disabled class="mo_table_textbox mo_oauth_input_disabled" required="" type="hidden"  name="mo_oauth_app_name" value="<?php echo esc_attr( $currentappname ); ?>">
@@ -305,38 +268,38 @@ function mooauth_client_attribite_role_mapping_ui() {
 		<p><input disabled type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled" > <strong class="mo_strong"><?php esc_html_e( ' Do Not allow login if roles are not mapped here ', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>&nbsp;&nbsp;<small><?php esc_html_e( '( We won\'t allow users to login if we don\'t find users role/group mapped below. )', 'miniorange-login-with-eve-online-google-facebook' ); ?></small></p>
 		<p><input disabled type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled" > <strong class="mo_strong"><?php esc_html_e( ' Role Mapping based on Email Domain ', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small><?php esc_html_e( '( This feature allows to map the roles based on email domain of the user when the email attribute is configured in Group Attributes Name. )', 'miniorange-login-with-eve-online-google-facebook' ); ?></small></p>
 		<div id="panel1">
-			<table class="mo_oauth_client_mapping_table" id="mo_oauth_client_role_mapping_table" style="width:90%">
+			<table class="mo_oauth_client_mapping_table" id="mo_oauth_client_role_mapping_table" class="mo_oauth_x_attrrolemapping_15">
 					<tr><td>&nbsp;</td></tr>
 					<tr>
-					<td><font style="font-size:13px;font-weight:bold;"><?php esc_html_e( 'Default Role ', 'miniorange-login-with-eve-online-google-facebook' ); ?></font>
-					<small><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip" style="width: 350px;padding: 5px !important; margin: 0px 0px 20px -150px;"  ><?php esc_html_e( ' Default role will be assigned to all users for which mapping is not specified.', 'miniorange-login-with-eve-online-google-facebook' ); ?></span><a
+					<td><font class="mo_oauth_x_attrrolemapping_16"><?php esc_html_e( 'Default Role ', 'miniorange-login-with-eve-online-google-facebook' ); ?></font>
+					<small><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip mo_oauth_x_attrrolemapping_17"><?php esc_html_e( ' Default role will be assigned to all users for which mapping is not specified.', 'miniorange-login-with-eve-online-google-facebook' ); ?></span><a
 							href="https://developers.miniorange.com/docs/oauth/wordpress/client/role-mapping"
 							target="_blank" rel="noopener"><i class="fa fa-info-circle mo_oauth_info"></i></a></div></small>
 					</td>
 					<td>
-						<select disabled class="mo_oauth_input_disabled" style="width:100%">
+						<select disabled class="mo_oauth_input_disabled mo_oauth_x_attrrolemapping_18">
 							<option><?php esc_html_e( 'Subscriber', 'miniorange-login-with-eve-online-google-facebook' ); ?></option>
 						</select>
 					</td>
 				</tr>
 				<tr><td>&nbsp;</td></tr>
 				<tr>
-					<td style="width:50%"><b><?php esc_html_e( 'Group Attribute Value', 'miniorange-login-with-eve-online-google-facebook' ); ?></b></td>
-					<td style="width:50%"><b><?php esc_html_e( 'WordPress Role', 'miniorange-login-with-eve-online-google-facebook' ); ?></b></td>
+					<td class="mo_oauth_x_attrrolemapping_19"><b><?php esc_html_e( 'Group Attribute Value', 'miniorange-login-with-eve-online-google-facebook' ); ?></b></td>
+					<td class="mo_oauth_x_attrrolemapping_19"><b><?php esc_html_e( 'WordPress Role', 'miniorange-login-with-eve-online-google-facebook' ); ?></b></td>
 				</tr>
 				<tr>
 					<td><input disabled class="mo_oauth_client_table_textbox mo_oauth_input_disabled" type="text" placeholder="<?php esc_html_e( 'group name', 'miniorange-login-with-eve-online-google-facebook' ); ?>" />
 					</td>
 					<td>
-						<select disabled class="mo_oauth_input_disabled" style="width:100%"  >
+						<select disabled class="mo_oauth_input_disabled mo_oauth_x_attrrolemapping_18">
 							<option><?php esc_html_e( 'Subscriber', 'miniorange-login-with-eve-online-google-facebook' ); ?></option>
 						</select>
 					</td>
 				</tr>
 				</table>
 				</br>
-				<table class="mo_oauth_client_mapping_table" style="width:90%;">
-					<tr><td><a style="cursor:not-allowed"><u><?php esc_html_e( 'Add More Mapping', 'miniorange-login-with-eve-online-google-facebook' ); ?></u></a><br><br></td><td>&nbsp;</td></tr>
+				<table class="mo_oauth_client_mapping_table mo_oauth_x_attrrolemapping_15">
+					<tr><td><a class="mo_oauth_x_attrrolemapping_20"><u><?php esc_html_e( 'Add More Mapping', 'miniorange-login-with-eve-online-google-facebook' ); ?></u></a><br><br></td><td>&nbsp;</td></tr>
 					<tr>
 						<td><input disabled type="submit" class="button button-primary button-large mo_disabled_btn" value="<?php esc_html_e( 'Save Mapping', 'miniorange-login-with-eve-online-google-facebook' ); ?>" /></td>
 						<td>&nbsp;</td>
@@ -345,6 +308,8 @@ function mooauth_client_attribite_role_mapping_ui() {
 				</div>
 			</form>
 		</div>
+	</div>
+	</div>
 	<?php
 }
 

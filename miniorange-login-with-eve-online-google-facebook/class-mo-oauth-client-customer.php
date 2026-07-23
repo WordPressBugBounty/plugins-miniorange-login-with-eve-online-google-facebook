@@ -21,6 +21,9 @@
  * @license      https://plugins.miniorange.com/mit-license Expat
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
 	This library is miniOrange Authentication Service.
 	Contains Request Calls to Customer service.
@@ -720,7 +723,7 @@ class MO_OAuth_Client_Customer {
 	 */
 	public function check_internet_connection() {
 		// Use WP HTTP API for making HTTP requests instead of fsockopen.
-		$response = wp_safe_remote_get( 'https://login.xecurify.com/', array( 'timeout' => 5 ) );
+		$response = wp_safe_remote_get( MO_OAUTH_HOSTNAME . '/', array( 'timeout' => 5 ) );
 
 		return ! is_wp_error( $response );
 	}

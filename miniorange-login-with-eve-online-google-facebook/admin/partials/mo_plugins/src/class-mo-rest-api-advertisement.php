@@ -182,6 +182,14 @@ class MO_REST_API_Advertisement {
 	public function test_api_security( $nonce ) {
 		if ( check_ajax_referer( 'mo_plugins_adv_test_api_security', 'nonce' ) ) {
 
+			// The probe below fires five sequential blocking HTTP requests (up to
+			// 10s each); serve a recent verdict from cache instead of re-probing
+			// on every button click.
+			$cached_response = get_transient( 'mo_adv_rest_api_security_result' );
+			if ( is_array( $cached_response ) && isset( $cached_response['status'] ) ) {
+				wp_send_json_success( $cached_response['status'], 200 );
+			}
+
 			$endpoints = array(
 				'posts',
 				'pages',
@@ -242,6 +250,7 @@ class MO_REST_API_Advertisement {
 			);
 
 			update_option( 'mo_adv_rest_api_security_status', $final_response );
+			set_transient( 'mo_adv_rest_api_security_result', $final_response, 5 * MINUTE_IN_SECONDS );
 
 			wp_send_json_success( $status, 200 );
 		}
@@ -350,8 +359,14 @@ class MO_REST_API_Advertisement {
 	 * @return string
 	 */
 	private function get_plugin_download_link_from_wp_org( $plugin_slug ) {
+		$transient_key = 'mo_adv_wporg_dl_' . md5( $plugin_slug );
+		$cached        = get_transient( $transient_key );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
 		$api_url  = 'https://api.wordpress.org/plugins/info/1.0/' . $plugin_slug . '.json';
-		$response = wp_remote_get( $api_url );
+		$response = wp_remote_get( $api_url, array( 'timeout' => 10 ) );
 
 		if ( is_wp_error( $response ) ) {
 			return false;
@@ -363,6 +378,8 @@ class MO_REST_API_Advertisement {
 		if ( ! $data || ! isset( $data['download_link'] ) ) {
 			return false;
 		}
+
+		set_transient( $transient_key, $data['download_link'], 12 * HOUR_IN_SECONDS );
 
 		return $data['download_link'];
 	}

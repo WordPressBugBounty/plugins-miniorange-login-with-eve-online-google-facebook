@@ -15,11 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Display User Analytics
  */
 function mooauth_client_user_analytics_ui() { ?>
+<div class="mo_oauth_card">
+	<div class="mo_oauth_card_header"><h3><?php esc_html_e( 'User Analytics', 'miniorange-login-with-eve-online-google-facebook' ); ?></h3></div>
+	<div class="mo_oauth_card_body">
 	<div class="mo_table_layout" id="mo_oauth_user_analytics">
 			<div class="mo_wpns_small_layout">
 					<table>
 						<tr>
-							<td style="width: 100%"><div class="mo_oauth_attribute_map_heading" style="display: inline;"><b class="mo_oauth_position"><?php esc_html_e( 'User Transactions Report ', 'miniorange-login-with-eve-online-google-facebook' ); ?></b> <small><div class="mo_oauth_tooltip" ><span class="mo_oauth_tooltiptext" >ENTERPRISE</span><a href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer"><span style="border:none"><img class="mo_oauth_premium-label" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) . '/images/mo_oauth_premium-label.png' ); ?>" alt="miniOrange Standard Plans Logo"></span></a></div></small></div></td><td></td><td style="text-align:right"><div class="mo_oauth_tooltip"><span class="mo_tooltiptext">Know how this is useful</span><a style="text-decoration: none;" target="_blank" href="https://developers.miniorange.com/docs/oauth/wordpress/client/user-analytics" rel="noopener noreferrer">
+							<td class="mo_oauth_td_full_width"><div class="mo_oauth_attribute_map_heading mo_oauth_display_inline"><b class="mo_oauth_position"><?php esc_html_e( 'User Transactions Report ', 'miniorange-login-with-eve-online-google-facebook' ); ?></b> <small><div class="mo_oauth_tooltip" ><span class="mo_oauth_tooltiptext" >ENTERPRISE</span><a href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer"><span class="mo_oauth_no_border"><img class="mo_oauth_premium-label" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) . '/images/mo_oauth_premium-label.png' ); ?>" alt="miniOrange Standard Plans Logo"></span></a></div></small></div></td><td></td><td class="mo_oauth_td_right"><div class="mo_oauth_tooltip"><span class="mo_tooltiptext">Know how this is useful</span><a class="mo_oauth_no_underline" target="_blank" href="https://developers.miniorange.com/docs/oauth/wordpress/client/user-analytics" rel="noopener noreferrer">
 		<img class="mo_oauth_guide_img" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) . '/images/mo_oauth_info-icon.png' ); ?>" alt="miniOrange Premium Plans Logo" aria-hidden="true"></a><br><br></div></td></tr><tr><td></td>
 							<td>
 								<input disabled type="submit" value="<?php esc_html_e( 'Refresh', 'miniorange-login-with-eve-online-google-facebook' ); ?>" class="button button-primary button-large mo_disabled_btn" />
@@ -29,22 +32,22 @@ function mooauth_client_user_analytics_ui() { ?>
 							</td>
 						</tr>
 					</table><br>
-				<table id="reports_table" class="display mo_oauth_client_user_analytics" cellspacing="0" style="text-align:center !important" width="100%" border="1px">
+				<table id="reports_table" class="mo_oauth_bootstrap_table mo_oauth_client_user_analytics">
 					<thead>
 						<tr>
-							<td><strong>testuser</strong></td>
-							<td><strong>Status</strong></td>
-							<td><strong>Application</strong></td>
-							<td><strong>Created Date</strong></td>
-							<td><strong>Email</strong></td>
-							<td><strong>Client IP</strong></td>
-							<td><strong>Navigation URL</strong></td>
+							<th><?php esc_html_e( 'Username', 'miniorange-login-with-eve-online-google-facebook' ); ?></th>
+							<th><?php esc_html_e( 'Status', 'miniorange-login-with-eve-online-google-facebook' ); ?></th>
+							<th><?php esc_html_e( 'Application', 'miniorange-login-with-eve-online-google-facebook' ); ?></th>
+							<th><?php esc_html_e( 'Created Date', 'miniorange-login-with-eve-online-google-facebook' ); ?></th>
+							<th><?php esc_html_e( 'Email', 'miniorange-login-with-eve-online-google-facebook' ); ?></th>
+							<th><?php esc_html_e( 'Client IP', 'miniorange-login-with-eve-online-google-facebook' ); ?></th>
+							<th><?php esc_html_e( 'Navigation URL', 'miniorange-login-with-eve-online-google-facebook' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
 							<td>testuser1</td>
-							<td style="color:red"><strong>FAILED. Invalid Email Received</strong></td>
+							<td class="mo_oauth_status_failed"><strong>FAILED. Invalid Email Received</strong></td>
 							<td>-</td>
 							<td>Mar 20,2024 1:53:10 pm</td>
 							<td>-</td>
@@ -53,7 +56,7 @@ function mooauth_client_user_analytics_ui() { ?>
 						</tr>
 						<tr>
 							<td>-</td>
-							<td style="color:red"><strong>FAILED. Invalid Username Received.</strong></td>
+							<td class="mo_oauth_status_failed"><strong>FAILED. Invalid Username Received.</strong></td>
 							<td>-</td>
 							<td>Mar 20,2024 1:58:31 pm</td>
 							<td>-</td>
@@ -62,7 +65,7 @@ function mooauth_client_user_analytics_ui() { ?>
 						</tr>
 						<tr>
 							<td>testuser3</td>
-							<td style="color:green"><strong>SUCCESS</strong></td>
+							<td class="mo_oauth_status_success"><strong>SUCCESS</strong></td>
 							<td>localserver</td>
 							<td>Mar 20,2024 2:01:10 pm</td>
 							<td>testuser3@test.com</td>
@@ -71,7 +74,7 @@ function mooauth_client_user_analytics_ui() { ?>
 						</tr>
 						<tr>
 							<td>testuser4</td>
-							<td style="color:green"><strong>SUCCESS</strong></td>
+							<td class="mo_oauth_status_success"><strong>SUCCESS</strong></td>
 							<td>localserver</td>
 							<td>Mar 20,2024 2:07:15 pm</td>
 							<td>testuser4@test.com</td>
@@ -80,7 +83,7 @@ function mooauth_client_user_analytics_ui() { ?>
 						</tr>
 						<tr>
 							<td>-</td>
-							<td style="color:red"><strong>FAILED. Invalid Username Received.</strong></td>
+							<td class="mo_oauth_status_failed"><strong>FAILED. Invalid Username Received.</strong></td>
 							<td>-</td>
 							<td>Mar 20,2024 2:25:18 pm</td>
 							<td>-</td>
@@ -91,5 +94,7 @@ function mooauth_client_user_analytics_ui() { ?>
 				</table>
 			</div>
 		</div>
+	</div>
+	</div>
 	<?php
 }

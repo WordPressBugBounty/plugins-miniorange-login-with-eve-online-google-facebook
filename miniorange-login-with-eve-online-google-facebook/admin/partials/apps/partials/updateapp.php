@@ -39,8 +39,8 @@ function mooauth_client_update_app_page( $appname ) {
 	$current_app_id  = $currentapp['appId'];
 	$refapp          = mooauth_client_get_app( $current_app_id );
 	$valid_discovery = get_option( 'mo_discovery_validation' ) ? get_option( 'mo_discovery_validation' ) : 'valid';
-	$is_invalid      = '<i class="fa fa-thumbs-down" style="color:#ff000085; font-size: 30px;"></i>';
-	$is_valid        = '<i class="fa fa-thumbs-up" style="color:#0080007d; font-size: 30px;"></i>';
+	$is_invalid      = '<i class="fa fa-thumbs-down mo_oauth_x_updateapp_1"></i>';
+	$is_valid        = '<i class="fa fa-thumbs-up mo_oauth_x_updateapp_2"></i>';
 
 	?>
 	<div>
@@ -59,20 +59,20 @@ function mooauth_client_update_app_page( $appname ) {
 		if ( isset( $app->video ) ) {
 
 			?>
-					<a href="<?php echo esc_attr( $app->video ); ?>" target="_blank" rel="noopener" class="mo-oauth-setup-video-button" style="text-decoration: none;" >Video Guide</a> 
+					<a href="<?php echo esc_attr( $app->video ); ?>" target="_blank" rel="noopener" class="mo-oauth-setup-video-button mo_oauth_x_updateapp_3" >Video Guide</a>
 					<?php
 		}
 		if ( isset( $app->guide ) ) {
 
 			?>
-					<a href="<?php echo esc_attr( $app->guide ); ?>" target="_blank" rel="noopener" class="mo-oauth-setup-guide-button" style="text-decoration: none;" > Setup Guide </a> 
+					<a href="<?php echo esc_attr( $app->guide ); ?>" target="_blank" rel="noopener" class="mo-oauth-setup-guide-button mo_oauth_x_updateapp_3" > Setup Guide </a>
 					<?php
 		}
 		?>
 				</span>
 				</div>
 		</div>
-		<div id="mo_oauth_update_app">	
+		<div id="mo_oauth_update_app" data-site-url="<?php echo esc_attr( site_url() ); ?>">
 		<form id="form-common" name="form-common" method="post" action="admin.php?page=mo_oauth_settings&tab=config&action=update&app=<?php echo esc_attr( $currentappname ); ?>">
 		<?php wp_nonce_field( 'mo_oauth_add_app_form', 'mo_oauth_add_app_form_field' ); ?>
 		<input class="mo_table_textbox" required="" type="hidden" name="mo_oauth_app_name" value="<?php echo isset( $currentapp['appId'] ) ? esc_attr( $currentapp['appId'] ) : 'other'; ?>">
@@ -89,21 +89,21 @@ function mooauth_client_update_app_page( $appname ) {
 		</td>
 			</tr>
 			<tr class="mo_oauth_configure_table_rows"><td class="mo_oauth_contact_heading"><strong class="mo_strong" class="mo_oauth_position"><?php esc_html_e( 'Redirect / Callback URL :', 'miniorange-login-with-eve-online-google-facebook' ); ?> </strong>
-			<div class="mo_oauth_tooltip" style="display: inline;"><span class="mo_tooltiptext" style="width:350px; margin-left:-175px" id="moTooltip_info">This Redirect / Callback URL is to be configured at your OAuth / OpenId provider and it does not mean to redirect users to this URL after SSO.</span><i class="fa fa-info-circle mo_oauth_info " style="font-size:17px; align-items: center;vertical-align: middle;" aria-hidden="true"></i></div>
+			<div class="mo_oauth_tooltip mo_oauth_x_updateapp_4"><span class="mo_tooltiptext mo_oauth_x_updateapp_5" id="moTooltip_info">This Redirect / Callback URL is to be configured at your OAuth / OpenId provider and it does not mean to redirect users to this URL after SSO.</span><i class="fa fa-info-circle mo_oauth_info mo_oauth_x_updateapp_6" aria-hidden="true"></i></div>
 			<td class="mo_oauth_contact_heading"><input class="mo_table_textbox" id="callbackurl" readonly="true" type="text" name="mo_oauth_callback_url" value='<?php echo esc_attr( $currentapp['redirecturi'] ); ?>'>
 			&nbsp;&nbsp;
-			<div class="mo_oauth_tooltip" style="display: inline;"><span class="mo_tooltiptext" id="moTooltip_copy">Copy to clipboard</span><i class="fa fa-clipboard fa-border" style="font-size:20px; align-items: center;vertical-align: middle;" aria-hidden="true" onclick="mooauth_copyUrl()" onmouseout="mooauth_outFunc()"></i></div>
+			<div class="mo_oauth_tooltip mo_oauth_x_updateapp_4"><span class="mo_tooltiptext" id="moTooltip_copy">Copy to clipboard</span><i class="fa fa-clipboard fa-border mo_oauth_x_updateapp_7" aria-hidden="true" onclick="mooauth_copyUrl()" onmouseout="mooauth_outFunc()"></i></div>
 			</td>
 			</tr>
 			<tr class="mo_oauth_configure_table_rows">
 				<td class="mo_oauth_contact_heading"><strong class="mo_strong"><font color="#FF0000">*</font><?php esc_html_e( 'Client ID :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
-				<td class="mo_oauth_contact_heading"><input class="mo_table_textbox" required="" type="text" name="mo_oauth_client_id" value="<?php echo $currentapp['clientid']; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Adding phpcs ignore because there are special chars in client id ?>"></td>
+				<td class="mo_oauth_contact_heading"><input class="mo_table_textbox" required="" type="text" name="mo_oauth_client_id" value="<?php echo esc_attr( $currentapp['clientid'] ); ?>"></td>
 			</tr>
 			<tr class="mo_oauth_configure_table_rows">
 				<td class="mo_oauth_contact_heading"><strong class="mo_strong"><font color="#FF0000">*</font><?php esc_html_e( 'Client Secret :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
 				<td class="mo_oauth_contact_heading">
-					<input id="mo_oauth_client_secret" class="mo_table_textbox" required="" type="password"  name="mo_oauth_client_secret" value="<?php echo ( $currentapp['clientsecret'] ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Adding phpcs ignore because there are special chars in client secret ?>">
-					<i class="fa fa-eye" onclick="mooauth_showClientSecret()" id="show_button" style="margin-left:-30px; cursor:pointer;"></i>
+					<input id="mo_oauth_client_secret" class="mo_table_textbox" required="" type="password"  name="mo_oauth_client_secret" value="<?php echo esc_attr( $currentapp['clientsecret'] ); ?>">
+					<i class="fa fa-eye mo_oauth_x_updateapp_8" onclick="mooauth_showClientSecret()" id="show_button"></i>
 				</td>
 			</tr>
 			<tr class="mo_oauth_configure_table_rows">
@@ -121,54 +121,42 @@ function mooauth_client_update_app_page( $appname ) {
 					?>
 				<tr >
 					<td class="mo_oauth_contact_heading"><strong class="mo_strong"><font color="#FF0000"></font><?php echo esc_attr( $currentappname ); ?> <?php esc_html_e( 'Domain:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
-					<td><input 
-					<?php
-					if ( 'invalid' === $valid_discovery ) {
-						echo 'style="border-color:red;"';}
-					?>
-					class="mo_table_textbox" type="text" name="mo_oauth_provider_domain"
+					<td><input
+					class="mo_table_textbox<?php echo ( 'invalid' === $valid_discovery ) ? ' mo_oauth_x_updateapp_9' : ''; ?>" type="text" name="mo_oauth_provider_domain"
 					value="<?php echo esc_attr( $currentapp['domain'] ); ?>">&nbsp;&nbsp;&nbsp;
 					<?php
 					if ( 'valid' === $valid_discovery ) {
-						echo '<i class="fa fa-thumbs-up" style="color:#0080007d; font-size: 30px;"></i>';
+						echo '<i class="fa fa-thumbs-up mo_oauth_x_updateapp_2"></i>';
 					} else {
-						echo '<i class="fa fa-thumbs-down" style="color:#ff000085; font-size: 30px;"></i>';}
+						echo '<i class="fa fa-thumbs-down mo_oauth_x_updateapp_1"></i>';}
 					?>
 					</td>
 				</tr>
 			<?php } elseif ( isset( $currentapp['tenant'] ) ) { ?>
 					<tr>
 						<td class="mo_oauth_contact_heading"><strong class="mo_strong"><font color="#FF0000"></font><?php echo esc_html( $currentappname ); ?> <?php esc_html_e( 'Tenant:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
-						<td><input 
-						<?php
-						if ( 'invalid' === $valid_discovery ) {
-							echo 'style="border-color:red;"';}
-						?>
-						class="mo_table_textbox" type="text" name="mo_oauth_provider_tenant"
+						<td><input
+						class="mo_table_textbox<?php echo ( 'invalid' === $valid_discovery ) ? ' mo_oauth_x_updateapp_9' : ''; ?>" type="text" name="mo_oauth_provider_tenant"
 						value="<?php echo esc_attr( $currentapp['tenant'] ); ?>">&nbsp;&nbsp;&nbsp;
 						<?php
 						if ( 'valid' === $valid_discovery ) {
-							echo '<i class="fa fa-thumbs-up" style="color:#0080007d; font-size: 30px;"></i>';
+							echo '<i class="fa fa-thumbs-up mo_oauth_x_updateapp_2"></i>';
 						} else {
-							echo '<i class="fa fa-thumbs-down" style="color:#ff000085; font-size: 30px;"></i>';}
+							echo '<i class="fa fa-thumbs-down mo_oauth_x_updateapp_1"></i>';}
 						?>
 						</td>
 					</tr>
 					<?php } if ( isset( $currentapp['policy'] ) ) { ?>
 				<tr >
 					<td class="mo_oauth_contact_heading"><strong class="mo_strong"><font color="#FF0000"></font><?php echo esc_html( $currentappname ); ?> <?php esc_html_e( 'Policy:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
-					<td><input 
-					<?php
-					if ( 'invalid' === $valid_discovery ) {
-						echo 'style="border-color:red;"';}
-					?>
-					class="mo_table_textbox" type="text"  name="mo_oauth_provider_policy" 
+					<td><input
+					class="mo_table_textbox<?php echo ( 'invalid' === $valid_discovery ) ? ' mo_oauth_x_updateapp_9' : ''; ?>" type="text"  name="mo_oauth_provider_policy"
 					value="<?php echo esc_attr( $currentapp['policy'] ); ?>">&nbsp;&nbsp;&nbsp;
 					<?php
 					if ( 'valid' === $valid_discovery ) {
-						echo '<i class="fa fa-thumbs-up" style="color:#0080007d; font-size: 30px;"></i>';
+						echo '<i class="fa fa-thumbs-up mo_oauth_x_updateapp_2"></i>';
 					} else {
-						echo '<i class="fa fa-thumbs-down" style="color:#ff000085; font-size: 30px;"></i>';}
+						echo '<i class="fa fa-thumbs-down mo_oauth_x_updateapp_1"></i>';}
 					?>
 					</td>
 				</tr>
@@ -178,23 +166,19 @@ function mooauth_client_update_app_page( $appname ) {
 			</tr>					
 			<tr >
 				<td></td>
-				<td><font><small><strong class="mo_strong" style="color: rgb(255,0,0);">[This field is necessary to enable 'Forgot Password / Reset Password' flow from Azure's Login page]</strong></small></font></td>
+				<td><font><small><strong class="mo_strong mo_oauth_x_updateapp_10">[This field is necessary to enable 'Forgot Password / Reset Password' flow from Azure's Login page]</strong></small></font></td>
 				</tr>
 			<?php } elseif ( isset( $currentapp['realm'] ) ) { ?>
 					<tr>
 						<td class="mo_oauth_contact_heading"><strong class="mo_strong"><font color="#FF0000"></font><?php echo esc_html( $currentappname ); ?> <?php esc_html_e( 'Realm:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>
 						</td>
-						<td><input 
-						<?php
-						if ( 'invalid' === $valid_discovery ) {
-							echo 'style="border-color:red;"';}
-						?>
-						class="mo_table_textbox" type="text" name="mo_oauth_provider_realm" value="<?php echo esc_attr( $currentapp['realm'] ); ?>">&nbsp;&nbsp;&nbsp;
+						<td><input
+						class="mo_table_textbox<?php echo ( 'invalid' === $valid_discovery ) ? ' mo_oauth_x_updateapp_9' : ''; ?>" type="text" name="mo_oauth_provider_realm" value="<?php echo esc_attr( $currentapp['realm'] ); ?>">&nbsp;&nbsp;&nbsp;
 						<?php
 						if ( 'valid' === $valid_discovery ) {
-							echo '<i class="fa fa-thumbs-up" style="color:#0080007d; font-size: 30px;"></i>';
+							echo '<i class="fa fa-thumbs-up mo_oauth_x_updateapp_2"></i>';
 						} else {
-							echo '<i class="fa fa-thumbs-down" style="color:#ff000085; font-size: 30px;"></i>';}
+							echo '<i class="fa fa-thumbs-down mo_oauth_x_updateapp_1"></i>';}
 						?>
 						</td>
 					</tr>
@@ -249,11 +233,11 @@ function mooauth_client_update_app_page( $appname ) {
 
 				<tr>
 					<td class="mo_oauth_contact_heading"><strong class="mo_strong"><?php esc_html_e( 'Send client credentials in :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
-					<td><div style="padding:5px;"></div><input type="checkbox" class="mo_input_checkbox" class="mo_table_textbox" name="mo_oauth_authorization_header" <?php checked( '1' === $currentapp['send_headers'] || 1 === $currentapp['send_headers'] ); ?> value="1"> <?php esc_html_e( 'Header', 'miniorange-login-with-eve-online-google-facebook' ); ?><span style="padding:0px 0px 0px 8px;"></span><input type="checkbox" class="mo_input_checkbox" class="mo_table_textbox" name="mo_oauth_body"<?php checked( '1' === $currentapp['send_body'] || 1 === $currentapp['send_body'] ); ?> value="1"> <?php esc_html_e( 'Body', 'miniorange-login-with-eve-online-google-facebook' ); ?><div style="padding:5px;"></div></td>
+					<td><div class="mo_oauth_x_updateapp_11"></div><input type="checkbox" class="mo_input_checkbox" class="mo_table_textbox" name="mo_oauth_authorization_header" <?php checked( '1' === $currentapp['send_headers'] || 1 === $currentapp['send_headers'] ); ?> value="1"> <?php esc_html_e( 'Header', 'miniorange-login-with-eve-online-google-facebook' ); ?><span class="mo_oauth_x_updateapp_12"></span><input type="checkbox" class="mo_input_checkbox" class="mo_table_textbox" name="mo_oauth_body"<?php checked( '1' === $currentapp['send_body'] || 1 === $currentapp['send_body'] ); ?> value="1"> <?php esc_html_e( 'Body', 'miniorange-login-with-eve-online-google-facebook' ); ?><div class="mo_oauth_x_updateapp_11"></div></td>
 				</tr>
 				<tr>
 				<td class="mo_oauth_contact_heading"><strong class="mo_strong"><?php esc_html_e( 'State Parameter :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
-				<td><div style="padding:5px;"></div><input type="checkbox" class="mo_input_checkbox" name="mo_oauth_state" value ="1" 
+				<td><div class="mo_oauth_x_updateapp_11"></div><input type="checkbox" class="mo_input_checkbox" name="mo_oauth_state" value ="1" 
 				<?php
 				if ( isset( $currentapp['send_state'] ) ) {
 					if ( 1 === $currentapp['send_state'] ) {
@@ -266,7 +250,7 @@ function mooauth_client_update_app_page( $appname ) {
 				<td><br></td>
 			</tr>
 			<tr>
-				<td class="mo_oauth_contact_heading"><strong class="mo_strong" class="mo_oauth_position"><?php esc_html_e( 'Group User Info Endpoint :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip" style="margin: 0px 0px 20px -60px;"  >PREMIUM</span>
+				<td class="mo_oauth_contact_heading"><strong class="mo_strong" class="mo_oauth_position"><?php esc_html_e( 'Group User Info Endpoint :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip mo_oauth_x_updateapp_13">PREMIUM</span>
 						<i class="fa fa-info-circle mo_oauth_info"></i></div></small>
 </td>
 				<td><input class="mo_table_textbox mo_oauth_input_disabled" type="text" value="" disabled >
@@ -283,7 +267,7 @@ function mooauth_client_update_app_page( $appname ) {
 			<?php } ?>
 			<tr><tr>
 				<td class="mo_oauth_contact_heading"><strong class="mo_strong"><?php esc_html_e( 'Login Button:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
-				<td><div style="padding:5px;"></div><input class="mo_oauth_input_box_css" type="checkbox" class="mo_input_checkbox" name="mo_oauth_show_on_login_page" value ="1" 
+				<td><div class="mo_oauth_x_updateapp_11"></div><input class="mo_oauth_input_box_css" type="checkbox" class="mo_input_checkbox" name="mo_oauth_show_on_login_page" value ="1" 
 				<?php
 				if ( isset( $currentapp['show_on_login_page'] ) ) {
 					if ( 1 === $currentapp['show_on_login_page'] ) {
@@ -295,7 +279,7 @@ function mooauth_client_update_app_page( $appname ) {
 			</tr>
 			<tr>
 				<td class="mo_oauth_contact_heading"><strong class="mo_strong"><?php esc_html_e( 'Allow admin SSO:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
-				<td><div style="padding:5px;"></div><input class="mo_oauth_input_box_css" type="checkbox" class="mo_input_checkbox" name="mo_oauth_allow_admin_sso" value ="1" 
+				<td><div class="mo_oauth_x_updateapp_11"></div><input class="mo_oauth_input_box_css" type="checkbox" class="mo_input_checkbox" name="mo_oauth_allow_admin_sso" value ="1" 
 				<?php
 				if ( isset( $currentapp['allow_admin_sso'] ) ) {
 					if ( 1 === $currentapp['allow_admin_sso'] ) {
@@ -306,7 +290,7 @@ function mooauth_client_update_app_page( $appname ) {
 				/><?php esc_html_e( 'Allow admin user to perform SSO', 'miniorange-login-with-eve-online-google-facebook' ); ?></td>
 				</tr><td></td>
 				<td>
-					<div id="admin_sso_notice" class="mo-oauth-admin-sso-notice" style="display:none;">
+					<div id="admin_sso_notice" class="mo-oauth-admin-sso-notice mo_oauth_hidden">
 						<span class="dashicons dashicons-info"></span>
 						<?php esc_html_e( 'Please enable', 'miniorange-login-with-eve-online-google-facebook' ); ?> 
 						<a href="admin.php?page=mo_oauth_settings&tab=attributemapping"><b><?php esc_html_e( 'email mapping', 'miniorange-login-with-eve-online-google-facebook' ); ?></b></a> 
@@ -330,58 +314,6 @@ function mooauth_client_update_app_page( $appname ) {
 		<p class="mo_oauth_upgrade_warning"><strong class="mo_strong">*NOTE:&nbsp; </strong><b><?php esc_html_e( 'Please configure', 'miniorange-login-with-eve-online-google-facebook' ); ?> <a id="mo_oauth_attr_map" href='<?php echo esc_attr( admin_url( 'admin.php?page=mo_oauth_settings&tab=attributemapping' ) ); ?>'><?php esc_html_e( 'Attribute Mapping', 'miniorange-login-with-eve-online-google-facebook' ); ?></a> <?php esc_html_e( 'before trying Single Sign-On.', 'miniorange-login-with-eve-online-google-facebook' ); ?></b></p>
 		</form>
 		</div>
-		</div>
-		<?php if ( $is_other_app ) { ?>
-		<script>
-		function mooauth_proceedToAttributeMapping() {
-			var link = jQuery("#mo_oauth_attr_map").attr("href");
-			window.location.href = link;
-		}
-
-		function mooauth_testConfiguration(){
-			var mo_oauth_app_name = jQuery("#mo_oauth_app_nameid").val();
-			var myWindow = window.open('<?php echo esc_attr( site_url() ); ?>' + '/?option=testattrmappingconfig&app=' + mo_oauth_app_name + '&time=' + Date.now(), "Test Attribute Configuration", "width=600, height=600");
-			/*try {
-				while(1) {
-					if(myWindow.closed()) {
-						$(document).trigger("config_tested");
-						break;
-					} else {continue;}
-				}
-			} catch(err) {
-				console.error(err);
-			}*/
-		}
-
-		function mooauth_showClientSecret(){
-			var field = document.getElementById("mo_oauth_client_secret");
-			var show_button = document.getElementById("show_button");
-			if(field.type == "password"){
-				field.type = "text";
-				show_button.className = "fa fa-eye-slash";
-			}
-			else{
-				field.type = "password";
-				show_button.className = "fa fa-eye";
-			}
-		}
-
-		jQuery(document).ready(function($) {
-			function toggleAdminSSONotice() {
-				if ($('input[name="mo_oauth_allow_admin_sso"]').is(':checked')) {
-					$('#admin_sso_notice').slideDown(300);
-				} else {
-					$('#admin_sso_notice').slideUp(300);
-				}
-			}
-			toggleAdminSSONotice();
-			$('input[name="mo_oauth_allow_admin_sso"]').on('change', function() {
-				toggleAdminSSONotice();
-			});
-		});
-
-		</script>
-			<?php
-		}
+		<?php
 		mooauth_client_grant_type_settings();
 }

@@ -155,26 +155,11 @@ class MO_OAuth_Admin_Notice {
 						</a>
 					</span>
 					</h4>
-					<button type="button" class="notice-dismiss" id="mo_oauth_client_disable_admin_notice">
+					<button type="button" class="notice-dismiss" id="mo_oauth_client_disable_admin_notice" data-mo-nonce="<?php echo esc_attr( wp_create_nonce( 'mo_dismiss_notice' ) ); ?>">
 					<span class="screen-reader-text">Dismiss this notice.</span>
 					</button>
 				</div>
 				</form>
-			<script>
-			jQuery("#mo_oauth_client_disable_admin_notice").click(function() {
-				jQuery.ajax({
-					url: ajaxurl,
-					type: 'POST',
-					data: {
-						action: 'mo_dismiss_admin_notice',
-						security: '<?php echo esc_attr( wp_create_nonce( 'mo_dismiss_notice' ) ); ?>'
-					},
-					success: function(response) {
-						jQuery('#mo_oauth_client_admin_notice_form').fadeOut();
-					}
-				});
-			});
-			</script>
 			<?php
 		}
 	}

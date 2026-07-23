@@ -14,106 +14,66 @@
 class MO_OAuth_Utils {
 
 	/**
-	 * Check if SSL certificate is valid for a domain
+	 * Get the decoded default-apps catalogue (defaultapps.json, ~49 KB).
 	 *
-	 * @param string $domain The domain to validate SSL for.
-	 * @return bool True if SSL is valid, false otherwise.
+	 * The file used to be re-read and re-JSON-decoded at every call site — several
+	 * times per admin render. The decoded object is cached in a static for the
+	 * current request and in the object cache (persistent when a drop-in such as
+	 * Redis/Memcached is installed). The cache key embeds the plugin asset version
+	 * so plugin updates naturally invalidate it.
+	 *
+	 * @return object|null Catalogue keyed by app ID, or null if the file is unreadable.
 	 */
-	public static function check_ssl_validity( $domain ) {
-		$domain       = preg_replace( '#^https?://#', '', $domain );
-		$domain       = explode( '/', $domain )[0];
-		$domain_parts = explode( ':', $domain );
-		$host         = $domain_parts[0];
-		$port         = isset( $domain_parts[1] ) ? $domain_parts[1] : '443';
+	public static function get_default_apps() {
+		static $apps = null;
 
-		if ( 'localhost' === $host || '127.0.0.1' === $host || '::1' === $host ) {
-			if ( class_exists( 'MOOAuth_Debug' ) ) {
-				MOOAuth_Debug::mo_oauth_log( 'SSL Certificate Check: SKIPPED for localhost domain: ' . $host . ' - SSL verification disabled' );
-			}
-			return false;
+		if ( null !== $apps ) {
+			return $apps;
 		}
 
-		$context_options = array(
-			'ssl' => array(
-				'capture_peer_cert' => true,
-				'verify_peer'       => true,
-				'verify_peer_name'  => true,
-				'allow_self_signed' => false,
-			),
-		);
+		$version   = defined( 'MO_OAUTH_CSS_JS_VERSION' ) ? MO_OAUTH_CSS_JS_VERSION : '0';
+		$cache_key = 'mo_oauth_default_apps_' . $version;
+		$cached    = wp_cache_get( $cache_key, 'mo_oauth' );
 
-		$context = stream_context_create( $context_options );
-
-		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- stream_socket_client() can emit warnings on expected SSL/connection failures; failure is handled via false and $errno/$errstr.
-		$client = @stream_socket_client(
-			"ssl://{$host}:{$port}",
-			$errno,
-			$errstr,
-			10,
-			STREAM_CLIENT_CONNECT,
-			$context
-		);
-
-		if ( false === $client ) {
-			if ( class_exists( 'MOOAuth_Debug' ) && ( 0 !== $errno || '' !== $errstr ) ) {
-				MOOAuth_Debug::mo_oauth_log(
-					sprintf(
-						'SSL Certificate Check: Connection failed. errno: %d, errstr: %s',
-						$errno,
-						$errstr
-					)
-				);
-			}
-			return false;
+		if ( false !== $cached ) {
+			$apps = $cached;
+			return $apps;
 		}
 
-		$params = stream_context_get_params( $client );
+		$apps = wp_json_file_decode( plugin_dir_path( __FILE__ ) . 'admin' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'apps' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'defaultapps.json' );
+		wp_cache_set( $cache_key, $apps, 'mo_oauth', HOUR_IN_SECONDS );
 
-		if ( ! isset( $params['options']['ssl']['peer_certificate'] ) ) {
-			fclose( $client ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
-			return false;
-		}
-
-		$cert       = openssl_x509_parse( $params['options']['ssl']['peer_certificate'] );
-		$valid_to   = $cert['validTo_time_t'];
-		$valid_from = $cert['validFrom_time_t'];
-		$is_valid   = time() >= $valid_from && time() < $valid_to;
-
-		fclose( $client ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
-
-		if ( class_exists( 'MOOAuth_Debug' ) ) {
-			$status = $is_valid ? 'VALID' : 'INVALID';
-			$expiry = gmdate( 'Y-m-d H:i:s', $valid_to );
-			MOOAuth_Debug::mo_oauth_log( 'SSL Certificate Check: ' . $status . ' for WordPress domain: ' . $domain . ' (Expires: ' . $expiry . ')' );
-		}
-
-		return $is_valid;
+		return $apps;
 	}
 
 	/**
-	 * Get SSL verification setting for wp_remote requests
+	 * Get SSL verification setting for wp_remote requests.
 	 *
-	 * @param string $url The URL to check SSL for.
-	 * @return bool Whether SSL verification should be enabled.
+	 * Always verifies SSL for real external hosts (letting wp_remote_get's own
+	 * certificate validation run as normal) — the only exception is a narrow
+	 * carve-out for localhost/loopback targets, a common local-development
+	 * convenience where self-signed certificates are the norm.
+	 *
+	 * This used to determine the verdict by checking the *local WordPress site's*
+	 * own certificate rather than the target $url's host, and silently disabled
+	 * verification for every outbound call whenever that unrelated check failed —
+	 * a TLS-downgrade risk. Now it looks at $url itself and defaults to requiring
+	 * verification, matching how sslverify should behave for a remote IdP endpoint.
+	 *
+	 * @param string $url The URL about to be requested via wp_remote_get/post.
+	 * @return bool Whether SSL verification should be enabled for this request.
 	 */
 	public static function get_ssl_verify_setting( $url ) {
-		$site_url        = site_url();
-		$parsed_site_url = wp_parse_url( $site_url );
+		$parsed_url = wp_parse_url( $url );
+		$host       = isset( $parsed_url['host'] ) ? trim( $parsed_url['host'], '[]' ) : ''; // parse_url() keeps the brackets around an IPv6 literal host, e.g. "[::1]".
 
-		if ( ! $parsed_site_url || ! isset( $parsed_site_url['host'] ) ) {
+		if ( in_array( $host, array( 'localhost', '127.0.0.1', '::1' ), true ) ) {
 			if ( class_exists( 'MOOAuth_Debug' ) ) {
-				MOOAuth_Debug::mo_oauth_log( 'SSL Verify Setting: TRUE (default) - Unable to parse WordPress site URL: ' . $site_url );
+				MOOAuth_Debug::mo_oauth_log( 'SSL Verify Setting: FALSE - localhost/loopback target: ' . $url );
 			}
-			return true;
+			return false;
 		}
 
-		$ssl_valid = self::check_ssl_validity( $parsed_site_url['host'] );
-
-		if ( class_exists( 'MOOAuth_Debug' ) ) {
-			$setting = $ssl_valid ? 'TRUE' : 'FALSE';
-			MOOAuth_Debug::mo_oauth_log( 'SSL Verify Setting: ' . $setting . ' for WordPress domain: ' . $parsed_site_url['host'] . ' (Request URL: ' . $url . ')' );
-		}
-
-		return $ssl_valid;
+		return true;
 	}
 }

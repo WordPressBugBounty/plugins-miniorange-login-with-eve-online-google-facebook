@@ -32,7 +32,7 @@ function mooauth_client_setup_client() {
 	      <div class="field-group">
 	        <label>Client Secret:</label>
 	        <input title="Client Secret"
-	        type="password" style="padding-right:8%"class="mo-normal-text long-field" name="clientSecret" id="clientSecret" value="" autocomplete="off" placeholder="Provide your client secret"><i class="fa fa-eye" onclick="mooauth_showClientSecret(\'clientSecret\',\'show_button\')" id="show_button"></i>
+	        type="password" class="mo-normal-text long-field mo-w-secret-input" name="clientSecret" id="clientSecret" value="" autocomplete="off" placeholder="Provide your client secret"><i class="fa fa-eye" onclick="mooauth_showClientSecret(\'clientSecret\',\'show_button\')" id="show_button"></i>
 	      </div>';
 		echo '<div class="field-group" id="mo-oauth-scope">
 		        <label>Scopes</label>
@@ -48,15 +48,6 @@ function mooauth_client_setup_client() {
 		            If your required scope is not in the list, write your own and <b> hit enter </b> button.
 		          </p>
 		        </div>
-	      	</div>
-	      	<script>
-					jQuery(".ui.dropdown.fluid")
-					  .dropdown({
-					    allowAdditions: true,
-					    hideAdditions: false,
-					    clearable:true
-					  });
-
-			</script>';
+	      	</div>';
 }
 

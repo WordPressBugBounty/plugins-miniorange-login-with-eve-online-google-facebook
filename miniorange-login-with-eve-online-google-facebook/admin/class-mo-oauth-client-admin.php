@@ -79,7 +79,7 @@ class MO_OAuth_Client_Admin {
 	public function admin_menu() {
 		$slug = 'mo_oauth_settings';
 		add_menu_page(
-			'MO OAuth Settings  ' . esc_html__( 'Configure OAuth', 'mo_oauth_settings' ),
+			'MO OAuth Settings  ' . esc_html__( 'Configure OAuth', 'miniorange-login-with-eve-online-google-facebook' ),
 			MO_OAUTH_ADMIN_MENU,
 			'administrator',
 			$slug,
@@ -114,7 +114,11 @@ class MO_OAuth_Client_Admin {
 	 */
 	public function menu_options() {
 		global $wpdb;
-		update_option( 'host_name', 'https://login.xecurify.com' );
+		// Only write when the value actually needs to change — update_option() with
+		// an unchanged value still runs on every plugin-page render otherwise.
+		if ( MO_OAUTH_HOSTNAME !== get_option( 'host_name' ) ) {
+			update_option( 'host_name', MO_OAUTH_HOSTNAME );
+		}
 		mooauth_client_main_menu();
 	}
 }

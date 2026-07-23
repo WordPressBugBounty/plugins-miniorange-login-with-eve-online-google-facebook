@@ -8,6 +8,9 @@
  * @link       https://miniorange.com
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Importing required files.
  */
@@ -59,7 +62,7 @@ class MO_OAuth_Client_Setup_Wizard {
 			<div class="moa">
 			    <h1 class="mo_oauth_h1">Setup Wizard</h1>
 			        <!--multistep -->
-				<div class="mo-multistepper-root" style="display:none;">
+				<div class="mo-multistepper-root mo-hidden">
 					<div class="mo-multistep-root">
 						<span class="mo-multilabel-root">
 							<span class="mo-multistep-icon-container">
@@ -113,31 +116,31 @@ class MO_OAuth_Client_Setup_Wizard {
 		    <div class="aui-page-panel">
 		    	<div class="aui-page-panel-inner">
 		    		<section class="aui-page-panel-content">
-				    	<div id="step1" style="display:none">';
+				    	<div id="step1" class="mo-hidden">';
 							mooauth_client_setup_apps();
 				echo '</div>
-						<div id="step2" style="display:none">';
+						<div id="step2" class="mo-hidden">';
 							mooauth_client_setup_callback();
 							mooauth_client_setup_client();
 							mooauth_client_setup_endpoints();
 				echo '</div>
-						<div id="step3" style="display:none">';
+						<div id="step3" class="mo-hidden">';
 							mooauth_client_summary();
 				echo '</div>		
-						<div id="step4" style="display:none">';
+						<div id="step4" class="mo-hidden">';
 							mooauth_setup_wizard_test();
 				echo '</div>
 					<!-- troubleshooting -->
-					</br>
-					<div class="mo-oauth-troubleshooting" style="display:none">
-					<h3 style="display:inline-block">Troubleshooting</h3>
+					<br>
+					<div class="mo-oauth-troubleshooting mo-hidden">
+					<h3 class="mo-w-inline-block">Troubleshooting</h3>
 					<ui id="mo-oauth-troubleshooting-ul">
 					</ui>
 					<br>
 					<h4 id="mo-oauth-unable-to-connect"></h4>
 					</div>			
 				 	<!-- content footer -->
-				        <div class="mo-button__footer" style="display:none;">
+				        <div class="mo-button__footer mo-hidden">
 				            <div>
 				                <input type="submit" class="mo-button--secondary" id="mo-btn-back" name="back" value="Back">
 				            </div>
@@ -149,7 +152,7 @@ class MO_OAuth_Client_Setup_Wizard {
 				                <input type="submit" class="mo-button mo-oauth-next-setup mo-btn-test-finish_class" value="Finish"  id="mo-btn-test-finish">
 				            </div>
 				        </div>
-				        <div class="mo-skip__footer" style="display:none;">				                
+				        <div class="mo-skip__footer mo-hidden">
 				                <input type="submit" class="mo-button mo-oauth-skip-setup" id="mo-btn-skip" value="Skip">
 				        </div>
 						<div class="mo-hidden">
@@ -169,156 +172,10 @@ class MO_OAuth_Client_Setup_Wizard {
 		    <div class="mo-logo-footer">
 		    	Powered by <img src="' . esc_attr( plugin_dir_url( __FILE__ ) ) . '/images/miniorange.png" alt="miniOrange" />
 		    </div>
-			<script>
-				mooauth_auto_fill_form();
-				jQuery("#mo-btn-next, .mo-button--secondary, .mo-oauth-save-draft, .close, .mo-oauth-skip-setup, #mo-btn-finish").click(function(e){
-					target = e.target.id;
-					jQuery("#"+target).prop("disabled",true);
-					console.log("#"+target);
-					if("mo-btn-next" == target){
-						var data= mooauth_get_data("save_draft","next");
-					}
-					if("mo-btn-back" == target){
-						var data= mooauth_get_data("save_draft","back");
-				    	
-					}
-					if("mo-link-draft" == target){
-						var data= mooauth_get_data("save_draft","draft");
-					}					
-					if("mo-btn-finish" == target){
-
-						var data= mooauth_get_data("save_app","finish");
-					}										
-					if("mo-btn-close" == target){
-
-						var data= mooauth_get_data("save_draft","close");
-					}										
-					if("mo-btn-skip" == target){
-						var data= mooauth_get_data("save_draft","skip");
-					}
-					if("mo-btn-next" == target || "mo-btn-back" == target){
-						jQuery.post(mo_oauth_ajax_object.ajax_url, data, function(response){
-							jQuery("#"+target).prop("disabled",false);
-							if (undefined != response.mo_oauth_discovery_validation)
-								var discovery_validation = response.mo_oauth_discovery_validation;
-							else 
-								var discovery_validation = "";
-							if("invalid" == discovery_validation){
-								jQuery(".mo-valid-icon").addClass("fa-thumbs-down");								
-								jQuery(".mo-valid-icon").removeClass("fa-thumbs-up");
-								jQuery(".mo-oauth-troubleshooting").show();
-								mooauth_get_discovery_troubleshooting(response.mo_oauth_discovery_url,response.mo_oauth_input,response.mo_oauth_appId);
-							}else{
-								jQuery("#Domain").val(response.domain);
-								jQuery(".mo-oauth-troubleshooting").hide();
-								if(undefined != response.mo_oauth_scopes_list && "" != response.mo_oauth_scopes_list ){
-									if(!Array.isArray(response.mo_oauth_scopes_list))
-										var scope_list = JSON.parse(response.mo_oauth_scopes_list);
-									else
-										var scope_list = response.mo_oauth_scopes_list;
-									jQuery(".ui.fluid.dropdown").dropdown({values:scope_list});
-									jQuery("#scope_list").val(response.mo_oauth_scopes_list);
-								}else{
-						           	jQuery(".ui.fluid.dropdown").dropdown({values:[]});
-						            jQuery("#scope_list").val("");
-						        }
-								if(undefined != response.mo_oauth_scopes && "" != response.mo_oauth_scopes && "[\"\"]" != response.mo_oauth_scopes  ){
-									console.log("scopes in ajax response");
-									console.log(response.mo_oauth_scopes);
-									if(!Array.isArray(response.mo_oauth_scopes))
-										var scopes = JSON.parse(response.mo_oauth_scopes);
-									else
-										var scopes = response.mo_oauth_scopes;
-										console.log("scopes after parse");
-										console.log(scopes);
-
-									jQuery(".ui.dropdown.fluid").dropdown({allowAdditions: true,clearable:true});
-									jQuery(".ui.fluid.dropdown").dropdown("clear");
-									jQuery(".ui.fluid.dropdown").dropdown("set selected",scopes);
-								}else{
-									jQuery(".ui.dropdown.fluid").dropdown({allowAdditions: true,clearable:true});
-								}	
-								if("valid" == discovery_validation){
-									jQuery(".mo-valid-icon").addClass("fa-thumbs-up");
-									jQuery(".mo-valid-icon").removeClass("fa-thumbs-down");
-								}else{									
-									jQuery(".mo-valid-icon").removeClass("fa-thumbs-up");
-									jQuery(".mo-valid-icon").removeClass("fa-thumbs-down");
-								}
-								if("mo-btn-next" == target){
-								 	mooauth_steps_icr();
-								}
-								else{
-									mooauth_steps_dcr();
-								}
-								console.log("removing disabling button");
-							}
-						});
-					}
-					else if("mo-btn-close" == target || "mo-link-draft" == target || "mo-btn-skip" == target){
-						jQuery.post(mo_oauth_ajax_object.ajax_url, data, function(response){
-							window.location.href = window.location.pathname + "?page=mo_oauth_settings&tab=config";
-							});
-					}
-					else{
-						var mo_response = mooauth_input_validation();
-						if(mo_response == "success"){
-							jQuery.post(mo_oauth_ajax_object.ajax_url, data, function(response){
-							if("mo-btn-finish" == target){
-								var site_url = "' . esc_url_raw( site_url() ) . '";
-								mooauth_testConfiguration(site_url);
-								mo_oauth_test_ajax_count = 0;
-								mooauth_get_test_result();
-								mo_oauth_trace_test_progress = setInterval(mooauth_get_test_result, 5000);
-							}
-							jQuery("#"+target).removeAttr("disabled");
-							jQuery(".mo-oauth-test-in-progress").show();
-							jQuery(".mo-oauth-test-in-failed").hide();
-							jQuery(".mo-oauth-test-successed").hide();
-							mooauth_steps_icr();
-							});	
-						}else{
-							jQuery("#"+target).removeAttr("disabled");
-						}
-					}				
-				});
-
-				jQuery(".mo-btn-test-finish_class").click(function(){
-					var data = {
-						"action": "mo_outh_ajax",
-        				"mo_oauth_option": "test_finish",
-        				"mo_oauth_nonce" : jQuery("#nonce").val()
-					}
-					jQuery.post(mo_oauth_ajax_object.ajax_url, data, function(response){
-						window.location.href = window.location.pathname + "?page=mo_oauth_settings&tab=config";
-					});
-				});
-				jQuery("#mo-btn-test-re-run").click(function(){
-					jQuery(".mo-oauth-troubleshooting").hide();
-					var data= mooauth_get_data("save_app","finish");
-					if("mo-btn-finish" == target || "mo-btn-next" == target){
-						var site_url = "' . esc_url_raw( site_url() ) . '";
-						mooauth_testConfiguration(site_url);
-						mo_oauth_test_ajax_count = 0;
-						mooauth_get_test_result();
-						mo_oauth_trace_test_progress = setInterval(mooauth_get_test_result, 5000);
-					}
-					jQuery("#"+target).removeAttr("disabled");
-					jQuery(".mo-oauth-test-in-progress").show();
-					jQuery(".mo-oauth-test-in-failed").hide();
-					jQuery(".mo-oauth-test-successed").hide();
-				});
-				jQuery("#mo-support-msg-hide").click(function(){
-					jQuery("#help-container").hide();
-				});
-				jQuery("#service-btn").click(function(){
-					jQuery(".support-form-container").show();
-				});
-				jQuery("#mo-support-form-hide").click(function(){
-					jQuery(".support-form-container").hide();
-					});
-			</script>
-		</body>';
+		';
+			wp_enqueue_script( 'mo_oauth_setup_wizard_inline_script', plugin_dir_url( __FILE__ ) . 'js/wizard-inline.min.js', array( 'jquery', 'mo_oauth_setup_wizard_script' ), MO_OAUTH_CSS_JS_VERSION, false );
+			wp_print_scripts( 'mo_oauth_setup_wizard_inline_script' );
+		echo '</body>';
 	}
 }
 

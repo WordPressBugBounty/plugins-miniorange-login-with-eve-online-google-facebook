@@ -84,8 +84,7 @@ class MO_OAuth_Wizard_Ajax {
 			wp_send_json( 'No application selected' );
 		}
 
-		$defaultapps     = file_get_contents( dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . '/apps/partials/defaultapps.json' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Using file_put_contents to fetch local file and not remote file.
-		$defaultappsjson = json_decode( $defaultapps );
+		$defaultappsjson = MO_OAuth_Utils::get_default_apps();
 		$appname         = $app['mo_oauth_appId'];
 		if ( isset( $app['mo_oauth_input'] ) ) {
 			foreach ( $defaultappsjson as $app_id => $application ) {
@@ -193,8 +192,7 @@ class MO_OAuth_Wizard_Ajax {
 			}
 		}
 		$newapp          = array();
-		$defaultapps     = file_get_contents( dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR . '/apps/partials/defaultapps.json' ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Using file_put_contents to fetch local file and not remote file.
-		$defaultappsjson = json_decode( $defaultapps );
+		$defaultappsjson = MO_OAuth_Utils::get_default_apps();
 		$appname         = $app['mo_oauth_appId'];
 		foreach ( $defaultappsjson as $app_id => $application ) {
 			if ( $app_id === $appname ) {

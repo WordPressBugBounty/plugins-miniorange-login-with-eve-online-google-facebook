@@ -41,7 +41,8 @@
 		"label":"Clever", "type":"oauth", "image":"clever.png", "scope": "read:students read:teachers read:user_id", "domain": "", "discovery":"", "authorize": "https://clever.com/oauth/authorize", "token": "https://clever.com/oauth/tokens", "userinfo": "https://api.clever.com/v3.0/me", "guide":"https://plugins.miniorange.com/clever-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"1"
 	},
 	"classlink": {
-		"label":"Classlink", "type":"oauth", "image":"classlink.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
+		"label":"Classlink", "type":"oauth", "image":"classlink.png", "scope": "", "domain": "",  "discovery":"", "authorize": "https://launchpad.classlink.com/oauth2/v2/auth", "token": "https://launchpad.classlink.com/oauth2/v2/token", "userinfo": "https://nodeapi.classlink.com/v2/my/info", "guide":"", "logo_class":"fa fa-lock"
+	, "setup_notice":"ClassLink's endpoints above are fixed (no domain substitution needed), but you must register your app in the ClassLink Developer Portal to obtain a Client ID/Secret, and confirm the current userinfo endpoint and required scopes for your integration in ClassLink's <a style='color:#15c !important' href='https://help.classlink.com/s/article/OAuth2-Workflow' target='blank'>OAuth2 Workflow guide</a>."
 	},
 	"whmcs": {
 		"label":"WHMCS", "type":"oauth", "image":"whmcs.png", "scope": "openid profile email", "domain": "", "discovery":"", "authorize": "https://{yourWHMCSdomain}/oauth/authorize.php", "token": "https://{yourWHMCSdomain}/oauth/token.php", "userinfo": "https://{yourWHMCSdomain}/oauth/userinfo.php", "guide":"https://plugins.miniorange.com/whmcs-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock"
@@ -69,24 +70,25 @@
 		"label":"Identity Server", "type":"oauth", "image":"identityserver.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://{your-identityserver-domain}/connect/authorize", "token": "https://{your-identityserver-domain}/connect/token", "userinfo": "https://{your-identityserver-domain}/connect/introspect", "guide":"https://plugins.miniorange.com/identityserver4-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the Identity Server domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/identityserver4-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>{your-identityserver-domain}</a></b>."
 	},
 	"neoncrm": {
-		"label":"Neon CRM", "type":"oauth", "image":"neoncrm.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":""
-	, "video":"" 
+		"label":"Neon CRM", "type":"oauth", "image":"neoncrm.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://{your-org-id}.app.neoncrm.com/np/oauth/auth", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter your Neon CRM org ID in the above endpoint in place of <b>{your-org-id}</b>. Neon CRM's constituent OAuth2 flow does not expose a standard token/userinfo pair compatible with this field's defaults — confirm the Token and Userinfo endpoints for your account with Neon CRM's <a style='color:#15c !important' href='https://developer.neoncrm.com/authenticating-constituents/' target='blank'>Authenticating Constituents guide</a> before saving."
+	, "video":""
 	},
 	"canvas": {
 		"label":"Canvas", "type":"oauth", "image":"canvas.png", "scope": "openid profile", "domain": "", "discovery":"", "authorize": "https://{your-site-url}/login/oauth2/auth", "token": "https://{your-site-url}/login/oauth2/token", "userinfo": "https://{your-site-url}/api/v1/users/self", "guide":"https://plugins.miniorange.com/canvas-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock","send_header":"1", "send_body":"0", "setup_notice":"Please enter the canvas site url in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/canvas-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>{your-site-url}</a></b>."
 	},
 	"wso2": {
-		"label":"WSO2", "type":"oauth", "image":"wso2.png", "scope": "", "domain": "", "discovery":"", "authorize": "https://domain/oauth2/authorize", "token": "https://domain/oauth2/toke", "userinfo": "https://domain/oauth2/userinfo", "guide":"https://plugins.miniorange.com/wso2-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock"
+		"label":"WSO2", "type":"oauth", "image":"wso2.png", "scope": "", "domain": "", "discovery":"", "authorize": "https://domain/oauth2/authorize", "token": "https://domain/oauth2/token", "userinfo": "https://domain/oauth2/userinfo", "guide":"https://plugins.miniorange.com/wso2-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock"
 	,"video":"https://youtu.be/ub34FlnRUiw", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the WSO2 domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/wso2-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>domain</a></b>."
 	},
 	"imis": {
-		"label":"iMIS", "type":"oauth", "image":"imis.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
+		"label":"iMIS", "type":"oauth", "image":"imis.png", "scope": "openid email profile", "domain": "",  "discovery":"", "authorize": "https://{your-domain}/openid/authenticate", "token": "https://{your-domain}/openid/token", "userinfo": "https://{your-domain}/openid/userinfo", "guide":"https://plugins.miniorange.com/imis-oauth-and-openid-connect-single-sign-on-sso", "logo_class":"fa fa-lock"
+	, "setup_notice":"Please enter your iMIS SSO Premium domain in the above endpoints in place of <b>{your-domain}</b>."
 	},
 	"adfs": {
 		"label":"ADFS", "type":"openidconnect", "image":"adfs.png", "scope": "openid", "domain": "", "discovery":"", "authorize": "https://{yourADFSDomain}/adfs/oauth2/authorize/", "token": "https://{yourADFSDomain}/adfs/oauth2/token/", "userinfo": "", "guide":"https://plugins.miniorange.com/adfs-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-windowslive", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the ADFS domain in the above endpoints in place of <b><a style='color:#15c !important' href='https://plugins.miniorange.com/adfs-single-sign-on-wordpress-sso-oauth-openid-connect#callback-url' target='blank'>{yourADFSdomain}</a></b>."
 	},
 	"laravel": {
-		"label":"Laravel", "type":"oauth", "image":"laravel.png", "scope": "", "domain": "", "discovery":"", "authorize": "http://your-laravel-site-url/oauth/authorize", "token": "http://your-laravel-site-url/oauth/token", "userinfo": "http://your-laravel-site-url/api/user/get", "guide":"https://plugins.miniorange.com/laravel-passport-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the Laravel site url in the above endpoints in place of <b style='color:#15c !important'>your-laravel-site-url</b>."
+		"label":"Laravel", "type":"oauth", "image":"laravel.png", "scope": "", "domain": "", "discovery":"", "authorize": "https://your-laravel-site-url/oauth/authorize", "token": "https://your-laravel-site-url/oauth/token", "userinfo": "https://your-laravel-site-url/api/user/get", "guide":"https://plugins.miniorange.com/laravel-passport-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the Laravel site url in the above endpoints in place of <b style='color:#15c !important'>your-laravel-site-url</b>."
 	},
 	"steam": {
 		"label":"steam", "type":"openidconnect", "image":"steam.png", "scope": "profile", "domain": "", "discovery":"", "authorize": "https://steamcommunity.com/openid/login", "token": "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=", "userinfo": "", "guide":"", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":""
@@ -114,7 +116,8 @@
 		"label":"Joomla", "type":"oauth", "image":"joomla.png", "scope": "email", "domain":"", "discovery":"", "authorize": "http://{joomla-app-domain}/index.php", "token": "http://{joomla-app-domain}/index.php", "userinfo": "http://{joomla-app-domain}/plugins/system/miniorangeoauth/miniorangeoauthserver.php", "guide":"https://plugins.miniorange.com/wordpress-single-sign-on-sso-oauth-openid-client-with-joomla-oauth-server", "logo_class":"fa fa-lock", "video":"", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the Joomla App Domain in the above endpoints in place of <b style='color:#15c !important'>{joomla-app-domain}</b>."
 	},
 	"mindbody": {
-		"label":"Mindbody", "type":"oauth", "image":"mindbody.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
+		"label":"Mindbody", "type":"oauth", "image":"mindbody.png", "scope": "", "domain": "",  "discovery":"", "authorize": "https://signin.mindbodyonline.com/connect/authorize", "token": "https://signin.mindbodyonline.com/connect/token", "userinfo": "https://signin.mindbodyonline.com/connect/userinfo", "guide":"", "logo_class":"fa fa-lock"
+	, "setup_notice":"You must provision an OAuth Client for your account in the Mindbody Developer Portal before using these endpoints, and confirm the Token/Userinfo paths above (inferred from Mindbody's standard sign-in service) against your account's actual configuration in Mindbody's <a style='color:#15c !important' href='https://developers.mindbodyonline.com/ConsumerDocumentation' target='blank'>API documentation</a>."
 	},
 	"SheepCRM": {
         "label":"SheepCRM", "type":"oauth", "image":"sheepcrm.png", "scope": "read write read_membership introspection", "domain": "", "discovery":"", "authorize": "https://auth.sheepcrm.com/o/authorize", "token": "https://auth.sheepcrm.com/o/token", "userinfo": "https://iam.sheepcrm.com/userinfo", "guide":"https://plugins.miniorange.com/sheepcrm-oauth-and-openid-connect-single-sign-on-sso-login#step_heading", "logo_class":"fa fa-lock"
@@ -160,10 +163,11 @@
 	, "video":"https://youtu.be/pU-lgMm318k", "send_header":"0", "send_body":"1"
 	},
 	"vendesta": {
-		"label":"Vendesta", "type":"oauth", "image":"vendesta.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
+		"label":"Vendasta", "type":"oauth", "image":"vendesta.png", "scope": "", "domain": "",  "discovery":"", "authorize": "", "token": "", "userinfo": "", "guide":"", "logo_class":"fa fa-lock"
+	, "setup_notice":"Vendasta's SSO uses a partner/account-group-specific 3-legged OAuth2 flow rather than a single fixed set of endpoints, so no default Authorize/Token/Userinfo URLs are pre-filled here. Obtain your account's specific endpoints from Vendasta's <a style='color:#15c !important' href='https://developers.vendasta.com/vendor/d191b96068b71-sso-o-auth2-3-legged-flow' target='blank'>SSO: OAuth2 3-Legged Flow guide</a>."
 	},
 	"gluu": {
-		"label":"Gluu Server", "type":"oauth", "image":"gluu.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "http://{gluu-server-domain}/oxauth/restv1/authorize", "token": "http://{gluu-server-domain}/oxauth/restv1/token", "userinfo": "http:///{gluu-server-domain}/oxauth/restv1/userinfo", "guide":"https://plugins.miniorange.com/gluu-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the gluu domain in the above endpoints in place of <b style='color:#15c !important'>{gluu-server-domain}</b>."
+		"label":"Gluu Server", "type":"oauth", "image":"gluu.png", "scope": "openid", "domain":"", "discovery":"", "authorize": "https://{gluu-server-domain}/oxauth/restv1/authorize", "token": "https://{gluu-server-domain}/oxauth/restv1/token", "userinfo": "https://{gluu-server-domain}/oxauth/restv1/userinfo", "guide":"https://plugins.miniorange.com/gluu-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the gluu domain in the above endpoints in place of <b style='color:#15c !important'>{gluu-server-domain}</b>."
 	},
 	"invision": {
 		"label":"Invision Community", "type":"oauth", "image":"invis.png", "scope": "email", "domain": "", "discovery":"", "authorize": "https://{invision-community-domain}/oauth/authorize/", "token": "https://{invision-community-domain}/oauth/token/", "userinfo": "https://{invision-community-domain}/api/core/me", "guide":"https://plugins.miniorange.com/invision-community-single-sign-on-wordpress-sso-oauth-openid-connect/", "logo_class":"fa fa-lock", "send_header":"1", "send_body":"0", "setup_notice":"Please enter the invision domain in the above endpoints in place of <b style='color:#15c !important'>{invision-community-domain}</b>."
@@ -211,7 +215,7 @@
 	, "video":"https://youtu.be/tqKpTuOH_eo"
 	},
 	"gitlab": {
-		"label":"GitLab", "type":"oauth", "image":"gitlab.png", "scope": "read_user", "domain": "", "avl_domain":"","discovery":"", "authorize": "https://gitlab.com/oauth/authorize", "token": "http://gitlab.com/oauth/token", "userinfo": "https://gitlab.com/api/v4/user", "guide":"https://plugins.miniorange.com/gitlab-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-gitlab"
+		"label":"GitLab", "type":"oauth", "image":"gitlab.png", "scope": "read_user", "domain": "", "avl_domain":"","discovery":"", "authorize": "https://gitlab.com/oauth/authorize", "token": "https://gitlab.com/oauth/token", "userinfo": "https://gitlab.com/api/v4/user", "guide":"https://plugins.miniorange.com/gitlab-single-sign-on-wordpress-sso-oauth-openid-connect", "logo_class":"fa fa-gitlab"
 	, "video":"https://youtu.be/RcI-x3wTqvw", "send_header":"1", "send_body":"0"
 	},
 	"reddit": {

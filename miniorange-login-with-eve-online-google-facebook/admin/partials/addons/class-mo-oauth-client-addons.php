@@ -58,15 +58,6 @@ class MO_OAuth_Client_Addons {
 		),
 
 		array(
-			'tag'             => 'session',
-			'title'           => 'SSO Session Management',
-			'desc'            => 'SSO session management add-on manages the login session time of your users based on their WordPress roles.',
-			'img'             => 'images/session.jpg',
-			'link'            => 'https://plugins.miniorange.com/sso-session-management',
-			'in_allinclusive' => true,
-		),
-
-		array(
 			'tag'             => 'media',
 			'title'           => 'Media Restriction',
 			'desc'            => 'miniOrange Media Restriction add-on restrict unauthorized users from accessing the media files on your WordPress site.',
@@ -214,188 +205,11 @@ class MO_OAuth_Client_Addons {
 
 		?>
 
-<style>
-.mo_oauth_outermost-div { 
-color: #3c434a;
-font-family: Open Sans !important;
-font-size: 14px;
-line-height: 1.4;
-letter-spacing: 0.3px;
-margin-left: -15px;
-background-color:#f7f7f7;
-opacity:1;
-padding: 0px 8px 15px 5px;
-}
-
-.mo_oauth_column_container {
-position: relative;
-box-sizing: border-box;
-margin-top: 20px;
-border-color: 1px solid red;
-z-index: 1000;
-}  
-
-.mo_oauth_column_container > .mo_oauth_column_inner {
-box-sizing: border-box;
-padding-left: 15px;
-padding-right: 10px;
-width: 100%;
-margin-right: 1px;
-font-family: Verdana, Arial, Helvetica, sans-serif;
-border-radius: 15px;
-} 
-
-.mo_oauth_benefits-outer-block{
-padding-left: 17px;
-padding-right: 17px;
-padding-top: 22px;
-width: 90%;
-margin-left: -2px;
-padding-bottom: 15px;
-background:#fff;
-height:300px;
-overflow: hidden;
-box-shadow: 0 4px 8px 0 rgb(0 0 0 / 10%);
-border-radius: 10px;
-transition: 0.3s;
-}
-.mo_oauth_benefits-outer-block:hover{
-box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
-}
-
-.mo_oauth_benefits-icon {
-font-size: 25px;
-padding-top: 6px;
-padding-right: 8px;
-padding-left: 8px;
-border-radius: 3px;
-padding-bottom: 5px;
-background: #1779ab;
-color: #fff;
-}
-
-.mo_2fa_addon_button{
-margin-top: 3px !important;
-}
-
-.mo_float-container {
-border: 1px solid #fff;
-padding-bottom: 70px;
-padding-top: 10px;
-padding-left: 1px;
-padding-right: 2px;
-width: 246px;
-}
-
-.mo_float-child {
-	width: 17%;
-	float: left;
-	padding: 1px;
-	padding-right: 0px;
-	padding-left: 0px;
-	height: 50px;
-}  
-
-.mo_float-child2{
-
-	width: 78%;
-	float: left;
-	padding-left: 0px;
-	padding-top:0px;
-	height: 50px;
-	font-weight: 700;
-}
-
-.mo_oauth_btn{
-margin: 0;
-position: absolute;
-bottom: 10px;
-left: 50%;
--ms-transform: translateX(-50%);
-transform: translateX(-50%);
-display: inline-box;
-line-height: 1.42857143;
-text-align: center;
-white-space: nowrap;
-vertical-align: middle;
-touch-action: manipulation;
-cursor: pointer;
-user-select: none;
-background-image: none;
-}
-
-
-.mo_oauth_know_more_button{
-border-radius: 5px;
-margin: 0.5em 0.5em 10px 0;
-font-size: 12px;
-padding: 0.4rem 1rem;
-border: solid 3px #012970;
-background-origin: border-box;
-box-shadow: 2px 1000px 1px #fff inset;
-transition: all 0.5s ease-out;
-}
-.mo_oauth_know_more_button:hover{
-box-shadow: 2px 1000px 1px #012970 inset;
-}
-
-
-h5 {
-font-weight: 700;
-font-size: 16px;
-line-height: 20px;
-text-transform: none;
-letter-spacing: 0.5px;
-}
-
-a {
-text-decoration: none;
-color: var(--main-color-dark-blue);
-transition: all 0.5s ease-out;
-}
-
-a:hover{
-color: #fff;
-}
-a.card-title{
-font-size:18px;
-}
-.mo_oauth_addon_headline a {
-font-size: 15px;
-text-decoration: none;
-color: var(--main-color-dark-blue);
-}
-
-@media (min-width: 768px) {
-.grid_view {
-width: 33%;
-float: left;
-}
-.row-view {
-width: 100%;
-position: relative;
-display: inline-block;
-}
-}
-
-/*Content Animation*/
-@keyframes fadeInScale {
-0% {
-transform: scale(0.9);
-opacity: 0;
-}
-
-100% {
-transform: scale(1);
-opacity: 1;
-}
-}
-</style>
 <input type="hidden" value="<?php echo esc_attr( mooauth_is_customer_registered() ); ?>" id="mo_customer_registered_addon">
 
-<a  id="mobacktoaccountsetup_addon" style="display:none;" href="<?php echo ! empty( $_SERVER['REQUEST_URI'] ) ? esc_attr( add_query_arg( array( 'tab' => 'account' ), sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) ) : ''; ?>">Back</a>
+<a  id="mobacktoaccountsetup_addon" class="mo_oauth_hidden" href="<?php echo ! empty( $_SERVER['REQUEST_URI'] ) ? esc_attr( add_query_arg( array( 'tab' => 'account' ), sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) ) : ''; ?>">Back</a>
 
-<form style="display:none;" id="loginform_addon" action="<?php echo esc_attr( get_option( 'host_name' ) ) . '/moas/login'; ?>" target="_blank" method="post">
+<form class="mo_oauth_hidden" id="loginform_addon" action="<?php echo esc_attr( get_option( 'host_name' ) ) . '/moas/login'; ?>" target="_blank" method="post">
 			<?php wp_nonce_field( 'mo_oauth_loginform_addon_nonce', 'mo_oauth_loginform_addon_field' ); ?>
 			<input type="email" name="username" value="<?php echo esc_attr( get_option( 'mo_oauth_admin_email' ) ); ?>"/>
 			<input type="text" name="redirectUrl"
@@ -410,22 +224,28 @@ opacity: 1;
 			}
 		}
 
+		?>
+<div class="mo_oauth_card">
+	<div class="mo_oauth_card_header"><h3><?php esc_html_e( 'Add-ons', 'miniorange-login-with-eve-online-google-facebook' ); ?></h3></div>
+	<div class="mo_oauth_card_body">
+		<?php
 		if ( count( $addons_recommended ) > 0 ) {
 			?>
 	<div class="mo_table_layout">
-	<b><p style="padding-left: 15px;font-size: 20px;"><?php esc_attr_e( 'Recommended Add-ons for you:', 'miniorange-login-with-eve-online-google-facebook' ); ?></p></b>
+	<b><p class="mo_oauth_x_addons_1"><?php esc_attr_e( 'Recommended Add-ons for you:', 'miniorange-login-with-eve-online-google-facebook' ); ?></p></b>
 	<div class="mo_oauth_outermost-div">
 	<div class="row-view">
 			<?php
 			foreach ( $addons_recommended as $key => $value ) {
 				self::get_single_addon_cardt( $value );
 			}
-		}
-
-		?>
+			?>
 	</div>
 </div>
 </div>
+			<?php
+		}
+		?>
 
 <div class="mo_table_layout mo_oauth_outer_div" id="mo_oauth_register">
 <div class="mo_oauth_customization_header">
@@ -450,41 +270,23 @@ opacity: 1;
 			<div class="row-view">
 			<?php
 			self::get_single_addon_cardt( $available_addons[ $i ] );
-			if ( $i + 1 >= $total_addons ) {
-				break;
+			if ( $i + 1 < $total_addons ) {
+				self::get_single_addon_cardt( $available_addons[ $i + 1 ] );
+				$i++;
 			}
-			self::get_single_addon_cardt( $available_addons[ $i + 1 ] );
-			$i++;
-			if ( $i + 1 >= $total_addons ) {
-				break;
+			if ( $i + 1 < $total_addons ) {
+				self::get_single_addon_cardt( $available_addons[ $i + 1 ] );
+				$i++;
 			}
-			self::get_single_addon_cardt( $available_addons[ $i + 1 ] );
-			$i++;
 			?>
-			</div> 
+			</div>
 			<?php
 		}
 		?>
 </div></div>
+	</div>
+	</div>
 
-
-<script type="text/javascript">
-	function upgradeform(planType) {
-				if(planType === "") {
-					location.href = "https://wordpress.org/plugins/miniorange-login-with-eve-online-google-facebook/";
-					return;
-				} else {	
-					jQuery('#requestOrigin').val(planType);
-					if(jQuery('#mo_customer_registered_addon').val()==1) {
-						jQuery('#loginform_addon').submit();
-					}
-					else{
-						location.href = jQuery('#mobacktoaccountsetup_addon').attr('href');
-					}
-				}
-
-			}
-</script>
 		<?php
 	}
 
@@ -502,8 +304,8 @@ opacity: 1;
 		}
 		if ( isset( $addon ) ) {
 			?>
-		<div class="grid_view mo_oauth_column_container" style="border-radius: 5px; text-align:center;">
-			<div class="mo_oauth_column_inner" style="border-radius: 5px;">
+		<div class="grid_view mo_oauth_column_container mo_oauth_x_addons_2">
+			<div class="mo_oauth_column_inner mo_oauth_x_addons_3">
 			<div class="row mo_oauth_benefits-outer-block">
 					<div> 
 					<img src="<?php echo esc_url( plugins_url( $addon['img'], __FILE__ ) ); ?>" class="mo_oauth_addon_img">					</div>
