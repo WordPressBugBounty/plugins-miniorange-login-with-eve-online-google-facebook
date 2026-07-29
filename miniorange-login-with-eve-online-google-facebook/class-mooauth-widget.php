@@ -781,8 +781,24 @@ function mooauth_login_validate() {
 					// If configured Steam application.
 					if ( isset( $_REQUEST['openid_op_endpoint'] ) && isset( $_REQUEST['openid_claimed_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
 						MOOAuth_Debug::mo_oauth_log( 'Applciation selecetd: Steam' );
-						$str         = sanitize_text_field( wp_unslash( $_REQUEST['openid_claimed_id'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
-						$extract     = ( explode( '/', $str ) );
+
+						// The response's own openid.claimed_id is unauthenticated client input until
+						// Steam itself confirms the assertion via the OpenID 2.0 check_authentication
+						// round-trip (spec section 11.4.2). Without this, an attacker can forge the
+						// callback with any SteamID and log in as whichever WP account maps to it.
+						if ( ! mooauth_verify_openid_assertion( $currentapp ) ) {
+							MOOAuth_Debug::mo_oauth_log( 'ERROR : OpenID assertion could not be verified with the provider.' );
+							wp_die( 'Authentication failed. Unable to verify the OpenID response with the provider.' );
+						}
+
+						$str     = sanitize_text_field( wp_unslash( $_REQUEST['openid_claimed_id'] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
+						$extract = ( explode( '/', $str ) );
+
+						if ( ! isset( $extract[5] ) || ! ctype_digit( $extract[5] ) ) {
+							MOOAuth_Debug::mo_oauth_log( 'ERROR : Invalid SteamID format in claimed_id.' );
+							wp_die( 'Authentication failed. Invalid SteamID received.' );
+						}
+
 						$mo_steam_id = $extract[5];
 
 						$access_token_url = $currentapp['accesstokenurl'];
@@ -1326,5 +1342,52 @@ function mooauth_validate_state( $state_encoded ) {
 		'timestamp' => $state_time,
 		'ip'        => $current_ip,
 	);
+}
+
+/**
+ * Verifies an OpenID 2.0 authentication response via the stateless
+ * check_authentication round-trip (OpenID Authentication 2.0, section
+ * 11.4.2), so the response's claims (e.g. openid.claimed_id) can only be
+ * trusted once the provider itself confirms it signed them. Always posts
+ * to the app's own configured authorizeurl rather than the endpoint
+ * asserted in the response, since the latter is attacker-controlled.
+ *
+ * @param array $currentapp Configured app data.
+ * @return bool True only if the provider confirms the assertion is valid.
+ */
+function mooauth_verify_openid_assertion( $currentapp ) {
+	$params = array();
+	foreach ( $_REQUEST as $key => $value ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Verifying the OpenID provider's assertion signature, not a form submission.
+		if ( 0 === strpos( $key, 'openid_' ) && is_string( $value ) ) {
+			$openid_key            = 'openid.' . substr( $key, 7 );
+			$params[ $openid_key ] = sanitize_text_field( wp_unslash( $value ) );
+		}
+	}
+
+	if ( empty( $params['openid.assoc_handle'] ) || empty( $params['openid.sig'] ) || empty( $params['openid.signed'] ) ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : OpenID response missing assoc_handle/sig/signed - cannot verify assertion.' );
+		return false;
+	}
+
+	$params['openid.mode'] = 'check_authentication';
+
+	$response = wp_remote_post(
+		$currentapp['authorizeurl'],
+		array(
+			'timeout'   => 20,
+			'body'      => $params,
+			'sslverify' => MO_OAuth_Utils::get_ssl_verify_setting( $currentapp['authorizeurl'] ),
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : OpenID check_authentication request failed - ' . $response->get_error_message() );
+		return false;
+	}
+
+	$body = wp_remote_retrieve_body( $response );
+	MOOAuth_Debug::mo_oauth_log( 'OpenID check_authentication response => ' . $body );
+
+	return (bool) preg_match( '/is_valid\s*:\s*true/i', $body );
 }
 ?>
