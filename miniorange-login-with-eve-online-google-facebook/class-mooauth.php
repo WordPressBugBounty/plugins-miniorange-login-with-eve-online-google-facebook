@@ -33,6 +33,15 @@ class MOOAuth {
 		add_action( 'admin_init', array( $this, 'mo_oauth_client_support_script_hook' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_disable_autoload_for_admin_only_options' ), 5 );
 		add_action( 'wp_ajax_mo_oauth_abilities_toggle_ajax', array( $this, 'mo_oauth_abilities_toggle_ajax' ) );
+		add_filter( 'pre_update_option_mo_oauth_apps_list', array( $this, 'mo_oauth_validate_app_access' ) );
+		add_filter( 'option_mo_oauth_apps_list', array( $this, 'mo_oauth_validate_app_access' ) );
+	}
+
+	public function mo_oauth_validate_app_access( $apps ) {
+		if ( is_array( $apps ) && count( $apps ) > 1 ) {
+			return array_slice( $apps, 0, 1, true );
+		}
+		return $apps;
 	}
 
 	/**
