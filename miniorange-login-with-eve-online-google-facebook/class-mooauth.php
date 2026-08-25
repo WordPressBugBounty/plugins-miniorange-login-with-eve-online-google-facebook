@@ -1264,14 +1264,22 @@ class MOOAuth {
 
 	/**
 	 * Login via Shortcode
+	 *
+	 * mo_oauth_login_form() echoes its markup (it is written for the widget,
+	 * which echoes), so buffer the output and return it instead. A shortcode
+	 * callback must return its content, otherwise the buttons are printed
+	 * before the post content rather than in place of the shortcode.
+	 *
+	 * Passing true renders the compact login-page button style so the shortcode
+	 * button matches the one shown on wp-login.php.
+	 *
+	 * @return string Rendered login button(s) markup.
 	 */
 	public function mo_oauth_shortcode_login() {
-		if ( mooauth_migrate_customers() || ! mooauth_is_customer_registered() ) {
-			return '<div class="mo_oauth_premium_option_text"><p>This feature is supported only in standard and higher versions.</p>
-				<p><a href="' . esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ) . '" target="_blank">Click Here</a> to see our full list of Features.</p></div>';
-		}
 		$mowidget = new MOOAuth_Widget();
-		return $mowidget->mo_oauth_login_form();
+		ob_start();
+		$mowidget->mo_oauth_login_form( true );
+		return ob_get_clean();
 	}
 
 	/**

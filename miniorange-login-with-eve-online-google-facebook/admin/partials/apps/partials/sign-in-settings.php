@@ -36,8 +36,7 @@ function mooauth_client_sign_in_settings_ui() {
 		</li>
 	</ol>
 
-	<h4><?php esc_html_e( 'Option 2: Use a Shortcode', 'miniorange-login-with-eve-online-google-facebook' ); ?> <small><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext"  >STANDARD</span><a href="https://developers.miniorange.com/docs/oauth/wordpress/client/login-options" target="_blank"
-				rel="noopener noreferrer"><span><i class="fa fa-info-circle mo_oauth_info"></i></span></a></div></small></h4>
+	<h4><?php esc_html_e( 'Option 2: Use a Shortcode', 'miniorange-login-with-eve-online-google-facebook' ); ?></h4>
 	<ul>
 		<li><?php esc_html_e( 'Place shortcode', 'miniorange-login-with-eve-online-google-facebook' ); ?>
 			<b>[mo_oauth_login]</b>

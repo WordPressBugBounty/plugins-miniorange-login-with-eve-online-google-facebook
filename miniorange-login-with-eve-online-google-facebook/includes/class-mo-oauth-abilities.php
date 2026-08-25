@@ -255,7 +255,7 @@ if ( ! class_exists( 'MO_OAuth_Abilities' ) ) {
 				'mo-oauth-client/enable-admin-sso-fix',
 				array(
 					'label'               => __( 'Fix WPO004 — enable Admin SSO', 'miniorange-login-with-eve-online-google-facebook' ),
-					'description'         => __( 'Fixes error WPO004 ("Invalid Login attempt. Please login using email and password.") shown when an administrator tries to log in via SSO while admin SSO is disabled on the app. When an admin mentions WPO004, call this ability — it sets allow_admin_sso=1 on the target OAuth app so admin-role users can authenticate via the IdP. Safe to call repeatedly.', 'miniorange-login-with-eve-online-google-facebook' ),
+					'description'         => __( 'Fixes error WPO004, recorded in the plugin debug log when an administrator tries to log in via SSO while admin SSO is disabled on the app (the visitor only sees the generic "Invalid login attempt" response). When an admin mentions WPO004, call this ability — it sets allow_admin_sso=1 on the target OAuth app so admin-role users can authenticate via the IdP. Safe to call repeatedly.', 'miniorange-login-with-eve-online-google-facebook' ),
 					'category'            => 'mo-oauth-troubleshooting',
 					'input_schema'        => array(
 						'type'                 => 'object',

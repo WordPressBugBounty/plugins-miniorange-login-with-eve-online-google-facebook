@@ -17,6 +17,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 require 'class-mooauth-debug.php';
 
 /**
+ * Terminate an SSO attempt with a single, identity-independent response.
+ *
+ * The SSO callback is reachable by an unauthenticated visitor and used to
+ * answer with a different message depending on what the asserted identity
+ * matched in the WordPress user table: one code when the login belonged to an
+ * administrator, another when the login existed but the asserted email did not
+ * match, another when the IdP had not verified the email. Those distinctions
+ * turned the callback into an oracle for username existence and for which
+ * usernames hold the administrator role, so every one of them now produces the
+ * exact same output. The specific reason is only ever recorded in the plugin
+ * debug log, which is server-side and admin-only.
+ *
+ * @param string $log_message Internal reason, written to the debug log only.
+ * @return void
+ */
+function mooauth_deny_sso_login( $log_message ) {
+	MOOAuth_Debug::mo_oauth_log( $log_message );
+	wp_die( esc_html__( 'Invalid login attempt. Please contact your administrator.', 'miniorange-login-with-eve-online-google-facebook' ) );
+}
+
+/**
  * [Add Widget Functionality]
  */
 class MOOAuth_Widget extends WP_Widget {
@@ -228,8 +249,14 @@ class MOOAuth_Widget extends WP_Widget {
 
 	/**
 	 * Display login widget content.
+	 *
+	 * @param bool $check_if_shortcode Render the compact login-page button style
+	 *                                 (.mo_oauth_login_button, the same markup the
+	 *                                 wp-login.php form uses) instead of the taller
+	 *                                 widget button. Defaults to false so the widget
+	 *                                 keeps its existing appearance.
 	 */
-	public function mo_oauth_login_form() {
+	public function mo_oauth_login_form( $check_if_shortcode = false ) {
 		global $post;
 		$appslist = get_option( 'mo_oauth_apps_list' );
 		if ( $appslist && count( $appslist ) > 0 ) {
@@ -254,10 +281,24 @@ class MOOAuth_Widget extends WP_Widget {
 				}
 
 				if ( is_array( $appslist ) ) {
+					// .mo_oauth_login_button is width:100% — inside the narrow
+					// wp-login.php form that reads correctly, but post/page content is
+					// full-bleed, so the shortcode needs a wrapper to cap the width and
+					// space multiple app buttons apart.
+					if ( $check_if_shortcode ) {
+						echo '<div class="mo_oauth_shortcode_login">';
+					}
 					foreach ( $appslist as $key => $app ) {
 						$logo_class = $this->mo_oauth_client_login_button_logo( $app['appId'] );
 
-						echo '<a style="text-decoration:none" href="javascript:void(0)" onClick="moOAuthLoginNew(\'' . esc_attr( $key ) . '\');"><div class="mo_oauth_login_button_widget"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon_widget"></i><h3 class="mo_oauth_login_button_text_widget">Login with ' . esc_attr( ucwords( $key ) ) . '</h3></div></a>';
+						if ( $check_if_shortcode ) {
+							echo '<a style="text-decoration:none" href="javascript:void(0)" onClick="moOAuthLoginNew(\'' . esc_attr( $key ) . '\');"><div class="mo_oauth_login_button mo_oauth_login_button_text"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon"></i>Login with ' . esc_attr( ucwords( $key ) ) . '</div></a>';
+						} else {
+							echo '<a style="text-decoration:none" href="javascript:void(0)" onClick="moOAuthLoginNew(\'' . esc_attr( $key ) . '\');"><div class="mo_oauth_login_button_widget"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon_widget"></i><h3 class="mo_oauth_login_button_text_widget">Login with ' . esc_attr( ucwords( $key ) ) . '</h3></div></a>';
+						}
+					}
+					if ( $check_if_shortcode ) {
+						echo '</div>';
 					}
 				}
 			} else {
@@ -304,9 +345,8 @@ class MOOAuth_Widget extends WP_Widget {
 	/**
 	 * Register Plugin styles.
 	 *
-	 * style_login_widget.min.css only styles the widget's logged-in/"Howdy" state
-	 * (.login_wid) and the shortcode's premium-upsell fallback
-	 * (.mo_oauth_premium_option_text) — the login button itself is styled by
+	 * style_login_widget.min.css only styles the logged-in/"Howdy" state
+	 * (.login_wid) — the login button itself is styled by
 	 * login-page.min.css, enqueued separately at the point it actually renders
 	 * (mo_oauth_wplogin_form_style()). So this stylesheet is only ever needed on
 	 * a page that actually renders the widget or the [mo_oauth_login] shortcode,
@@ -351,7 +391,16 @@ class MOOAuth_Widget extends WP_Widget {
  * @param mixed $currentappname Current SSO app name.
  */
 function mooauth_update_email_to_username_attr( $currentappname ) {
-	$appslist                                     = get_option( 'mo_oauth_apps_list' );
+	$appslist = get_option( 'mo_oauth_apps_list' );
+
+	// Only ever update an app that exists and actually has an email attribute to fall back on.
+	// Without this the function happily creates an entry for an unknown (or empty) app name and
+	// persists that junk into the saved app list.
+	if ( ! is_array( $appslist ) || ! isset( $appslist[ $currentappname ]['email_attr'] ) ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : Cannot use email as username attribute - app not configured.' );
+		return;
+	}
+
 	$appslist[ $currentappname ]['username_attr'] = $appslist[ $currentappname ]['email_attr'];
 	update_option( 'mo_oauth_apps_list', $appslist );
 }
@@ -396,12 +445,20 @@ function mooauth_login_validate() {
 
 		foreach ( $appslist as $key => $app ) {
 
+			// Only the app that was actually requested may drive this authorization request.
+			// Every other configured app is skipped outright: falling through to one of them
+			// would redirect the user into an OAuth flow they never asked for, built from
+			// state that was never generated for it.
+			if ( $appname !== $key ) {
+				continue;
+			}
+
 			// OIDC nonce: generated per-request for OpenID Connect apps only, to bind the ID token
 			// back to this specific authorization request and block replay of a captured token.
 			$is_oidc_app = isset( $app['apptype'] ) && 'openidconnect' === $app['apptype'];
 			$oidc_nonce  = $is_oidc_app ? bin2hex( \openssl_random_pseudo_bytes( 32 ) ) : '';
 
-			if ( $appname === $key && ( isset( $app['send_state'] ) !== true || $app['send_state'] | 'oauth1' === $app['appId'] || 'twitter' === $app['appId'] ) ) {
+			if ( isset( $app['send_state'] ) !== true || $app['send_state'] | 'oauth1' === $app['appId'] || 'twitter' === $app['appId'] ) {
 
 				if ( 'twitter' === $app['appId'] || 'oauth1' === $app['appId'] ) {
 					include 'class-mo-oauth-custom-oauth1.php';
@@ -433,14 +490,25 @@ function mooauth_login_validate() {
 					$authorization_url .= '&nonce=' . $oidc_nonce;
 				}
 
+				// Server-side record that this site minted this state. Validation requires it
+				// to be present and then deletes it, making every state single-use and blocking
+				// replay of a captured callback URL inside the 5 minute window.
+				set_transient( 'mo_oauth_state_' . hash( 'sha256', $state_nonce_hmac ), $appname, 300 );
+
+				// Apple is driven with response_mode=form_post, so the IdP returns the callback
+				// as a cross-site POST. Browsers withhold SameSite=Lax cookies on cross-site
+				// POST, which would leave the state unbindable to the originating browser, so
+				// that flow needs SameSite=None - only honoured together with Secure.
+				$is_form_post = ( false !== strpos( $authorization_url, 'apple' ) );
+
 				setcookie(
 					'mo_oauth_sso_state',
 					$state_cookie,
 					array(
 						'expires'  => time() + 300,   // 5 minutes
 						'httponly' => true,
-						'secure'   => is_ssl(),
-						'samesite' => 'Lax',
+						'secure'   => $is_form_post ? true : is_ssl(),
+						'samesite' => $is_form_post ? 'None' : 'Lax',
 						'path'     => COOKIEPATH,
 						'domain'   => COOKIE_DOMAIN,
 					)
@@ -453,8 +521,8 @@ function mooauth_login_validate() {
 						array(
 							'expires'  => time() + 300,   // 5 minutes
 							'httponly' => true,
-							'secure'   => is_ssl(),
-							'samesite' => 'Lax',
+							'secure'   => $is_form_post ? true : is_ssl(),
+							'samesite' => $is_form_post ? 'None' : 'Lax',
 							'path'     => COOKIEPATH,
 							'domain'   => COOKIE_DOMAIN,
 						)
@@ -472,10 +540,13 @@ function mooauth_login_validate() {
 
 					$authorization_url = $app['authorizeurl'];
 
-					$use_https = ! empty( $_SERVER['HTTPS'] ) || ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $sub_param2 === $_SERVER['HTTP_X_FORWARDED_PROTO'] );
-
 					$sub_param1 = null;
 					$sub_param2 = null;
+
+					// Compare the forwarded protocol against 'https' itself. This previously read
+					// $sub_param2 before it was assigned, which both emitted a warning and made
+					// the proxy check compare against null.
+					$use_https = ! empty( $_SERVER['HTTPS'] ) || ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) ) );
 
 					if ( isset( $_SERVER['HTTP_HOST'] ) && isset( $_SERVER['SCRIPT_NAME'] ) ) {
 						$sub_param1 .= sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) );
@@ -518,11 +589,14 @@ function mooauth_login_validate() {
 					$authorization_url .= '&nonce=' . $oidc_nonce;
 				}
 
+				// State is disabled for this app, so no state was generated for this request.
+				// Expire any state left behind by an earlier flow rather than planting one, so a
+				// stale cookie can never be mistaken for this request's state on the callback.
 				setcookie(
 					'mo_oauth_sso_state',
-					$state_cookie,
+					'',
 					array(
-						'expires'  => time() + 300,   // 5 minutes
+						'expires'  => time() + 300,
 						'httponly' => true,
 						'secure'   => is_ssl(),
 						'samesite' => 'Lax',
@@ -530,6 +604,7 @@ function mooauth_login_validate() {
 						'domain'   => COOKIE_DOMAIN,
 					)
 				);
+				unset( $_COOKIE['mo_oauth_sso_state'] );
 
 				if ( ! empty( $oidc_nonce ) ) {
 					setcookie(
@@ -548,22 +623,38 @@ function mooauth_login_validate() {
 				if ( session_status() === PHP_SESSION_NONE ) {
 					session_start();
 				}
-				$_SESSION['oauth2state'] = $state_cookie;
-				$_SESSION['appname']     = $appname;
+				unset( $_SESSION['oauth2state'] );
+				$_SESSION['appname'] = $appname;
 
 				MOOAuth_Debug::mo_oauth_log( 'Authorization Request Sent => ' . $authorization_url );
 				header( 'Location: ' . $authorization_url );
 				exit;
 			}
 		}
+
+		// Nothing in the configured app list matched the requested app name. Stop here instead
+		// of letting the request fall through, and keep the requested name out of the response
+		// so it is never reflected back to the caller.
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : No OAuth application is configured for the requested app name.' );
+		wp_die( 'Authentication failed. The requested application is not configured.' );
 	} elseif ( ( ! empty( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'openidcallback' ) !== false ) || ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'oauth_token' ) !== false ) && ( strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'oauth_verifier' ) ) ) {
 		$appslist        = get_option( 'mo_oauth_apps_list' );
 		$username_attr   = '';
 		$email_attr      = '';
 		$currentapp      = false;
 		$allow_admin_sso = '';
+
+		// This callback is meaningless without the app name this plugin set when it started the
+		// OAuth1 flow. Resolve it once, up front, so a callback URL replayed without the cookie
+		// fails closed instead of reading an absent key on every use below.
+		$tappname = ! empty( $_COOKIE['tappname'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) : '';
+		if ( '' === $tappname || ! is_array( $appslist ) ) {
+			MOOAuth_Debug::mo_oauth_log( 'ERROR : OAuth1 callback received without a pending authorization request.' );
+			wp_die( 'Authentication failed. Please try again.' );
+		}
+
 		foreach ( $appslist as $key => $app ) {
-			if ( $key === $_COOKIE['tappname'] ) {
+			if ( $key === $tappname ) {
 						include 'class-mo-oauth-custom-oauth1.php';
 						$currentapp = $app;
 				if ( isset( $app['username_attr'] ) ) {
@@ -571,7 +662,7 @@ function mooauth_login_validate() {
 				}
 				if ( isset( $app['email_attr'] ) ) {
 					if ( ! isset( $app['username_attr'] ) ) {
-						mooauth_update_email_to_username_attr( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) );
+						mooauth_update_email_to_username_attr( $tappname );
 						$username_attr = $app['email_attr'];
 
 					}
@@ -579,12 +670,12 @@ function mooauth_login_validate() {
 					$email_attr = $app['email_attr'];
 				}
 				if ( isset( $app['allow_admin_sso'] ) ) {
-					$allow_admin_sso = $app['allow_admin_sso '];
+					$allow_admin_sso = $app['allow_admin_sso'];
 				}
 			}
 		}
 
-		$resource_owner = MOOAuth_Custom_OAuth1::mo_oidc1_get_access_token( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) );
+		$resource_owner = MOOAuth_Custom_OAuth1::mo_oidc1_get_access_token( $tappname );
 		$username       = '';
 		$email          = '';
 		update_option( 'mo_oauth_attr_name_list', $resource_owner );
@@ -629,8 +720,7 @@ function mooauth_login_validate() {
 			$user_id = $user->ID;
 
 			if ( in_array( 'administrator', $user->roles, true ) && ! $allow_admin_sso ) {
-				MOOAuth_Debug::mo_oauth_log( 'WPO004: Invalid Login attempt. Please login using email and password.' );
-				wp_die( 'WPO004: Invalid Login attempt. Please login using email and password.' );
+				mooauth_deny_sso_login( 'WPO004: Invalid Login attempt. Please login using email and password.' );
 			}
 
 			// Whenever the IdP asserts an email for this login (email_attr is mapped),
@@ -646,8 +736,7 @@ function mooauth_login_validate() {
 				$mo_oauth_email_verify_check  = isset( $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] ) ? $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] : false;
 
 				if ( strtolower( $current_user_email ) !== strtolower( $email ) ) {
-					MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
-					wp_die( 'Error : WPO01 Invalid login attempt.' );
+					mooauth_deny_sso_login( 'Error : WPO01 Invalid login attempt. Asserted email does not match the matched account.' );
 				}
 
 				if ( $mo_oauth_email_verify_check ) {
@@ -663,8 +752,7 @@ function mooauth_login_validate() {
 					if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
 						$email_verified = $resource_owner[ $idp_email_verified_key ];
 						if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
-							MOOAuth_Debug::mo_oauth_log( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
-							wp_die( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
+							mooauth_deny_sso_login( 'Error: wpoauth:002 - Email verification failed. The IdP did not report the asserted email as verified.' );
 						}
 					}
 				}
@@ -755,7 +843,10 @@ function mooauth_login_validate() {
 						}
 						if ( isset( $app['email_attr'] ) ) {
 							if ( ! isset( $app['username_attr'] ) ) {
-								mooauth_update_email_to_username_attr( sanitize_text_field( wp_unslash( $_COOKIE['tappname'] ) ) );
+								// The app to update is the one that just matched. This used to read the
+								// OAuth1 'tappname' cookie, which is absent on the OAuth2 callback, so it
+								// stored the fallback under an empty app name instead of this app.
+								mooauth_update_email_to_username_attr( $currentappname );
 								$username_attr = $app['email_attr'];
 
 							}
@@ -918,8 +1009,7 @@ function mooauth_login_validate() {
 					$user_id = $user->ID;
 
 					if ( in_array( 'administrator', $user->roles, true ) && ! $allow_admin_sso ) {
-						MOOAuth_Debug::mo_oauth_log( 'WPO005: Invalid Login attempt. Please login using email and password.' );
-						wp_die( 'WPO005: Invalid Login attempt. Please login using email and password.' );
+						mooauth_deny_sso_login( 'WPO005: Invalid Login attempt. Please login using email and password.' );
 					}
 
 					// Whenever the IdP asserts an email for this login (email_attr is
@@ -936,8 +1026,7 @@ function mooauth_login_validate() {
 						$mo_oauth_email_verify_check  = isset( $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] ) ? $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] : false;
 
 						if ( strtolower( $current_user_email ) !== strtolower( $email ) ) {
-							MOOAuth_Debug::mo_oauth_log( 'Error : WPO01 Invalid login attempt.' );
-							wp_die( 'Error : WPO01 Invalid login attempt.' );
+							mooauth_deny_sso_login( 'Error : WPO01 Invalid login attempt. Asserted email does not match the matched account.' );
 						}
 
 						if ( $mo_oauth_email_verify_check ) {
@@ -953,8 +1042,7 @@ function mooauth_login_validate() {
 							if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
 								$email_verified = $resource_owner[ $idp_email_verified_key ];
 								if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
-									MOOAuth_Debug::mo_oauth_log( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
-									wp_die( 'Error: wpoauth:002 - Email verification failed. Please log in using your WordPress username and password.' );
+									mooauth_deny_sso_login( 'Error: wpoauth:002 - Email verification failed. The IdP did not report the asserted email as verified.' );
 								}
 							}
 						}
@@ -1028,18 +1116,20 @@ function mooauth_handle_user_registration( $username, $email = null ) {
 	$random_password = wp_generate_password( 10, false );
 
 	if ( strlen( $username ) > 60 ) {
-		MOOAuth_Debug::mo_oauth_log( 'ERROR : The username received has a length greater than 60 characters.' );
-		wp_die( 'You are not allowed to login. Please contact your administrator' );
+		mooauth_deny_sso_login( 'ERROR : The username received has a length greater than 60 characters.' );
 	}
 
 	if ( preg_match( '/[+,\/~!#$%^&*():={}|;">?\/\\\\\/\\\\\']/', $username ) ) {
-		MOOAuth_Debug::mo_oauth_log( 'ERROR : The username received has a special character' );
-		wp_die( 'You are not allowed to login. Please contact your administrator' );
+		mooauth_deny_sso_login( 'ERROR : The username received has a special character' );
 	}
 
 	$user_create_response = wp_create_user( $username, $random_password, $email );
 	if ( is_wp_error( $user_create_response ) ) {
-		wp_die( esc_html( $user_create_response->get_error_message() ) );
+		// The raw WP_Error text distinguishes "that username already exists"
+		// from "that email address is already used", which is the same
+		// existence oracle the denial messages above used to leak, so only the
+		// generic response is emitted and the detail goes to the debug log.
+		mooauth_deny_sso_login( 'ERROR : User registration failed => ' . $user_create_response->get_error_message() );
 	}
 
 	$user = get_user_by( 'login', $username );
@@ -1230,30 +1320,22 @@ function mooauth_gen_rand_str( $length = 10 ) {
 	add_action( 'init', 'mooauth_login_validate' );
 
 /**
- * Get client IP address
+ * Get client IP address.
  *
- * @return string Client IP address
+ * Only the real connection IP ($_SERVER['REMOTE_ADDR']) is used. Proxy headers
+ * such as X-Forwarded-For, Client-IP and Forwarded are deliberately NOT read:
+ * they are supplied by the client, are trivially spoofable, and trusting them
+ * would let an attacker bind an OAuth state parameter to a victim's IP and
+ * defeat the CSRF/IP-binding check in mooauth_validate_state().
+ *
+ * @return string Validated client IP address, or 'UNKNOWN' if unavailable.
  */
 function mooauth_get_client_ip() {
-	$ipaddress = '';
-	if ( getenv( 'HTTP_CLIENT_IP' ) ) {
-		$ipaddress = getenv( 'HTTP_CLIENT_IP' );
-	} elseif ( getenv( 'HTTP_X_FORWARDED_FOR' ) ) {
-		$ipaddress = getenv( 'HTTP_X_FORWARDED_FOR' );
-	} elseif ( getenv( 'HTTP_X_FORWARDED' ) ) {
-		$ipaddress = getenv( 'HTTP_X_FORWARDED' );
-	} elseif ( getenv( 'HTTP_FORWARDED_FOR' ) ) {
-		$ipaddress = getenv( 'HTTP_FORWARDED_FOR' );
-	} elseif ( getenv( 'HTTP_FORWARDED' ) ) {
-		$ipaddress = getenv( 'HTTP_FORWARDED' );
-	} elseif ( getenv( 'REMOTE_ADDR' ) ) {
-		$ipaddress = getenv( 'REMOTE_ADDR' );
-	} else {
+	$ipaddress = isset( $_SERVER['REMOTE_ADDR'] ) ? trim( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) ) : '';
+
+	if ( ! filter_var( $ipaddress, FILTER_VALIDATE_IP ) ) {
 		$ipaddress = 'UNKNOWN';
 	}
-
-	$ips       = array_map( 'trim', explode( ',', $ipaddress ) );
-	$ipaddress = $ips[0];
 
 	return $ipaddress;
 }
@@ -1279,11 +1361,22 @@ function mooauth_get_sso_redirect_to() {
 }
 
 /**
- * Validate OAuth state parameter
- * Expected format: appname|timestamp|ip_hmac
+ * Validate OAuth state parameter.
+ * Expected format: appname|timestamp|ip_hmac|state_nonce_hmac
+ *
+ * Three independent checks must all pass:
+ *   1. Freshness  - the embedded timestamp is under 5 minutes old.
+ *   2. Issuance   - a server-side transient proves this site minted the state,
+ *                   and consuming it makes the state single-use (anti-replay).
+ *   3. Session    - the nonce HMAC matches the one in the HttpOnly state cookie,
+ *                   binding the callback to the browser that began the login
+ *                   (RFC 6749 s10.12, RFC 9700 s4.7).
+ *
+ * The ip_hmac field is retained in the wire format for compatibility but is not
+ * used to authenticate the callback.
  *
  * @param string $state_encoded Base64 encoded state parameter.
- * @return array Decoded state data or wp_die() if invalid
+ * @return array Decoded state data, or wp_die() if invalid.
  */
 function mooauth_validate_state( $state_encoded ) {
 	$state_string = base64_decode( $state_encoded ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Base64 decode will be required for fetching appname from state.
@@ -1300,9 +1393,12 @@ function mooauth_validate_state( $state_encoded ) {
 		wp_die( 'Authentication failed. Please try again.' );
 	}
 
-	$appname                  = $state_parts[0];
-	$timestamp                = $state_parts[1];
-	$ip_hmac                  = $state_parts[2];
+	$appname   = $state_parts[0];
+	$timestamp = $state_parts[1];
+	// $state_parts[2] is the legacy IP HMAC. It is deliberately NOT used as an
+	// authenticator: client IPs are shared behind reverse proxies and NAT, so they
+	// cannot identify a browser session. The field is still written by the request
+	// builder so the state/cookie wire format stays unchanged.
 	$state_nonce_hmac_request = $state_parts[3];
 
 	$hmac_secret = wp_salt( 'auth' );
@@ -1317,30 +1413,60 @@ function mooauth_validate_state( $state_encoded ) {
 	}
 
 	$timestamp_hmac = hash_hmac( 'sha256', $timestamp, $hmac_secret );
-	$cookie_name    = 'mo_oauth_sso_state';
-	$cookie_state   = sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ?? '' ) );
-	$current_ip     = mooauth_get_client_ip();
-	if ( ! empty( $cookie_state ) ) {
-		$state_string            = base64_decode( $cookie_state ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Base64 decode will be required for fetching appname from state.
-		$state_parts             = explode( '|', $state_string );
-		$state_nonce_cookie      = $state_parts[3];
-		$state_nonce_hmac_cookie = hash_hmac( 'sha256', $state_nonce_cookie, $timestamp_hmac );
-		if ( $state_nonce_hmac_request !== $state_nonce_hmac_cookie ) {
-			MOOAuth_Debug::mo_oauth_log( 'ERROR : State parameter mismatch. Expected: ' . $cookie_state . ', Got: ' . $state_encoded );
-			wp_die( 'Authentication failed. Please try again.' );
-		}
-	} else {
-		$current_ip_hmac = hash_hmac( 'sha256', $current_ip, $timestamp_hmac );
 
-		if ( $current_ip_hmac !== $ip_hmac ) {
-			MOOAuth_Debug::mo_oauth_log( 'ERROR : IP address mismatch. Expected: ' . $ip_hmac . ', Got: ' . $current_ip_hmac );
-			wp_die( 'Authentication failed. Please try again.' );
-		}
+	// 1. Server-side proof of issuance. A missing record means the state was never
+	// minted by this site, has expired, or has already been consumed.
+	$state_transient_key = 'mo_oauth_state_' . hash( 'sha256', $state_nonce_hmac_request );
+	$issued_appname      = get_transient( $state_transient_key );
+
+	if ( false === $issued_appname ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : State parameter is unknown, expired, or has already been used.' );
+		wp_die( 'Authentication failed. Please try again.' );
 	}
+
+	// Consume it immediately so a captured callback URL cannot be replayed.
+	delete_transient( $state_transient_key );
+
+	if ( ! hash_equals( (string) $issued_appname, (string) $appname ) ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : State appname does not match the value recorded at issuance.' );
+		wp_die( 'Authentication failed. Please try again.' );
+	}
+
+	// 2. Bind the callback to the browser that started the login (RFC 6749 s10.12,
+	// RFC 9700 s4.7). The raw nonce is held only in an HttpOnly cookie, so a callback
+	// URL opened in any other browser has no matching cookie and is rejected. There is
+	// deliberately no IP-based fallback: an attacker could simply omit the cookie to
+	// reach it, and client IPs are shared behind proxies and NAT anyway.
+	$cookie_name  = 'mo_oauth_sso_state';
+	$cookie_state = sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ?? '' ) );
+
+	if ( empty( $cookie_state ) ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : State cookie missing - cannot bind the callback to the originating browser session.' );
+		wp_die( 'Authentication failed. Please try again.' );
+	}
+
+	$cookie_parts = explode( '|', base64_decode( $cookie_state ) ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Base64 decode is required to read the nonce back out of the state cookie.
+
+	if ( count( $cookie_parts ) !== 4 ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : Invalid state cookie structure.' );
+		wp_die( 'Authentication failed. Please try again.' );
+	}
+
+	$state_nonce_hmac_cookie = hash_hmac( 'sha256', $cookie_parts[3], $timestamp_hmac );
+
+	// Timing-safe: the cookie value is a secret, so never leak it to the debug log.
+	if ( ! hash_equals( $state_nonce_hmac_cookie, $state_nonce_hmac_request ) ) {
+		MOOAuth_Debug::mo_oauth_log( 'ERROR : State parameter does not match the state cookie.' );
+		wp_die( 'Authentication failed. Please try again.' );
+	}
+
+	// One-time use: clear the cookie now that it has been consumed.
+	setcookie( $cookie_name, '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+
 	return array(
 		'appname'   => $appname,
 		'timestamp' => $state_time,
-		'ip'        => $current_ip,
+		'ip'        => mooauth_get_client_ip(),
 	);
 }
 
