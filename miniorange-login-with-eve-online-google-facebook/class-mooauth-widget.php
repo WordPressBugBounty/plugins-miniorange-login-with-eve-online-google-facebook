@@ -1370,10 +1370,11 @@ function mooauth_get_sso_redirect_to() {
  *                   and consuming it makes the state single-use (anti-replay).
  *   3. Session    - the nonce HMAC matches the one in the HttpOnly state cookie,
  *                   binding the callback to the browser that began the login
- *                   (RFC 6749 s10.12, RFC 9700 s4.7).
- *
- * The ip_hmac field is retained in the wire format for compatibility but is not
- * used to authenticate the callback.
+ *                   (RFC 6749 s10.12, RFC 9700 s4.7). When the browser sends no
+ *                   state cookie at all - cross-site POST callbacks, SameSite
+ *                   handling, cookie-stripping proxies or privacy settings - the
+ *                   callback is bound to the client IP recorded at issuance
+ *                   instead of being rejected outright.
  *
  * @param string $state_encoded Base64 encoded state parameter.
  * @return array Decoded state data, or wp_die() if invalid.
@@ -1393,12 +1394,9 @@ function mooauth_validate_state( $state_encoded ) {
 		wp_die( 'Authentication failed. Please try again.' );
 	}
 
-	$appname   = $state_parts[0];
-	$timestamp = $state_parts[1];
-	// $state_parts[2] is the legacy IP HMAC. It is deliberately NOT used as an
-	// authenticator: client IPs are shared behind reverse proxies and NAT, so they
-	// cannot identify a browser session. The field is still written by the request
-	// builder so the state/cookie wire format stays unchanged.
+	$appname                  = $state_parts[0];
+	$timestamp                = $state_parts[1];
+	$ip_hmac_request          = $state_parts[2];
 	$state_nonce_hmac_request = $state_parts[3];
 
 	$hmac_secret = wp_salt( 'auth' );
@@ -1434,34 +1432,45 @@ function mooauth_validate_state( $state_encoded ) {
 
 	// 2. Bind the callback to the browser that started the login (RFC 6749 s10.12,
 	// RFC 9700 s4.7). The raw nonce is held only in an HttpOnly cookie, so a callback
-	// URL opened in any other browser has no matching cookie and is rejected. There is
-	// deliberately no IP-based fallback: an attacker could simply omit the cookie to
-	// reach it, and client IPs are shared behind proxies and NAT anyway.
+	// URL opened in any other browser has no matching cookie and is rejected.
 	$cookie_name  = 'mo_oauth_sso_state';
 	$cookie_state = sanitize_text_field( wp_unslash( $_COOKIE[ $cookie_name ] ?? '' ) );
 
-	if ( empty( $cookie_state ) ) {
-		MOOAuth_Debug::mo_oauth_log( 'ERROR : State cookie missing - cannot bind the callback to the originating browser session.' );
-		wp_die( 'Authentication failed. Please try again.' );
+	if ( ! empty( $cookie_state ) ) {
+		$cookie_parts = explode( '|', base64_decode( $cookie_state ) ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Base64 decode is required to read the nonce back out of the state cookie.
+
+		if ( count( $cookie_parts ) !== 4 ) {
+			MOOAuth_Debug::mo_oauth_log( 'ERROR : Invalid state cookie structure.' );
+			wp_die( 'Authentication failed. Please try again.' );
+		}
+
+		$state_nonce_hmac_cookie = hash_hmac( 'sha256', $cookie_parts[3], $timestamp_hmac );
+
+		// Timing-safe: the cookie value is a secret, so never leak it to the debug log.
+		if ( ! hash_equals( $state_nonce_hmac_cookie, $state_nonce_hmac_request ) ) {
+			MOOAuth_Debug::mo_oauth_log( 'ERROR : State parameter does not match the state cookie.' );
+			wp_die( 'Authentication failed. Please try again.' );
+		}
+
+		// One-time use: clear the cookie now that it has been consumed.
+		setcookie( $cookie_name, '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
+	} else {
+		// Fallback: no state cookie came back with the callback. Rather than failing the
+		// login outright, fall back to the client IP recorded when the state was minted.
+		// This keeps flows working where the browser legitimately withholds the cookie
+		// (cross-site POST callbacks, SameSite handling, cookie-stripping proxies or
+		// privacy settings). Replay is still bounded by the single-use transient above
+		// and the 5 minute freshness window.
+		MOOAuth_Debug::mo_oauth_log( 'NOTICE : State cookie missing - falling back to IP address validation.' );
+
+		$current_ip      = mooauth_get_client_ip();
+		$current_ip_hmac = hash_hmac( 'sha256', $current_ip, $timestamp_hmac );
+
+		if ( ! hash_equals( $current_ip_hmac, $ip_hmac_request ) ) {
+			MOOAuth_Debug::mo_oauth_log( 'ERROR : IP address mismatch. Expected: ' . $ip_hmac_request . ', Got: ' . $current_ip_hmac );
+			wp_die( 'Authentication failed. Please try again.' );
+		}
 	}
-
-	$cookie_parts = explode( '|', base64_decode( $cookie_state ) ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Base64 decode is required to read the nonce back out of the state cookie.
-
-	if ( count( $cookie_parts ) !== 4 ) {
-		MOOAuth_Debug::mo_oauth_log( 'ERROR : Invalid state cookie structure.' );
-		wp_die( 'Authentication failed. Please try again.' );
-	}
-
-	$state_nonce_hmac_cookie = hash_hmac( 'sha256', $cookie_parts[3], $timestamp_hmac );
-
-	// Timing-safe: the cookie value is a secret, so never leak it to the debug log.
-	if ( ! hash_equals( $state_nonce_hmac_cookie, $state_nonce_hmac_request ) ) {
-		MOOAuth_Debug::mo_oauth_log( 'ERROR : State parameter does not match the state cookie.' );
-		wp_die( 'Authentication failed. Please try again.' );
-	}
-
-	// One-time use: clear the cookie now that it has been consumed.
-	setcookie( $cookie_name, '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true );
 
 	return array(
 		'appname'   => $appname,

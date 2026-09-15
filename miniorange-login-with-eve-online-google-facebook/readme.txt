@@ -4,7 +4,7 @@ Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenID
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 7.1.1
+Stable tag: 7.1.2
 License: Expat
 License URI: https://plugins.miniorange.com/mit-license
 
@@ -22,7 +22,7 @@ An unlimited number of users can perform Single Sign-On with OAuth/OIDC supporte
 
 |<a href="https://plugins.miniorange.com/wordpress-sso#key-features" target="_blank"> Features </a>| <a href="https://plugins.miniorange.com/wordpress-single-sign-on-sso-with-oauth-openid-connect?utm_source=wordpress_readme&utm_medium=marketplace&utm_campaign=readme_traffic&utm_id=wpor_13" target="_blank"> OAuth / OpenID Providers Setup guides </a>|<a href="https://youtu.be/Vff0E0KxM3k" target="_blank"> Videos </a>|<a href="https://plugins.miniorange.com/setup-chatgpt-to-wordpress-abilities-api-using-mcp" target="_blank"> ChaGPT</a>| <a href="https://plugins.miniorange.com/connect-wordpress-with-claude-mcp-guide" target="_blank"> Claude</a>| <a href="https://plugins.miniorange.com/connect-wordpress-with-cursor-mcp-guide" target="_blank"> Cursor</a>
 
-=FREE VERSION FEATURES FOR FOR WORDPRESS OAUTH PLUGIN =
+= FREE VERSION FEATURES FOR FOR WORDPRESS OAUTH PLUGIN =
 
 *	WordPress Single Sign-On OAuth & OpenID Connect Login supports unlimited SSO with any 3rd party OAuth & OpenID Connect server or custom OAuth & OpenID Connect server like AWS Cognito, Azure AD, Azure AD B2C, Office 365, Google Apps, etc.
 *	**WordPress Single Sign-On  Grant Support** - Standard OAuth2 Grant: Authorization Code
@@ -460,6 +460,9 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO |  WordPress OAuth
 
 == Changelog ==
+
+= 7.1.2 =
+* Handled State Cookie Missing case in OAuth flow
 
 = 7.1.1 =
 * Compatibility with WP 7.1
@@ -1119,6 +1122,9 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+
+= 7.1.2 =
+* Handled State Cookie Missing case in OAuth flow
 
 = 7.1.1 =
 * Compatibility with WP 7.1
