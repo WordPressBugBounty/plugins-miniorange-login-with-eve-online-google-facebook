@@ -38,6 +38,50 @@ function mooauth_deny_sso_login( $log_message ) {
 }
 
 /**
+ * Enforce the "email verified" setting against the IdP response.
+ *
+ * @param array $resource_owner IdP user details.
+ * @param array $currentapp     Configured app the login came through.
+ * @return void
+ */
+function mooauth_verify_idp_email( $resource_owner, $currentapp ) {
+	$config = get_option( 'mo_oauth_login_settings_option' );
+	if ( empty( $config['mo_oauth_email_verify_check'] ) ) {
+		return;
+	}
+
+	$key   = isset( $config['mo_oauth_idp_email_verified_key'] ) && '' !== $config['mo_oauth_idp_email_verified_key']
+		? $config['mo_oauth_idp_email_verified_key'] : 'email_verified';
+	$value = isset( $config['mo_oauth_idp_email_verified_value'] ) && '' !== $config['mo_oauth_idp_email_verified_value']
+		? $config['mo_oauth_idp_email_verified_value'] : '1';
+
+	$app_id       = isset( $currentapp['appId'] ) ? $currentapp['appId'] : '';
+	$claim_is_std = false;
+
+	// Discord reports email verification as "verified". Only swap it in while the admin
+	// is still on the default key, so a custom key the admin configured is never overridden.
+	if ( 'discord' === $app_id && 'email_verified' === $key ) {
+		$key          = 'verified';
+		$claim_is_std = true;
+	}
+
+	if ( ! is_array( $resource_owner ) || ! isset( $resource_owner[ $key ] ) ) {
+		if ( $claim_is_std ) {
+			MOOAuth_Debug::mo_oauth_log( 'Error: wpoauth:003 - Email verification claim "' . $key . '" missing from IdP response.' );
+			wp_die( esc_html__( 'Error: wpoauth:003 - Unable to verify this email with the provider. Please log in using your WordPress username and password.', 'miniorange-login-with-eve-online-google-facebook' ) );
+		}
+		// Many IdPs (e.g. Azure AD / Entra ID, ADFS) do not send an email-verified claim at
+		// all, including over OIDC, so a missing claim is logged and allowed as before.
+		MOOAuth_Debug::mo_oauth_log( 'Email verification claim "' . $key . '" not present in IdP response; skipping verification check.' );
+		return;
+	}
+
+	if ( (string) $resource_owner[ $key ] !== (string) $value ) {
+		mooauth_deny_sso_login( 'Error: wpoauth:002 - Email verification failed. The IdP did not report the asserted email as verified.' );
+	}
+}
+
+/**
  * [Add Widget Functionality]
  */
 class MOOAuth_Widget extends WP_Widget {
@@ -731,30 +775,12 @@ function mooauth_login_validate() {
 			// configs that map only a username attribute (no email_attr) have no
 			// email signal to check here and are unaffected, exactly as before.
 			if ( ! empty( $email_attr ) ) {
-				$current_user_email           = $user->user_email;
-				$mo_oauth_email_verify_config = get_option( 'mo_oauth_login_settings_option' );
-				$mo_oauth_email_verify_check  = isset( $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] ) ? $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] : false;
+				$current_user_email = $user->user_email;
 
-				if ( strtolower( $current_user_email ) !== strtolower( $email ) ) {
+				// Accounts created before an email attribute was mapped have no stored email, so
+				// there is nothing to cross-check; the email is saved below for later logins.
+				if ( '' !== $current_user_email && strtolower( $current_user_email ) !== strtolower( $email ) ) {
 					mooauth_deny_sso_login( 'Error : WPO01 Invalid login attempt. Asserted email does not match the matched account.' );
-				}
-
-				if ( $mo_oauth_email_verify_check ) {
-
-					$idp_email_verified_key = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'] ) && '' !== $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
-					? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
-					: 'email_verified';
-
-					$idp_email_verified_value = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'] ) && '' !== $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
-					? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
-					: '1';
-
-					if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
-						$email_verified = $resource_owner[ $idp_email_verified_key ];
-						if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
-							mooauth_deny_sso_login( 'Error: wpoauth:002 - Email verification failed. The IdP did not report the asserted email as verified.' );
-						}
-					}
 				}
 
 				wp_update_user(
@@ -764,6 +790,7 @@ function mooauth_login_validate() {
 					)
 				);
 			}
+			mooauth_verify_idp_email( $resource_owner, $currentapp );
 		} else {
 			if ( mooauth_migrate_customers() ) {
 				$user = mooauth_looped_user( $username );
@@ -962,7 +989,6 @@ function mooauth_login_validate() {
 					MOOAuth_Debug::mo_oauth_log( 'Resource Owner Response => ' );
 					MOOAuth_Debug::mo_oauth_log( $resource_owner );
 				}
-
 				$username = '';
 				$email    = '';
 				update_option( 'mo_oauth_attr_name_list', $resource_owner );
@@ -1021,30 +1047,12 @@ function mooauth_login_validate() {
 					// a username attribute (no email_attr) have no email signal to
 					// check here and are unaffected, exactly as before.
 					if ( ! empty( $email_attr ) ) {
-						$current_user_email           = $user->user_email;
-						$mo_oauth_email_verify_config = get_option( 'mo_oauth_login_settings_option' );
-						$mo_oauth_email_verify_check  = isset( $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] ) ? $mo_oauth_email_verify_config['mo_oauth_email_verify_check'] : false;
+						$current_user_email = $user->user_email;
 
-						if ( strtolower( $current_user_email ) !== strtolower( $email ) ) {
+						// Accounts created before an email attribute was mapped have no stored email, so
+						// there is nothing to cross-check; the email is saved below for later logins.
+						if ( '' !== $current_user_email && strtolower( $current_user_email ) !== strtolower( $email ) ) {
 							mooauth_deny_sso_login( 'Error : WPO01 Invalid login attempt. Asserted email does not match the matched account.' );
-						}
-
-						if ( $mo_oauth_email_verify_check ) {
-
-							$idp_email_verified_key = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key'] )
-							? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_key']
-							: 'email_verified';
-
-							$idp_email_verified_value = isset( $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value'] )
-							? $mo_oauth_email_verify_config['mo_oauth_idp_email_verified_value']
-							: '1';
-
-							if ( isset( $resource_owner[ $idp_email_verified_key ] ) ) {
-								$email_verified = $resource_owner[ $idp_email_verified_key ];
-								if ( (string) $email_verified !== (string) $idp_email_verified_value ) {
-									mooauth_deny_sso_login( 'Error: wpoauth:002 - Email verification failed. The IdP did not report the asserted email as verified.' );
-								}
-							}
 						}
 
 						wp_update_user(
@@ -1054,6 +1062,7 @@ function mooauth_login_validate() {
 							)
 						);
 					}
+					mooauth_verify_idp_email( $resource_owner, $currentapp );
 				} else {
 					if ( mooauth_migrate_customers() ) {
 						$user = mooauth_looped_user( $username );

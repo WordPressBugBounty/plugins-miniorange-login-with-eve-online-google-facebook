@@ -815,6 +815,7 @@ class MOOAuth {
 		} elseif ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_email_verified' && isset( $_REQUEST['mo_oauth_email_verified_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_email_verified_form_field'] ) ), 'mo_oauth_email_verified_form' ) ) {
 			$email_verify_check                                    = isset( $_POST['mo_oauth_email_verify_check'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_email_verify_check'] ) ) ) : '';
 			$email_verify_key                                      = isset( $_POST['mo_oauth_idp_email_verified_key'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_idp_email_verified_key'] ) ) ) : '';
+			$email_verify_key                                      = '' === trim( $email_verify_key ) ? 'email_verified' : $email_verify_key;
 			$email_verify_value                                    = isset( $_POST['mo_oauth_idp_email_verified_value'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_idp_email_verified_value'] ) ) ) : '';
 			$app_config['mo_oauth_email_verify_check']             = $email_verify_check;
 			$app_config['mo_oauth_idp_email_verified_key']         = $email_verify_key;

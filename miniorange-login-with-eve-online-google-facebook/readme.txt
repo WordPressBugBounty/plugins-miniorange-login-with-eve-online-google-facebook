@@ -4,7 +4,7 @@ Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenID
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 7.1.2
+Stable tag: 7.1.3
 License: Expat
 License URI: https://plugins.miniorange.com/mit-license
 
@@ -460,6 +460,9 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO |  WordPress OAuth
 
 == Changelog ==
+
+= 7.1.3 = 
+* Handled the verified claim coming in the OAuth flow for Discord
 
 = 7.1.2 =
 * Handled State Cookie Missing case in OAuth flow
@@ -1122,6 +1125,9 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+
+= 7.1.3 = 
+* Handled the verified claim coming in the OAuth flow for Discord
 
 = 7.1.2 =
 * Handled State Cookie Missing case in OAuth flow
