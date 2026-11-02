@@ -25,3 +25,4 @@ delete_option( 'mo_oauth_client_new_registration' );
 delete_option( 'mo_oauth_client_registration_status' );
 delete_option( 'mo_oauth_client_show_mo_server_message' );
 delete_option( 'mo_existing_app_flow' );
+delete_option( 'mo_oauth_halloween_sale_notice_snoozed_until' );

@@ -38,6 +38,31 @@ function mooauth_deny_sso_login( $log_message ) {
 }
 
 /**
+ * Maps the boolean spellings IdPs use (true/false, "true"/"false", 1/0, "1"/"0") to '1'/'0'.
+ * Anything else is returned as a plain string so exact-match comparisons are unaffected.
+ *
+ * @param mixed $claim Claim value as received from the IdP or the settings.
+ * @return string
+ */
+function mooauth_normalize_boolean_claim( $claim ) {
+	if ( true === $claim ) {
+		return '1';
+	}
+	if ( false === $claim ) {
+		return '0';
+	}
+	$claim = is_scalar( $claim ) ? (string) $claim : '';
+	$lower = strtolower( $claim );
+	if ( 'true' === $lower ) {
+		return '1';
+	}
+	if ( 'false' === $lower ) {
+		return '0';
+	}
+	return $claim;
+}
+
+/**
  * Enforce the "email verified" setting against the IdP response.
  *
  * @param array $resource_owner IdP user details.
@@ -76,7 +101,10 @@ function mooauth_verify_idp_email( $resource_owner, $currentapp ) {
 		return;
 	}
 
-	if ( (string) $resource_owner[ $key ] !== (string) $value ) {
+	$claim_value = mooauth_normalize_boolean_claim( $resource_owner[ $key ] );
+	$expected    = mooauth_normalize_boolean_claim( $value );
+
+	if ( $claim_value !== $expected ) {
 		mooauth_deny_sso_login( 'Error: wpoauth:002 - Email verification failed. The IdP did not report the asserted email as verified.' );
 	}
 }
@@ -777,18 +805,13 @@ function mooauth_login_validate() {
 			if ( ! empty( $email_attr ) ) {
 				$current_user_email = $user->user_email;
 
-				// Accounts created before an email attribute was mapped have no stored email, so
-				// there is nothing to cross-check; the email is saved below for later logins.
-				if ( '' !== $current_user_email && strtolower( $current_user_email ) !== strtolower( $email ) ) {
+				// Fail closed: an empty stored email or an empty asserted email can never
+				// authenticate a username/email-matched account, and the stored email is
+				// never overwritten from IdP claims (that would be an account takeover).
+				if ( '' === $current_user_email || '' === trim( (string) $email ) || strtolower( $current_user_email ) !== strtolower( (string) $email ) ) {
 					mooauth_deny_sso_login( 'Error : WPO01 Invalid login attempt. Asserted email does not match the matched account.' );
 				}
 
-				wp_update_user(
-					array(
-						'ID'         => $user_id,
-						'user_email' => $email,
-					)
-				);
 			}
 			mooauth_verify_idp_email( $resource_owner, $currentapp );
 		} else {
@@ -926,7 +949,7 @@ function mooauth_login_validate() {
 
 						$resource_owner = $mo_oauth_handler->get_resource_owner( $profile_url, '' );
 					} else { // Openid flow.
-						$code = ! empty( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
+						$code = ! empty( $_REQUEST['code'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['code'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
 						if ( ! isset( $currentapp['send_headers'] ) ) {
 							$currentapp['send_headers'] = false;
 						}
@@ -974,7 +997,7 @@ function mooauth_login_validate() {
 						$currentapp['send_body'] = false;
 					}
 
-					$access_token = $mo_oauth_handler->get_access_token( $access_token_url, 'authorization_code', $currentapp['clientid'], $currentapp['clientsecret'], sanitize_text_field( wp_unslash( $_GET['code'] ) ), $currentapp['redirecturi'], $currentapp['send_headers'], $currentapp['send_body'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
+					$access_token = $mo_oauth_handler->get_access_token( $access_token_url, 'authorization_code', $currentapp['clientid'], $currentapp['clientsecret'], sanitize_text_field( wp_unslash( $_REQUEST['code'] ) ), $currentapp['redirecturi'], $currentapp['send_headers'], $currentapp['send_body'] ); //phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ignoring nonce verification because we are fetching data from URL and not on form submission.
 
 					if ( ! $access_token ) {
 						MOOAuth_Debug::mo_oauth_log( 'Access Token Response => ERROR : Invalid token received.' );
@@ -1049,18 +1072,13 @@ function mooauth_login_validate() {
 					if ( ! empty( $email_attr ) ) {
 						$current_user_email = $user->user_email;
 
-						// Accounts created before an email attribute was mapped have no stored email, so
-						// there is nothing to cross-check; the email is saved below for later logins.
-						if ( '' !== $current_user_email && strtolower( $current_user_email ) !== strtolower( $email ) ) {
+						// Fail closed: an empty stored email or an empty asserted email can never
+						// authenticate a username/email-matched account, and the stored email is
+						// never overwritten from IdP claims (that would be an account takeover).
+						if ( '' === $current_user_email || '' === trim( (string) $email ) || strtolower( $current_user_email ) !== strtolower( (string) $email ) ) {
 							mooauth_deny_sso_login( 'Error : WPO01 Invalid login attempt. Asserted email does not match the matched account.' );
 						}
 
-						wp_update_user(
-							array(
-								'ID'         => $user_id,
-								'user_email' => $email,
-							)
-						);
 					}
 					mooauth_verify_idp_email( $resource_owner, $currentapp );
 				} else {

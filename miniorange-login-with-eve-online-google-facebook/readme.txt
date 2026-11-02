@@ -4,7 +4,7 @@ Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenID
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 7.1.3
+Stable tag: 7.1.4
 License: Expat
 License URI: https://plugins.miniorange.com/mit-license
 
@@ -24,7 +24,7 @@ An unlimited number of users can perform Single Sign-On with OAuth/OIDC supporte
 
 = FREE VERSION FEATURES FOR FOR WORDPRESS OAUTH PLUGIN =
 
-*	WordPress Single Sign-On OAuth & OpenID Connect Login supports unlimited SSO with any 3rd party OAuth & OpenID Connect server or custom OAuth & OpenID Connect server like AWS Cognito, Azure AD, Azure AD B2C, Office 365, Google Apps, etc.
+*	WordPress Single Sign-On OAuth & OpenID Connect Login supports unlimited SSO with any 3rd party OAuth & OpenID Connect server or custom OAuth & OpenID Connect server like AWS Cognito, Azure AD (Entra ID), Azure AD B2C, Office 365, Google Apps, etc.
 *	**WordPress Single Sign-On  Grant Support** - Standard OAuth2 Grant: Authorization Code
 *	**Auto Create Users ( User Provisioning )** : After Single Sign On, a new user automatically gets created in WordPress
 *	**Account Linking** : After SSO, if the user already exists in WordPress, then their profile gets updated. Else, a new WordPress User is created.
@@ -136,9 +136,9 @@ WordPress Single Sign-On allows users to log into any website/application using 
 
 **Microsoft SSO/Azure SSO**
 
-This WordPress OAuth / OpenID Connect SSO plugin supports SSO with Microsoft apps like Azure AD, Azure B2C, Office 365, Microsoft Dynamics CRM, Microsoft Teams, and Windows Live. It also supports policy-based login redirections, including sign-up, sign-in, forgot password, and custom policies, enhancing the login experience across Microsoft services.
+This WordPress OAuth / OpenID Connect SSO plugin supports SSO with Microsoft apps like Azure AD (Entra ID), Azure B2C, Office 365, Microsoft Dynamics CRM, Microsoft Teams, and Windows Live. It also supports policy-based login redirections, including sign-up, sign-in, forgot password, and custom policies, enhancing the login experience across Microsoft services.
 
-WordPress integrates with Microsoft services like Azure AD, Azure B2C, and Office 365 for secure Single Sign-On across single-site and multisite networks (including subdomains). Users can perform single sign-on, map profile attributes, and manage role-based access across applications and tenants using SSO
+WordPress integrates with Microsoft services like Azure AD (Entra ID), Azure B2C, and Office 365 for secure Single Sign-On across single-site and multisite networks (including subdomains). Users can perform single sign-on, map profile attributes, and manage role-based access across applications and tenants using SSO
 
 Apart from SSO, it also supports WordPress-Azure integrations and customizations, such as token-based calls to specific APIs and the Microsoft Graph API, enhancing the login experience
 
@@ -355,12 +355,13 @@ Save the configuration.
 
 **AI-Assisted Troubleshooting**
 
+* Built-in AI help: the plugin can write OAuth errors in an LLM-readable format for ChatGPT, Claude or Cursor, and includes an AI / MCP Abilities API integration so AI agents can configure SSO, diagnose errors and submit support queries.
 * The OAuth Client plugin includes AI-assisted troubleshooting capabilities.
 * Navigate to the plugin's Troubleshooting section.
 * Enable the AI-assisted configuration or troubleshooting option, where available.
 * The plugin can generate structured OAuth error information that can be interpreted by AI tools.
 * Use the generated error information to identify configuration issues and troubleshoot failed SSO attempts.
-* The plugin documentation states that AI-assisted troubleshooting can structure OAuth errors for interpretation by tools such as ChatGPT, Claude, or Perplexity.
+* The plugin documentation states that AI-assisted troubleshooting can structure OAuth errors for interpretation by tools such as ChatGPT, Claude, or Cursor.
 
 **Abilities API / MCP Setting**
 
@@ -432,7 +433,7 @@ You can activate the plugin on any subsite of the Multisite network instead of a
 We will help you in integrating this plugin with your other installed plugins. This plugin is already compatible with WooCommerce, MemberPress, BuddyPress & Learndash. Please email us at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> or <a href="http://miniorange.com/contact" target="_blank">Contact us</a> for other integrations. You can also submit your query from plugin's configuration page.
 
 = Can I add multiple SSO options on my WordPress sites? =
-Yes, you can add multiple IDPs for Single Sign-on on your WordPress sites. e.g. Azure AD, G Suite / Google Apps, Office 365, Salesforce, Keycloak, and many more.
+Yes, you can add multiple IDPs for Single Sign-on on your WordPress sites. e.g. Azure AD (Entra ID), G Suite / Google Apps, Office 365, Salesforce, Keycloak, and many more.
 
 = I would like to change our license domain. How do we do this? =
 Yes, You can now activate the license on your new domain to enable WordPress Single Sign-on. Write us at <a href="mailto:info@xecurify.com" target="_blank">info@xecurify.com</a> we will help you set up.
@@ -460,6 +461,10 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO |  WordPress OAuth
 
 == Changelog ==
+
+= 7.1.4 =
+* Security fix: SSO login is now denied for accounts with an empty email address, and the stored account email is no longer overwritten from IdP claims
+* Fixed Sign in with Apple login: the authorization code is now also read from the form_post (POST) callback, and the email-verified claim is accepted whether the IdP sends it as a boolean or as a "true"/"false" string
 
 = 7.1.3 = 
 * Handled the verified claim coming in the OAuth flow for Discord
@@ -1125,6 +1130,10 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+
+= 7.1.4 =
+* Security fix: SSO login is now denied for accounts with an empty email address, and the stored account email is no longer overwritten from IdP claims
+* Fixed Sign in with Apple login: the authorization code is now also read from the form_post (POST) callback, and the email-verified claim is accepted whether the IdP sends it as a boolean or as a "true"/"false" string
 
 = 7.1.3 = 
 * Handled the verified claim coming in the OAuth flow for Discord

@@ -452,6 +452,85 @@ class MO_OAuth_Client_Customer {
 	}
 
 	/**
+	 * Send Halloween sale discount request to miniOrange support.
+	 *
+	 * Unlike the other alerts this never echoes or exits on failure, since it is
+	 * called from an AJAX handler that must always answer with JSON.
+	 *
+	 * @param string $email    customer email.
+	 * @param string $use_case optional use case the customer described.
+	 *
+	 * @return bool True when the notify API accepted the email.
+	 */
+	public function mo_oauth_send_halloween_sale_request( $email, $use_case = '' ) {
+		if ( ! $this->check_internet_connection() ) {
+			return false;
+		}
+		$url = get_option( 'host_name' ) . '/moas/api/notify/send';
+
+		$customer_key = $this->default_customer_key;
+		$api_key      = $this->default_api_key;
+
+		$current_time_in_millis = self::get_timestamp();
+		$hash_value             = hash( 'sha512', $customer_key . $current_time_in_millis . $api_key );
+		$subject                = 'Query for a Halloween discount for OAuth - ' . $email;
+
+		// Fall back to the details given at miniOrange account registration.
+		$current_user = wp_get_current_user();
+		$first_name   = $current_user->user_firstname ? $current_user->user_firstname : get_option( 'mo_oauth_admin_fname' );
+		$last_name    = $current_user->user_lastname ? $current_user->user_lastname : get_option( 'mo_oauth_admin_lname' );
+		$company      = get_option( 'mo_oauth_admin_company' );
+		$company      = $company ? $company : wp_parse_url( site_url(), PHP_URL_HOST );
+		$phone        = get_option( 'mo_oauth_client_admin_phone' );
+		$query        = $use_case ? $use_case : 'Can I get the discount code for the Halloween deal?';
+
+		$content = '<div>Hello,'
+			. '<br><br>First Name : ' . esc_html( $first_name )
+			. '<br><br>Last Name : ' . esc_html( $last_name )
+			. '<br><br>Company : <a href="' . esc_url( site_url() ) . '" target="_blank">' . esc_html( $company ) . '</a>'
+			. '<br><br>Phone Number : ' . ( $phone ? '<a href="tel:' . esc_attr( $phone ) . '">' . esc_html( $phone ) . '</a>' : '' )
+			. '<br><br>Email : <a href="mailto:' . esc_attr( $email ) . '" target="_blank">' . esc_html( $email ) . '</a>'
+			. '<br><br>Query : <b>[Halloween Sale - OAuth]</b><br>' . nl2br( esc_html( $query ) ) . '</div>';
+
+		$fields  = array(
+			'customerKey' => $customer_key,
+			'sendEmail'   => true,
+			'email'       => array(
+				'customerKey' => $customer_key,
+				'fromEmail'   => $email,
+				'bccEmail'    => 'oauthsupport@xecurify.com',
+				'fromName'    => 'miniOrange',
+				'toEmail'     => 'oauthsupport@xecurify.com',
+				'toName'      => 'oauthsupport@xecurify.com',
+				'subject'     => $subject,
+				'content'     => $content,
+			),
+		);
+		$headers = array(
+			'Content-Type'  => 'application/json',
+			'Customer-Key'  => $customer_key,
+			'Timestamp'     => $current_time_in_millis,
+			'Authorization' => $hash_value,
+		);
+		$args    = array(
+			'method'      => 'POST',
+			'body'        => wp_json_encode( $fields ),
+			'timeout'     => '15',
+			'redirection' => '5',
+			'httpversion' => '1.0',
+			'blocking'    => true,
+			'headers'     => $headers,
+		);
+
+		$response = wp_remote_post( $url, $args );
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return false;
+		}
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		return ! ( is_array( $body ) && isset( $body['status'] ) && 0 !== strcasecmp( $body['status'], 'SUCCESS' ) );
+	}
+
+	/**
 	 * Send Demo alert.
 	 *
 	 * @param mixed $email customer email.
