@@ -133,7 +133,6 @@ class MO_OAuth_Admin_Notice {
 			?>
 				<form name="f" method="post" action="" id="mo_oauth_client_admin_notice_form">
 				<?php wp_nonce_field( 'mo_oauth_client_admin_notice_form', 'mo_oauth_client_admin_notice_form_field' ); ?>
-				<input type="hidden" name="option" value="mo_oauth_client_rest_api_message" />
 				<div class="notice notice-info mo-oauth-notice">
 					<h4>
 					<i class="fa fa-info-circle"></i>

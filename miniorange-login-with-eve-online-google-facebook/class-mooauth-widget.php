@@ -215,7 +215,7 @@ class MOOAuth_Widget extends WP_Widget {
 					echo '<br>';
 					echo '<div class="row">';
 					$logo_class = $this->mo_oauth_client_login_button_logo( $app['appId'] );
-					echo '<a style="text-decoration:none" href="javascript:void(0)" onClick="moOAuthLoginNew(\'' . esc_attr( $key ) . '\');"><div class="mo_oauth_login_button mo_oauth_login_button_text"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon"></i>Login with ' . esc_attr( ucwords( $key ) ) . '</div></a>';
+					echo '<a style="text-decoration:none" href="javascript:void(0)" data-mo-oauth-app="' . esc_attr( $key ) . '"><div class="mo_oauth_login_button mo_oauth_login_button_text"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon"></i>' . esc_html( mooauth_client_get_button_text( $key, $app ) ) . '</div></a>';
 					echo '</div><br><br>';
 				}
 			}
@@ -364,9 +364,9 @@ class MOOAuth_Widget extends WP_Widget {
 						$logo_class = $this->mo_oauth_client_login_button_logo( $app['appId'] );
 
 						if ( $check_if_shortcode ) {
-							echo '<a style="text-decoration:none" href="javascript:void(0)" onClick="moOAuthLoginNew(\'' . esc_attr( $key ) . '\');"><div class="mo_oauth_login_button mo_oauth_login_button_text"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon"></i>Login with ' . esc_attr( ucwords( $key ) ) . '</div></a>';
+							echo '<a style="text-decoration:none" href="javascript:void(0)" data-mo-oauth-app="' . esc_attr( $key ) . '"><div class="mo_oauth_login_button mo_oauth_login_button_text"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon"></i>' . esc_html( mooauth_client_get_button_text( $key, $app ) ) . '</div></a>';
 						} else {
-							echo '<a style="text-decoration:none" href="javascript:void(0)" onClick="moOAuthLoginNew(\'' . esc_attr( $key ) . '\');"><div class="mo_oauth_login_button_widget"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon_widget"></i><h3 class="mo_oauth_login_button_text_widget">Login with ' . esc_attr( ucwords( $key ) ) . '</h3></div></a>';
+							echo '<a style="text-decoration:none" href="javascript:void(0)" data-mo-oauth-app="' . esc_attr( $key ) . '"><div class="mo_oauth_login_button_widget"><i class="' . esc_attr( $logo_class ) . ' mo_oauth_login_button_icon_widget"></i><h3 class="mo_oauth_login_button_text_widget">' . esc_html( mooauth_client_get_button_text( $key, $app ) ) . '</h3></div></a>';
 						}
 					}
 					if ( $check_if_shortcode ) {
@@ -407,6 +407,18 @@ class MOOAuth_Widget extends WP_Widget {
 				url += '&redirect_to=' + encodeURIComponent(redirectTo);
 			}
 			window.location.href = url;
+		}
+
+		if ( ! window.moOAuthLoginListenerAdded ) {
+			window.moOAuthLoginListenerAdded = true;
+			document.addEventListener( 'click', function ( event ) {
+				var link = event.target.closest ? event.target.closest( 'a[data-mo-oauth-app]' ) : null;
+				if ( ! link ) {
+					return;
+				}
+				event.preventDefault();
+				moOAuthLoginNew( link.getAttribute( 'data-mo-oauth-app' ) );
+			} );
 		}
 	</script>
 		<?php
@@ -1316,6 +1328,20 @@ function mooauth_get_valid_html( $args = array() ) {
 		return array_merge( $args, $retval );
 	}
 	return $retval;
+}
+
+/**
+ * Get the text shown on an app's SSO login button.
+ *
+ * @param string $app_key app name (key in mo_oauth_apps_list).
+ * @param array  $app     app configuration.
+ * @return string Custom display name if set, otherwise the app name (e.g. "Azure").
+ */
+function mooauth_client_get_button_text( $app_key, $app ) {
+	if ( is_array( $app ) && ! empty( $app['displayappname'] ) ) {
+		return $app['displayappname'];
+	}
+	return ucwords( $app_key );
 }
 
 /**

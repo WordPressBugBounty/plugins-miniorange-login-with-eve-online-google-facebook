@@ -39,7 +39,6 @@ function mooauth_client_setup_client() {
 		        <div class="long-field-scope">
 			        <div name="scopes" class="ui fluid multiple selection search dropdown" multiple="" id="multi-select">
 			        	<div class="text"></div>
-  						<i class="dropdown icon"></i>
 					</div>
 				</div>
 		        <div class="description">

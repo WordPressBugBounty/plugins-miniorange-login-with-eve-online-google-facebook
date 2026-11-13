@@ -121,7 +121,7 @@ function mooauth_client_customization_ui() {
 					<?php
 					$app_details = get_option( 'mo_oauth_apps_list' );
 					$app_id      = array_key_first( $app_details );
-					$displayname = 'Login with ' . $app_id;
+					$displayname = ! empty( $app_details[ $app_id ]['displayappname'] ) ? $app_details[ $app_id ]['displayappname'] : $app_id;
 					$appname     = $app_id;
 					$icons       = $appname;
 					if ( 'vkontakte' === $appname ) {

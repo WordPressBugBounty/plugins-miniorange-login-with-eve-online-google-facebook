@@ -452,17 +452,18 @@ class MO_OAuth_Client_Customer {
 	}
 
 	/**
-	 * Send Halloween sale discount request to miniOrange support.
+	 * Send a seasonal sale (Black Friday, End of Year, ...) discount request to miniOrange support.
 	 *
 	 * Unlike the other alerts this never echoes or exits on failure, since it is
 	 * called from an AJAX handler that must always answer with JSON.
 	 *
-	 * @param string $email    customer email.
-	 * @param string $use_case optional use case the customer described.
+	 * @param string $email     customer email.
+	 * @param string $sale_name sale name as support should see it, e.g. "Black Friday".
+	 * @param string $use_case  optional use case the customer described.
 	 *
 	 * @return bool True when the notify API accepted the email.
 	 */
-	public function mo_oauth_send_halloween_sale_request( $email, $use_case = '' ) {
+	public function mo_oauth_send_sale_request( $email, $sale_name, $use_case = '' ) {
 		if ( ! $this->check_internet_connection() ) {
 			return false;
 		}
@@ -473,7 +474,8 @@ class MO_OAuth_Client_Customer {
 
 		$current_time_in_millis = self::get_timestamp();
 		$hash_value             = hash( 'sha512', $customer_key . $current_time_in_millis . $api_key );
-		$subject                = 'Query for a Halloween discount for OAuth - ' . $email;
+		$article                = preg_match( '/^[aeiou]/i', $sale_name ) ? 'an' : 'a';
+		$subject                = 'Query for ' . $article . ' ' . $sale_name . ' discount for OAuth - ' . $email;
 
 		// Fall back to the details given at miniOrange account registration.
 		$current_user = wp_get_current_user();
@@ -482,7 +484,7 @@ class MO_OAuth_Client_Customer {
 		$company      = get_option( 'mo_oauth_admin_company' );
 		$company      = $company ? $company : wp_parse_url( site_url(), PHP_URL_HOST );
 		$phone        = get_option( 'mo_oauth_client_admin_phone' );
-		$query        = $use_case ? $use_case : 'Can I get the discount code for the Halloween deal?';
+		$query        = $use_case ? $use_case : 'Can I get the discount code for the ' . $sale_name . ' deal?';
 
 		$content = '<div>Hello,'
 			. '<br><br>First Name : ' . esc_html( $first_name )
@@ -490,7 +492,7 @@ class MO_OAuth_Client_Customer {
 			. '<br><br>Company : <a href="' . esc_url( site_url() ) . '" target="_blank">' . esc_html( $company ) . '</a>'
 			. '<br><br>Phone Number : ' . ( $phone ? '<a href="tel:' . esc_attr( $phone ) . '">' . esc_html( $phone ) . '</a>' : '' )
 			. '<br><br>Email : <a href="mailto:' . esc_attr( $email ) . '" target="_blank">' . esc_html( $email ) . '</a>'
-			. '<br><br>Query : <b>[Halloween Sale - OAuth]</b><br>' . nl2br( esc_html( $query ) ) . '</div>';
+			. '<br><br>Query : <b>[' . esc_html( $sale_name ) . ' Sale - OAuth]</b><br>' . nl2br( esc_html( $query ) ) . '</div>';
 
 		$fields  = array(
 			'customerKey' => $customer_key,

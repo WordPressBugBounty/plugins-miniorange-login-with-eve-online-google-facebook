@@ -149,14 +149,13 @@ class MO_OAuth_Client_Admin_Menu {
 
 		$log_dir = dirname( $log_file_path );
 
-		$index_path = trailingslashit( $log_dir ) . 'index.php';
 		if ( ! function_exists( 'request_filesystem_credentials' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
 		$credentials = request_filesystem_credentials( site_url() );
 		if ( 'on' === $mo_log_enable && ( ! $mo_oauth_debug || ! file_exists( $log_file_path ) ) ) {
 			if ( ! $mo_oauth_debug ) {
-				update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
+				update_option( 'mo_oauth_debug', 'mo_oauth_debug_' . wp_generate_password( 32, false ) );
 				$mo_oauth_debug = get_option( 'mo_oauth_debug' );
 				$log_file_path  = MOOAuth_Debug::get_log_file_path();
 			}
@@ -173,15 +172,8 @@ class MO_OAuth_Client_Admin_Menu {
 				}
 			}
 		}
-		if ( 'on' === get_option( 'mo_debug_enable' ) && ! file_exists( $index_path ) ) {
-			if ( WP_Filesystem( $credentials ) ) {
-				global $wp_filesystem;
-				$wp_filesystem->put_contents(
-					$index_path,
-					"<?php\n// Silence is golden.\n",
-					0600
-				);
-			}
+		if ( 'on' === get_option( 'mo_debug_enable' ) ) {
+			MOOAuth_Debug::harden_log_dir();
 		}
 
 		if ( 'licensing' !== $currenttab ) { ?>
@@ -405,12 +397,12 @@ class MO_OAuth_Client_Admin_Menu {
 	public static function show_support_sidebar( $currenttab ) {
 		if ( 'licensing' !== $currenttab ) {
 			echo '<div class="mo_oauth_layout_sidebar mo_oauth_sidebar">';
-			self::show_upsell_card();
-			self::show_addon_promo_card();
 			if ( 'attributemapping' === $currenttab ) {
 				echo esc_html( MO_OAuth_Client_Attribute_Mapping::emit_attribute_table() );
 			}
 			echo esc_html( MO_OAuth_Client_Support::support() );
+			self::show_upsell_card();
+			self::show_addon_promo_card();
 			echo '</div>';
 		}
 	}

@@ -158,7 +158,7 @@ jQuery(function() {
 	jQuery("#mo_oauth_client_default_apps li").click(function(){
 		var appId = jQuery(this).data("appid");
 		jQuery("#displayName").val(appId);
-		jQuery("#moauth_show_desc").html("This will displayed on SSO login button as <b>\"Login with " +appId +"\"</b>. The entire button name is customizable in paid versions.");
+		jQuery("#moauth_show_desc").html("This will displayed on SSO login button as <b>\"" +appId +"\"</b>. The entire button name is customizable in paid versions.");
 		var selected_app_child = jQuery(this).children();
 		var jsonStr = jQuery(selected_app_child[1]).val();
 		if (jsonStr) {
@@ -367,15 +367,9 @@ jQuery(function() {
 		}
 	});
 
+	/* "Attribute Mapping" button on the test screen: open the mapping panel (js/attr-mapping.js). */
 	jQuery(".mo-btn-test-finish_class").click(function(){
-		var data = {
-			"action": "mo_outh_ajax",
-			"mo_oauth_option": "test_finish",
-			"mo_oauth_nonce" : jQuery("#nonce").val()
-		}
-		jQuery.post(mo_oauth_ajax_object.ajax_url, data, function(response){
-			window.location.href = window.location.pathname + "?page=mo_oauth_settings&tab=config";
-		});
+		mooauth_wizard_open_attr_mapping();
 	});
 
 	jQuery("#mo-btn-test-re-run").click(function(){

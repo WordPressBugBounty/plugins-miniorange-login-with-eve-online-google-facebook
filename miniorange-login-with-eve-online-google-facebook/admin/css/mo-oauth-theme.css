@@ -1331,3 +1331,32 @@
 	font-size: 14px;
 	font-weight: 600;
 }
+.mo_oauth_grant_type_wrap {
+	display: flex;
+	align-items: center;
+	width: 90%;
+}
+.mo_oauth_grant_type_select {
+	flex: 1;
+	min-width: 0;
+}
+.mo_oauth_grant_type_wrap .mo_oauth_premium-label {
+	margin: 0 0 0 10px;
+	vertical-align: middle;
+}
+.mo_oauth_grant_type_info img {
+	height: 18px;
+	width: auto;
+	margin: 0 0 -4px 8px;
+}
+.mo_oauth_tooltip .mo_oauth_grant_type_tooltip {
+	width: 460px;
+	padding: 8px 12px;
+	left: 50%;
+	bottom: 140%;
+	margin-left: -230px;
+	margin-bottom: 0;
+	text-align: left;
+	line-height: 1.4;
+	font-weight: 600;
+}

@@ -48,7 +48,40 @@ class MOOAuth_Debug {
 	 */
 	public static function get_log_file_path() {
 
-		return mo_oauth_get_log_dir() . DIRECTORY_SEPARATOR . get_option( 'mo_oauth_debug' ) . '.log';
+		return mooauth_get_log_dir() . DIRECTORY_SEPARATOR . get_option( 'mo_oauth_debug' ) . '.log';
+	}
+
+	/**
+	 * Protect the debug-log directory from direct HTTP access.
+	 *
+	 * Adds a blank index.php (stops directory listing) and a deny-all .htaccess
+	 * (stops the .log file being downloaded by URL), since the log can contain
+	 * tokens, client IDs and user data from the IdP.
+	 */
+	public static function harden_log_dir() {
+		$log_dir       = mooauth_get_log_dir();
+		$index_file    = $log_dir . DIRECTORY_SEPARATOR . 'index.php';
+		$htaccess_file = $log_dir . DIRECTORY_SEPARATOR . '.htaccess';
+		if ( ! is_dir( $log_dir ) || ( file_exists( $index_file ) && file_exists( $htaccess_file ) ) ) {
+			return;
+		}
+		global $wp_filesystem;
+		if ( ! function_exists( 'WP_Filesystem' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		if ( ! $wp_filesystem && ! WP_Filesystem() ) {
+			return;
+		}
+		if ( ! file_exists( $index_file ) ) {
+			$wp_filesystem->put_contents( $index_file, "<?php\n// Silence is golden.\n", FS_CHMOD_FILE );
+		}
+		if ( ! file_exists( $htaccess_file ) ) {
+			$wp_filesystem->put_contents(
+				$htaccess_file,
+				"<IfModule mod_authz_core.c>\n\tRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n\tOrder allow,deny\n\tDeny from all\n</IfModule>\n",
+				FS_CHMOD_FILE
+			);
+		}
 	}
 
 	/**
@@ -65,6 +98,7 @@ class MOOAuth_Debug {
 		if ( ! file_exists( $mo_pluginlog ) ) {
 			return;
 		}
+		self::harden_log_dir();
 		$mo_time = time();
 		$mo_log  = '[' . gmdate( 'Y-m-d H:i:s', $mo_time ) . ' UTC] : ' . print_r( $mo_message, true ) . PHP_EOL; //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r, WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Used for debugging purposes
 

@@ -339,26 +339,6 @@ function mooauth_client_sign_in_settings_ui() {
 					</td>
 					<td><input disabled="true" type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled"></td>
 				</tr>
-				<tr class="mo-divider">
-					<td>&nbsp;</td>
-				</tr>
-				<tr>
-					<td>
-						<h3 class="mo_oauth_signing_heading mo_oauth_x_signinsettings_3">
-							<?php esc_html_e( 'User Login Audit / Login Reports', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-						</h3>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<font class="mo_oauth_x_signinsettings_10">
-							<?php esc_html_e( 'Enable User login reports', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-						</font><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >ENTERPRISE</span><a href="https://developers.miniorange.com/docs/oauth/wordpress/client/user-analytics"
-							target="_blank" rel="noopener"><i class="fa fa-info-circle mo_oauth_info"></i></a> 
-							</div></small></p>
-					</td>
-					<td><input disabled="true" type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled"></td>
-				</tr>
 				<tr>
 					<td>&nbsp;</td>
 				</tr>

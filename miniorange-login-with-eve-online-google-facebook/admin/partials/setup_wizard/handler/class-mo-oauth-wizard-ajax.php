@@ -53,6 +53,12 @@ class MO_OAuth_Wizard_Ajax {
 				case 'test_finish':
 					$this->test_finish();
 					break;
+				case 'attr_mapping_data':
+					$this->attr_mapping_data();
+					break;
+				case 'save_attr_mapping':
+					$this->save_attr_mapping();
+					break;
 			}
 		}
 	}
@@ -292,16 +298,18 @@ class MO_OAuth_Wizard_Ajax {
 		$wizard_app->mo_oauth_debug = $app['mo_oauth_debug'];
 		if ( 'true' === $app['mo_oauth_debug'] ) {
 			if ( ! get_option( 'mo_oauth_debug' ) ) {
-				update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
+				update_option( 'mo_oauth_debug', 'mo_oauth_debug_' . wp_generate_password( 32, false ) );
 			}
 
 			// Use uploads directory instead of plugin directory.
 			$mo_oauth_log_file = MOOAuth_Debug::get_log_file_path();
+			$log_dir           = mooauth_get_log_dir();
 
 			// Make sure log directory exists.
 			if ( ! file_exists( $log_dir ) ) {
 				wp_mkdir_p( $log_dir );
 			}
+			MOOAuth_Debug::harden_log_dir();
 
 			if ( ! function_exists( 'request_filesystem_credentials' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -438,6 +446,73 @@ class MO_OAuth_Wizard_Ajax {
 	 */
 	private function test_finish() {
 		delete_option( 'mo_oauth_setup_wizard_app' );
+	}
+
+	/**
+	 * Returns the attributes received in the last SSO test, plus the current
+	 * Username / Email mapping, for the wizard's Attribute Mapping panel.
+	 */
+	private function attr_mapping_data() {
+		$attrs = get_option( 'mo_oauth_attr_name_list' );
+		$apps  = get_option( 'mo_oauth_apps_list' );
+		if ( ! is_array( $attrs ) || empty( $attrs ) || ! is_array( $apps ) || empty( $apps ) ) {
+			wp_send_json_error( array( 'message' => 'No attributes received yet. Please run Test Configuration first.' ) );
+		}
+
+		$app   = reset( $apps );
+		$names = function_exists( 'mooauth_client_dropdownattrmapping' ) ? mooauth_client_dropdownattrmapping( '', $attrs, array() ) : array_keys( $attrs );
+
+		// Pre-select only an already saved mapping; otherwise both dropdowns start at "Select an Attribute".
+		$username_attr = ! empty( $app['username_attr'] ) ? $app['username_attr'] : '';
+		$email_attr    = ! empty( $app['email_attr'] ) ? $app['email_attr'] : '';
+
+		wp_send_json_success(
+			array(
+				'attributes'    => array_values( $names ),
+				'username_attr' => $username_attr,
+				'email_attr'    => $email_attr,
+			)
+		);
+	}
+
+	/**
+	 * Saves the Username / Email mapping chosen in the wizard. Uses the same
+	 * app settings (username_attr / email_attr) as the Attribute/Role Mapping tab.
+	 */
+	private function save_attr_mapping() {
+		$username_attr = isset( $_POST['mo_oauth_username_attr'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_username_attr'] ) ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in mo_oauth_ajax().
+		$email_attr    = isset( $_POST['mo_oauth_email_attr'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_email_attr'] ) ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in mo_oauth_ajax().
+
+		$apps = get_option( 'mo_oauth_apps_list' );
+		if ( ! is_array( $apps ) || empty( $apps ) ) {
+			wp_send_json_error( array( 'message' => 'You MUST configure an application before you map attributes.' ) );
+		}
+		if ( '' === $username_attr && '' === $email_attr ) {
+			wp_send_json_error( array( 'message' => 'Please select attributes for both Username and Email.' ) );
+		}
+		if ( '' === $username_attr ) {
+			wp_send_json_error( array( 'message' => 'Please select an attribute for Username.' ) );
+		}
+		if ( '' === $email_attr ) {
+			wp_send_json_error( array( 'message' => 'Please select an attribute for Email.' ) );
+		}
+		$email = mooauth_client_getnestedattribute( get_option( 'mo_oauth_attr_name_list' ), $email_attr );
+		if ( ! is_string( $email ) || false === filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid email attribute selected. Please select an attribute that contains a valid email.' ) );
+		}
+
+		$app_key                           = array_key_first( $apps );
+		$apps[ $app_key ]['username_attr'] = $username_attr;
+		$apps[ $app_key ]['email_attr']    = $email_attr;
+		update_option( 'mo_oauth_apps_list', $apps );
+
+		$notices = get_option( 'mo_oauth_client_notice_messages' );
+		if ( isset( $notices['attr_mapp_notice'] ) ) {
+			unset( $notices['attr_mapp_notice'] );
+			update_option( 'mo_oauth_client_notice_messages', $notices );
+		}
+
+		wp_send_json_success( array( 'message' => 'Attribute mapping saved successfully.' ) );
 	}
 }
 new MO_OAuth_Wizard_Ajax();

@@ -32,9 +32,6 @@ if ( ! defined( 'MO_OAUTH_PLUGIN_SLUG' ) ) {
 if ( ! defined( 'MO_OAUTH_CLIENT_DEAL_DATE' ) ) {
 	define( 'MO_OAUTH_CLIENT_DEAL_DATE', '2021-12-31 23:59:59' );
 }
-if ( ! defined( 'MO_OAUTH_CLIENT_HALLOWEEN_SALE_END_DATE' ) ) {
-	define( 'MO_OAUTH_CLIENT_HALLOWEEN_SALE_END_DATE', '2026-11-06 23:59:59' );
-}
 if ( ! defined( 'MO_OAUTH_CLIENT_PRICING_PLAN' ) ) {
 	define( 'MO_OAUTH_CLIENT_PRICING_PLAN', 'https://plugins.miniorange.com/wordpress-sso#pricing' );
 }
@@ -49,7 +46,7 @@ if ( ! defined( 'MO_OAUTH_CLIENT_DISCOUNT_URL' ) ) {
 	}
 }
 
-if ( ! function_exists( 'mo_oauth_get_log_dir' ) ) {
+if ( ! function_exists( 'mooauth_get_log_dir' ) ) {
 	/**
 	 * Get the debug-log directory path.
 	 *
@@ -62,7 +59,7 @@ if ( ! function_exists( 'mo_oauth_get_log_dir' ) ) {
 	 *
 	 * @return string
 	 */
-	function mo_oauth_get_log_dir() {
+	function mooauth_get_log_dir() {
 		static $log_dir = null;
 
 		if ( null === $log_dir ) {

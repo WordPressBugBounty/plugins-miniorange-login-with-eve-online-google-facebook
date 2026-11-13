@@ -20,9 +20,9 @@ class MO_OAuth_Client_Support {
 	 * Call internal functions
 	 */
 	public static function support() {
-		self::mo_usecase_page();
 		self::support_page();
 		self::mo_download_log();
+		self::mo_usecase_page();
 	}
 
 	/**

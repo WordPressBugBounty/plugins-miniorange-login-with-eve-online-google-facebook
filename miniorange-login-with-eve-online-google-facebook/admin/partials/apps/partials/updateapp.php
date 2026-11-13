@@ -84,15 +84,15 @@ function mooauth_client_update_app_page( $appname ) {
 		<table class="mo_settings_table mo_oauth_configure_table">
 			<tr class="mo_oauth_configure_table_rows" id="mo_oauth_display_app_name_div">
 				<td class="mo_oauth_contact_heading"><strong class="mo_strong" class="mo_oauth_position"><?php esc_html_e( 'Display App Name :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
-				<td class="mo_oauth_contact_heading"><input disabled class="mo_table_textbox mo_oauth_input_disabled" type="text" value="Login with <?php echo esc_attr( $currentappname ); ?>" >
+				<td class="mo_oauth_contact_heading"><input class="mo_table_textbox" type="text" name="mo_oauth_display_app_name" placeholder="<?php echo esc_attr( $currentappname ); ?>" value="<?php echo esc_attr( ! empty( $currentapp['displayappname'] ) ? $currentapp['displayappname'] : $currentappname ); ?>" >
 				&nbsp;&nbsp;
 		</td>
 			</tr>
 			<tr class="mo_oauth_configure_table_rows"><td class="mo_oauth_contact_heading"><strong class="mo_strong" class="mo_oauth_position"><?php esc_html_e( 'Redirect / Callback URL :', 'miniorange-login-with-eve-online-google-facebook' ); ?> </strong>
 			<div class="mo_oauth_tooltip mo_oauth_x_updateapp_4"><span class="mo_tooltiptext mo_oauth_x_updateapp_5" id="moTooltip_info">This Redirect / Callback URL is to be configured at your OAuth / OpenId provider and it does not mean to redirect users to this URL after SSO.</span><i class="fa fa-info-circle mo_oauth_info mo_oauth_x_updateapp_6" aria-hidden="true"></i></div>
 			<td class="mo_oauth_contact_heading"><input class="mo_table_textbox" id="callbackurl" readonly="true" type="text" name="mo_oauth_callback_url" value='<?php echo esc_attr( $currentapp['redirecturi'] ); ?>'>
-			&nbsp;&nbsp;
-			<div class="mo_oauth_tooltip mo_oauth_x_updateapp_4"><span class="mo_tooltiptext" id="moTooltip_copy">Copy to clipboard</span><i class="fa fa-clipboard fa-border mo_oauth_x_updateapp_7" aria-hidden="true" onclick="mooauth_copyUrl()" onmouseout="mooauth_outFunc()"></i></div>
+			<div class="mo_oauth_tooltip mo_oauth_x_updateapp_4 mo_oauth_copy_in_input"><span class="mo_tooltiptext" id="moTooltip_copy">Copy to clipboard</span><i class="fa fa-clipboard fa-border mo_oauth_x_updateapp_7" aria-hidden="true" onclick="mooauth_copyUrl()" onmouseout="mooauth_outFunc()"></i></div>
+			<small><div class="mo_oauth_tooltip"><span class="mo_oauth_tooltiptext">STANDARD</span><a href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer"><span class="mo_oauth_x_customization_2"><img class="mo_oauth_premium-label" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) . '/images/mo_oauth_premium-label.png' ); ?>" alt="miniOrange Standard Plans Logo"></span></a></div></small>
 			</td>
 			</tr>
 			<tr class="mo_oauth_configure_table_rows">
@@ -209,6 +209,7 @@ function mooauth_client_update_app_page( $appname ) {
 					$oidc = true;
 				}
 				?>
+				<?php if ( ( true === $oidc && ! empty( $currentapp['resourceownerdetailsurl'] ) ) || false === $oidc ) { ?>
 				<tr id="mo_oauth_resourceownerdetailsurl_div">
 					<td class="mo_oauth_contact_heading"><strong class="mo_strong">
 					<?php
@@ -229,6 +230,7 @@ function mooauth_client_update_app_page( $appname ) {
 						value="<?php echo ! empty( $currentapp['resourceownerdetailsurl'] ) ? esc_attr( $currentapp['resourceownerdetailsurl'] ) : ''; ?>"></td>
 					<?php } ?>	
 				</tr>
+				<?php } ?>
 			<?php } if ( 'oauth1' !== $refapp->type ) { ?>
 
 				<tr>
@@ -250,19 +252,26 @@ function mooauth_client_update_app_page( $appname ) {
 				<td><br></td>
 			</tr>
 			<tr>
-				<td class="mo_oauth_contact_heading"><strong class="mo_strong" class="mo_oauth_position"><?php esc_html_e( 'Group User Info Endpoint :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong><small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip mo_oauth_x_updateapp_13">PREMIUM</span>
-						<i class="fa fa-info-circle mo_oauth_info"></i></div></small>
+				<td class="mo_oauth_contact_heading"><strong class="mo_strong" class="mo_oauth_position"><?php esc_html_e( 'Group User Info Endpoint :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong><small class=""><div class="mo_oauth_tooltip mo_oauth_grant_type_info"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip mo_oauth_x_updateapp_13">PREMIUM</span>
+						<img src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_info-icon.png" alt="<?php esc_attr_e( 'Premium feature', 'miniorange-login-with-eve-online-google-facebook' ); ?>"></div></small>
 </td>
 				<td><input class="mo_table_textbox mo_oauth_input_disabled" type="text" value="" disabled >
 				</td>
 			</tr>
 			<tr>
-				<td class="mo_oauth_contact_heading"><strong class="mo_strong" class="mo_oauth_position"><?php esc_html_e( 'JWKS URL :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>
-				<small class=""><div class="mo_oauth_tooltip"  ><span class="mo_oauth_tooltiptext mo_oauth_extra_tooltip"  >PREMIUM</span>
-				<i class="fa fa-info-circle mo_oauth_info"></i></div></small></td>
-				<td><input class="mo_table_textbox mo_oauth_input_disabled" type="text" value="" disabled >
-				&nbsp;&nbsp;
-		</td>
+				<td class="mo_oauth_contact_heading"><strong class="mo_strong"><?php esc_html_e( 'Grant Type :', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong><div class="mo_oauth_tooltip mo_oauth_grant_type_info"><span class="mo_tooltiptext"><?php esc_html_e( 'Know how this is useful', 'miniorange-login-with-eve-online-google-facebook' ); ?></span><a class="mo_oauth_x_grantsettings_4" target="_blank" href="https://developers.miniorange.com/docs/oauth/wordpress/client/multiple-grant-support" rel="noopener noreferrer"><img src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_info-icon.png" alt="<?php esc_attr_e( 'Grant type guide', 'miniorange-login-with-eve-online-google-facebook' ); ?>"></a></div></td>
+				<td>
+					<div class="mo_oauth_grant_type_wrap">
+					<select class="mo_oauth_input mo_oauth_grant_type_select" id="mo_oauth_grant_type">
+						<option value="authorization_code" selected><?php esc_html_e( 'Authorization Code Grant', 'miniorange-login-with-eve-online-google-facebook' ); ?></option>
+						<option value="implicit" disabled><?php esc_html_e( 'Implicit Grant', 'miniorange-login-with-eve-online-google-facebook' ); ?></option>
+						<option value="hybrid" disabled><?php esc_html_e( 'Hybrid Grant', 'miniorange-login-with-eve-online-google-facebook' ); ?></option>
+						<option value="password" disabled><?php esc_html_e( 'Password Grant', 'miniorange-login-with-eve-online-google-facebook' ); ?></option>
+						<option value="client_credentials" disabled><?php esc_html_e( 'Client Credentials Grant', 'miniorange-login-with-eve-online-google-facebook' ); ?></option>
+					</select>
+					<div class="mo_oauth_tooltip"><span class="mo_oauth_tooltiptext mo_oauth_grant_type_tooltip"><?php esc_html_e( 'The free version supports only the Authorization Code Grant. Implicit, Hybrid, Password and Client Credentials grants are available in the premium version.', 'miniorange-login-with-eve-online-google-facebook' ); ?></span><a href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer"><img class="mo_oauth_premium-label" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_premium-label.png" alt="<?php esc_attr_e( 'Premium feature', 'miniorange-login-with-eve-online-google-facebook' ); ?>"></a></div>
+					</div>
+				</td>
 			</tr>
 			<?php } ?>
 			<tr><tr>

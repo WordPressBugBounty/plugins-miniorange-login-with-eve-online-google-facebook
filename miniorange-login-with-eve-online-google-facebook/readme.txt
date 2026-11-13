@@ -4,7 +4,7 @@ Tags: SSO, OAuth 2.0, login, Single Sign-On, OpenID
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.0
-Stable tag: 7.1.4
+Stable tag: 7.1.5
 License: Expat
 License URI: https://plugins.miniorange.com/mit-license
 
@@ -461,6 +461,11 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 7. WordPress Dashboard Login / SSO |  WordPress OAuth
 
 == Changelog ==
+
+= 7.1.5 =
+* Fix: Resolved an XSS vulnerability in the display name.
+* Fix: Resolved Plugin Check Plugin(PCP) warnings in the OAuth plugin.
+* Improvement: Improved usability of the OAuth SSO setup process.
 
 = 7.1.4 =
 * Security fix: SSO login is now denied for accounts with an empty email address, and the stored account email is no longer overwritten from IdP claims
@@ -1130,6 +1135,11 @@ Please email us for more information on this SSO solution at <a href="mailto:inf
 * First version with supported applications as EVE Online and Google.
 
 == Upgrade Notice ==
+
+= 7.1.5 =
+* Fix: Resolved an XSS vulnerability in the display name.
+* Fix: Resolved Plugin Check Plugin(PCP) warnings in the OAuth plugin.
+* Improvement: Improved usability of the OAuth SSO setup process.
 
 = 7.1.4 =
 * Security fix: SSO login is now denied for accounts with an empty email address, and the stored account email is no longer overwritten from IdP claims

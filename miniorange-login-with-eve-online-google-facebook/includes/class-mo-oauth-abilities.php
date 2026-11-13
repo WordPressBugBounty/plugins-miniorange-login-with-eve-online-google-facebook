@@ -803,7 +803,7 @@ if ( ! class_exists( 'MO_OAuth_Abilities' ) ) {
 			if ( $enable ) {
 				update_option( 'mo_debug_enable', 'on' );
 				if ( ! get_option( 'mo_oauth_debug' ) ) {
-					update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
+					update_option( 'mo_oauth_debug', 'mo_oauth_debug_' . wp_generate_password( 32, false ) );
 				}
 				update_option( 'mo_debug_time', time() );
 				if ( ! wp_next_scheduled( 'mo_oauth_auto_delete_debug_logs' ) ) {

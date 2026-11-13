@@ -28,7 +28,7 @@ class MOOAuth {
 		register_activation_hook( MO_OAUTH_PLUGIN_BASENAME, array( $this, 'mo_oauth_set_cron_job' ) );
 		add_shortcode( 'mo_oauth_login', array( $this, 'mo_oauth_shortcode_login' ) );
 		add_action( 'admin_footer', array( $this, 'mo_oauth_client_feedback_request' ) );
-		add_action( 'check_if_wp_rest_apis_are_open', array( $this, 'mo_oauth_scheduled_task' ) );
+		add_action( 'admin_init', array( $this, 'mo_oauth_remove_rest_api_check_cron' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_debug_log_ajax_hook' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_client_support_script_hook' ) );
 		add_action( 'admin_init', array( $this, 'mo_oauth_disable_autoload_for_admin_only_options' ), 5 );
@@ -214,7 +214,7 @@ class MOOAuth {
 
 				if ( ! $log_filename ) {
 					// Create a new debug filename if none exists.
-					update_option( 'mo_oauth_debug', 'mo_oauth_debug' . uniqid() );
+					update_option( 'mo_oauth_debug', 'mo_oauth_debug_' . wp_generate_password( 32, false ) );
 					$log_filename = get_option( 'mo_oauth_debug' );
 				}
 				$mo_file_path = MOOAuth_Debug::get_log_file_path();
@@ -232,6 +232,7 @@ class MOOAuth {
 						$wp_filesystem->chmod( $mo_file_path, 0644 );
 					}
 				}
+				MOOAuth_Debug::harden_log_dir();
 				if ( ! wp_next_scheduled( 'mo_oauth_auto_delete_debug_logs' ) ) {
 					wp_schedule_single_event( time() + 604800, 'mo_oauth_auto_delete_debug_logs' );
 				}
@@ -307,9 +308,6 @@ class MOOAuth {
 	 * Set cron job
 	 */
 	public function mo_oauth_set_cron_job() {
-		if ( ! wp_next_scheduled( 'check_if_wp_rest_apis_are_open' ) ) {
-			wp_schedule_event( time() + 604800, 'weekly', 'check_if_wp_rest_apis_are_open' ); // update timestamp and name according to interval.
-		}
 		$mo_log_enable = get_option( 'mo_debug_enable' );
 		if ( isset( $mo_log_enable ) && 'on' === $mo_log_enable && ! wp_next_scheduled( 'mo_oauth_auto_delete_debug_logs' ) ) {
 			wp_schedule_single_event( time() + 604800, 'mo_oauth_auto_delete_debug_logs' );
@@ -346,35 +344,12 @@ class MOOAuth {
 
 
 	/**
-	 * Check REST APIs.
+	 * Unschedule the removed weekly REST API check cron on sites upgraded from an older version.
 	 */
-	public function mo_oauth_scheduled_task() {
-		$url      = site_url() . '/wp-json/wp/v2/posts';
-		$response = wp_remote_get(
-			$url,
-			array(
-				'method'      => 'GET',
-				'timeout'     => 10, // A loopback reachability check to the site's own REST API; 10s is ample and avoids tying up a cron worker for up to 45s on a slow/unreachable response.
-				'redirection' => 5,
-				'httpversion' => 1.0,
-				'blocking'    => true,
-				'headers'     => array(),
-				'cookies'     => array(),
-				'sslverify'   => MO_OAuth_Utils::get_ssl_verify_setting( $url ),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			if ( is_object( $response ) ) {
-				error_log( print_r( sanitize_text_field( $response->errors ), true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r, WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Used for debugging purposes
-			}
-			return;
-		}
-		$code = wp_remote_retrieve_response_code( $response );
-		if ( isset( $code ) && 200 === $code ) {
-			if ( isset( $response ) ) {
-				update_option( 'mo_oauth_client_show_rest_api_message', true );
-			}
+	public function mo_oauth_remove_rest_api_check_cron() {
+		if ( wp_next_scheduled( 'check_if_wp_rest_apis_are_open' ) ) {
+			wp_clear_scheduled_hook( 'check_if_wp_rest_apis_are_open' );
+			delete_option( 'mo_oauth_client_show_rest_api_message' );
 		}
 	}
 
@@ -432,13 +407,6 @@ class MOOAuth {
 			update_option( 'mo_oauth_client_show_mo_server_message', 1 );
 			return;
 		}
-		if ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'mo_oauth_client_rest_api_message' && isset( $_REQUEST['mo_oauth_client_rest_api_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_client_rest_api_form_field'] ) ), 'mo_oauth_client_rest_api_form' ) ) {
-
-			delete_option( 'mo_oauth_client_show_rest_api_message' );
-			wp_clear_scheduled_hook( 'check_if_wp_rest_apis_are_open' );
-			return;
-		}
-
 		if ( isset( $_POST['option'] ) && sanitize_text_field( wp_unslash( $_POST['option'] ) ) === 'clear_pointers' && isset( $_REQUEST['mo_oauth_clear_pointers_form_field'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['mo_oauth_clear_pointers_form_field'] ) ), 'mo_oauth_clear_pointers_form' ) ) {
 			update_user_meta( get_current_user_id(), 'dismissed_wp_pointers', '' );
 			return;
@@ -707,6 +675,16 @@ class MOOAuth {
 					$newapp['send_state']         = $send_state;
 					$newapp['show_on_login_page'] = $show_on_login_page;
 					$newapp['allow_admin_sso']    = $allow_admin_sso;
+
+					// Custom SSO button text. Saved only when it differs from the default (the app name).
+					if ( isset( $_POST['mo_oauth_display_app_name'] ) ) {
+						$display_app_name = trim( sanitize_text_field( wp_unslash( $_POST['mo_oauth_display_app_name'] ) ) );
+						if ( '' === $display_app_name || 0 === strcasecmp( $display_app_name, $appname ) ) {
+							unset( $newapp['displayappname'] );
+						} else {
+							$newapp['displayappname'] = $display_app_name;
+						}
+					}
 
 					if ( 'oauth1' === $appname || 'twitter' === $appname ) {
 						$newapp['requesturl'] = isset( $_POST['mo_oauth_requesturl'] ) ? stripslashes( sanitize_text_field( wp_unslash( $_POST['mo_oauth_requesturl'] ) ) ) : '';

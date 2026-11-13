@@ -31,7 +31,7 @@ function mooauth_setup_wizard_test() {
 			<center>
 				<div class="mo-oauth-test-successed" hidden><div class="mo-w-test-grid">
 					<h5 class="mo-oauth-test-success-msg mo-w-test-msg">Congratulations!! Test completed successfully.</h5>
-					<div><input type="submit" class="mo-button mo-oauth-next-setup mo-btn-test-finish_class" value="Finish"  id="mo-btn-test-finish"></div>
+					<div><input type="submit" class="mo-button mo-oauth-next-setup mo-btn-test-finish_class" value="Attribute Mapping"  id="mo-btn-test-finish"></div>
                 </div>
 					<p class="mo-oauth-test-prefered-attr"></p>
 					<table>

@@ -12,7 +12,7 @@
  * Plugin Name: OAuth Single Sign On - SSO (OAuth Client)
  * Plugin URI: https://www.miniorange.com
  * Description: This WordPress Single Sign-On plugin allows login into WordPress with your Azure AD B2C, AWS Cognito, Salesforce, Keycloak, Discord, WordPress or other custom OAuth 2.0 / OpenID Connect providers. WordPress OAuth Client plugin works with any Identity provider that conforms to the OAuth 2.0 and OpenID Connect (OIDC) 1.0 standard.
- * Version: 7.1.4
+ * Version: 7.1.5
  * Author: miniOrange
  * Author URI: https://www.miniorange.com
  * License: Expat
@@ -33,32 +33,25 @@ require 'class-mo-oauth-client-customer.php';
 require 'class-mo-oauth-utils.php';
 require plugin_dir_path( __FILE__ ) . 'includes' . DIRECTORY_SEPARATOR . 'class-mo-oauth-client.php';
 
-// The six requires below are wp-admin only: each one's only entry points are
+// The five requires below are wp-admin only: each one's only entry points are
 // admin_init/admin_notices/admin_footer/wp_ajax_* hooks (wp_ajax_* is served by
 // admin-ajax.php, which is_admin() also reports true for), none of which ever
 // fire on a front-end page view. Gating them here means the front-end no longer
-// parses/loads the setup wizard, its AJAX handler, the admin notices, the
-// feedback-form modal, or the cross-sell ad module on every single page request.
+// parses/loads the setup wizard, its AJAX handler, the admin notices, or the
+// feedback-form modal on every single page request.
 if ( is_admin() ) {
 	require 'views' . DIRECTORY_SEPARATOR . 'feedback-form.php';
 	require 'admin' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'setup_wizard' . DIRECTORY_SEPARATOR . 'handler' . DIRECTORY_SEPARATOR . 'class-mo-oauth-wizard-ajax.php';
 	require 'admin' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'notice' . DIRECTORY_SEPARATOR . 'class-mo-oauth-admin-notice.php';
-	require 'admin' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'notice' . DIRECTORY_SEPARATOR . 'class-mo-oauth-halloween-sale.php';
+	require 'admin' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'notice' . DIRECTORY_SEPARATOR . 'class-mo-oauth-seasonal-sale.php';
 	require 'admin' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'setup_wizard' . DIRECTORY_SEPARATOR . 'class-mo-oauth-client-setup-wizard.php';
-	require 'admin' . DIRECTORY_SEPARATOR . 'partials' . DIRECTORY_SEPARATOR . 'mo_plugins' . DIRECTORY_SEPARATOR . 'autoload.php';
 }
 
 require 'constants.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes' . DIRECTORY_SEPARATOR . 'class-mo-oauth-abilities.php';
 require_once 'class-mooauth.php';
-define( 'MO_OAUTH_CSS_JS_VERSION', '7.1.4' );
+define( 'MO_OAUTH_CSS_JS_VERSION', '7.1.5' );
 define( 'MO_OAUTH_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-
-use MOOAuth_Plugins\MO_REST_API_Advertisement;
-
-if ( class_exists( 'MOOAuth_Plugins\MO_REST_API_Advertisement' ) ) {
-	MO_REST_API_Advertisement::get_instance();
-}
 
 new MOOAuth();
 /**

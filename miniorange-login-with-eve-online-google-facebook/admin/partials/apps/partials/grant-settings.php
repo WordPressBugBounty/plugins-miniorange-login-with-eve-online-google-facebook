@@ -18,38 +18,15 @@ function mooauth_client_grant_type_settings() {
 	?>
 	</div>
 	<div class="mo_table_layout mo_oauth_contact_heading mo_oauth_outer_div mo_oauth_x_grantsettings_1" id="mo_grant_settings">
-	<div class="mo_oauth_customization_header"><div class="mo_oauth_attribute_map_heading mo_oauth_x_grantsettings_2"><b class="mo_oauth_position"><?php esc_html_e( 'Grant Settings', 'miniorange-login-with-eve-online-google-facebook' ); ?></b> <small><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_oauth_tooltiptext"  >PREMIUM</span><a href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer"><span class="mo_oauth_x_grantsettings_3"><img class="mo_oauth_premium-label" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_premium-label.png" alt="miniOrange Premium Plans Logo"></span></a></div></small></div>
-	<div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >Know how this is useful</span><a class="mo_oauth_x_grantsettings_4" target="_blank" href="https://developers.miniorange.com/docs/oauth/wordpress/client/multiple-grant-support" rel="noopener noreferrer">
-		<img class="mo_oauth_guide_img" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_info-icon.png" alt="miniOrange Premium Plans Logo" aria-hidden="true"></a></div></div>
-		<div class="grant_types mo_oauth_grant_setting ">
-			<h4><?php esc_html_e( 'Select Grant Type:', 'miniorange-login-with-eve-online-google-facebook' ); ?></h4>
-			<input checked disabled type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled">&emsp;<strong class="mo_strong"><?php esc_html_e( 'Authorization Code Grant', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>&emsp;<code class="mo_oauth_x_grantsettings_5"><small>DEFAULT</small></code>
-			<blockquote class="mo_oauth_blackquote">
-				<?php esc_html_e( 'The Authorization Code grant type is used by web and mobile apps.', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-				<?php esc_html_e( 'It requires the client to exchange authorization code with access token from the server. ', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-				<small>(<?php esc_html_e( 'If you have doubt on which settings to use, you can leave this checked and disable all others.', 'miniorange-login-with-eve-online-google-facebook' ); ?>)</small>
-			</blockquote>
-			<input disabled type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled">&emsp;<strong class="mo_strong"><?php esc_html_e( 'Implicit Grant', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>
-			<blockquote class="mo_oauth_blackquote">
-				<?php esc_html_e( 'The Implicit grant type is a simplified version of the Authorization Code Grant flow. ', 'miniorange-login-with-eve-online-google-facebook' ); ?><?php esc_html_e( 'OAuth providers directly offer access token when using this grant type.', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-			</blockquote>
-			<input disabled type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled">&emsp;<strong class="mo_strong"><?php esc_html_e( 'Password Grant', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>
-			<blockquote class="mo_oauth_blackquote">
-				<?php esc_html_e( 'Password grant is used by application to exchange user\'s credentials for access token. ', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-				<?php esc_html_e( 'This, generally, should be used by internal applications.', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-			</blockquote>
-			<input disabled type="checkbox" class="mo_input_checkbox mo_oauth_input_disabled">&emsp;<strong class="mo_strong"><?php esc_html_e( 'Refresh Token Grant', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong>
-			<blockquote class="mo_oauth_blackquote">
-				<?php esc_html_e( 'The Refresh Token grant type is used by clients.', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-				<?php esc_html_e( 'This can help in keeping user session persistent.', 'miniorange-login-with-eve-online-google-facebook' ); ?>
-			</blockquote>
-		</div>
-		<hr>
 		<div class="mo_oauth_customization_header"><div class="mo_oauth_attribute_map_heading mo_oauth_x_grantsettings_2"><b class="mo_oauth_position"><?php esc_html_e( 'JWT Validation & PKCE', 'miniorange-login-with-eve-online-google-facebook' ); ?></b> <small><div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_oauth_tooltiptext"  >ENTERPRISE</span><a href="<?php echo esc_url( MO_OAUTH_CLIENT_PRICING_PLAN ); ?>" target="_blank" rel="noopener noreferrer"><span class="mo_oauth_x_grantsettings_3"><img class="mo_oauth_premium-label" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_premium-label.png" alt="miniOrange Premium Plans Logo"></span></a></div></small></div>
 	<div class="mo_oauth_tooltip mo_oauth_tooltip_float_right"><span class="mo_tooltiptext"  >Know how this is useful</span><a class="mo_oauth_x_grantsettings_4" target="_blank" href="https://developers.miniorange.com/docs/oauth/wordpress/client/multiple-grant-support#configure-pkce-flow" rel="noopener noreferrer">
 		<img class="mo_oauth_guide_img" src="<?php echo esc_url( dirname( plugin_dir_url( __FILE__ ) ) ); ?>/images/mo_oauth_info-icon.png" alt="miniOrange Premium Plans Logo" aria-hidden="true"></a></div></div>
 				<div>
 					<table class="mo_settings_table mo_oauth_grant_setting">
+						<tr>
+							<td><strong class="mo_strong"><?php esc_html_e( 'JWKS URL:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
+							<td><input class="mo_table_textbox mo_oauth_input_disabled" type="text" value="" disabled /></td>
+						</tr>
 						<tr>
 							<td><strong class="mo_strong"><?php esc_html_e( 'Enable JWT Verification:', 'miniorange-login-with-eve-online-google-facebook' ); ?></strong></td>
 							<td><input type="checkbox" class="mo_input_checkbox" value="" disabled/></td>

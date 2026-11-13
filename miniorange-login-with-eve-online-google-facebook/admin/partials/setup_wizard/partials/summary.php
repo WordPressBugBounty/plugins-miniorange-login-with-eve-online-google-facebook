@@ -26,7 +26,7 @@ function mooauth_client_summary() {
 	echo '
     <label>Callback URL :</label>
       <div class="mo-summary-callback mo-summary-data">' . esc_url_raw( site_url() ) . '</div>
-      <a class="mo-editstep mo-w-red" data-step="2">&nbsp[Editable in premium]</a>
+      <a class="mo-editstep mo-editstep-disabled mo-w-red" aria-disabled="true">&nbsp[Editable in premium]</a>
     </li><li class="summary-form-row">';
 
 	echo '<label>Client ID :</label>

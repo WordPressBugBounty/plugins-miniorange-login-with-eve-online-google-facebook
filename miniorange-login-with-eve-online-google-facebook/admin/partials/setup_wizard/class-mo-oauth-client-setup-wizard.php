@@ -20,6 +20,7 @@ require 'partials' . DIRECTORY_SEPARATOR . 'callback.php';
 require 'partials' . DIRECTORY_SEPARATOR . 'apps.php';
 require 'partials' . DIRECTORY_SEPARATOR . 'summary.php';
 require 'partials' . DIRECTORY_SEPARATOR . 'test.php';
+require 'partials' . DIRECTORY_SEPARATOR . 'attr-mapping.php';
 require 'partials' . DIRECTORY_SEPARATOR . 'support.php';
 
 /**
@@ -33,7 +34,8 @@ class MO_OAuth_Client_Setup_Wizard {
 		echo '<head>
 		    <meta charset="utf-8">
 		    <!-- load dependencies -->';
-			wp_enqueue_style( 'mo_oauth_setup_wizard_style', plugin_dir_url( __FILE__ ) . '/css/generic.min.css', array(), MO_OAUTH_CSS_JS_VERSION );
+			// Version includes the file's modification time so browsers re-download it whenever it changes.
+			wp_enqueue_style( 'mo_oauth_setup_wizard_style', plugin_dir_url( __FILE__ ) . '/css/generic.min.css', array(), MO_OAUTH_CSS_JS_VERSION . '.' . filemtime( __DIR__ . '/css/generic.min.css' ) );
 			wp_print_styles( 'mo_oauth_setup_wizard_style' );
 			wp_enqueue_style( 'mo_oauth_setup_wizard_steps_style', plugin_dir_url( __FILE__ ) . '/css/multi-step.min.css', array(), MO_OAUTH_CSS_JS_VERSION );
 			wp_print_styles( 'mo_oauth_setup_wizard_steps_style' );
@@ -130,6 +132,9 @@ class MO_OAuth_Client_Setup_Wizard {
 						<div id="step4" class="mo-hidden">';
 							mooauth_setup_wizard_test();
 				echo '</div>
+						<div id="mo-oauth-attr-mapping-step" class="mo-hidden">';
+							mooauth_setup_wizard_attr_mapping();
+				echo '</div>
 					<!-- troubleshooting -->
 					<br>
 					<div class="mo-oauth-troubleshooting mo-hidden">
@@ -147,9 +152,9 @@ class MO_OAuth_Client_Setup_Wizard {
 				            <div>
 				                <input type="submit" name="later" id="mo-link-draft" class="mo-oauth-save-draft" href="." value="Save draft">
 				                <input type="submit" class="mo-button mo-oauth-next-setup" value="Next"  id="mo-btn-next">
-				                <input type="submit" class="mo-button mo-oauth-next-setup" value="Finish"  id="mo-btn-finish">
+				                <input type="submit" class="mo-button mo-oauth-next-setup" value="Test Configuration"  id="mo-btn-finish">
 								<input type="submit" class="mo-button mo-oauth-next-setup" value="Re-run test" id="mo-btn-test-re-run" >
-				                <input type="submit" class="mo-button mo-oauth-next-setup mo-btn-test-finish_class" value="Finish"  id="mo-btn-test-finish">
+				                <input type="submit" class="mo-button mo-oauth-next-setup mo-btn-test-finish_class" value="Attribute Mapping"  id="mo-btn-test-finish">
 				            </div>
 				        </div>
 				        <div class="mo-skip__footer mo-hidden">
@@ -175,6 +180,8 @@ class MO_OAuth_Client_Setup_Wizard {
 		';
 			wp_enqueue_script( 'mo_oauth_setup_wizard_inline_script', plugin_dir_url( __FILE__ ) . 'js/wizard-inline.min.js', array( 'jquery', 'mo_oauth_setup_wizard_script' ), MO_OAUTH_CSS_JS_VERSION, false );
 			wp_print_scripts( 'mo_oauth_setup_wizard_inline_script' );
+			wp_enqueue_script( 'mo_oauth_setup_wizard_attr_mapping_script', plugin_dir_url( __FILE__ ) . 'js/attr-mapping.js', array( 'jquery', 'mo_oauth_setup_wizard_inline_script' ), MO_OAUTH_CSS_JS_VERSION, false );
+			wp_print_scripts( 'mo_oauth_setup_wizard_attr_mapping_script' );
 		echo '</body>';
 	}
 }
